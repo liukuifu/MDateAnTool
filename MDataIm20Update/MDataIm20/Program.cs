@@ -16,15 +16,15 @@ namespace MDataIm20Update
             LogHelper.writeInfoLog("Main Start");
             if (args == null)
             {
-                Console.WriteLine("请输入数据类型名和数据文件");
-                LogHelper.writeWarnLog("请输入数据类型名和数据文件");
+                Console.WriteLine("请输入数据类型名和日期");
+                LogHelper.writeWarnLog("请输入数据类型名和日期");
                 return;
             }
 
             if (args.Length < 2)
             {
-                Console.WriteLine("请输入数据类型名和数据文件");
-                LogHelper.writeWarnLog("请输入数据类型名和数据文件");
+                Console.WriteLine("请输入数据类型名和日期");
+                LogHelper.writeWarnLog("请输入数据类型名和日期");
                 return;
             }
             if (string.IsNullOrEmpty(args[0]))
@@ -36,8 +36,8 @@ namespace MDataIm20Update
 
             if (string.IsNullOrEmpty(args[1]))
             {
-                Console.WriteLine("数据文件不能为空");
-                LogHelper.writeWarnLog("数据文件不能为空");
+                Console.WriteLine("日期不能为空");
+                LogHelper.writeWarnLog("日期不能为空");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace MDataIm20Update
             string strJson = string.Empty;
             string strDBType = args[0];
             //string strDBType = "task";
-            string strFileName = args[1];
+            string strInputDate = args[1];
             //string strFileName = @"E:\导入数据\temp.eggdata.log.2015-10-29.001";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;
@@ -82,10 +82,10 @@ namespace MDataIm20Update
                 
                 if ("go".Equals(strDBType))
                 {
-                    string strInputDateTemp = strFileName.Substring(strFileName.Length - 10);
-                    string strInputDate = strInputDateTemp.Substring(strInputDateTemp.Length - 4) +
-                        "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 7, 2) +
-                        "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 10, 2);
+                    //string strInputDateTemp = strFileName.Substring(strFileName.Length - 10);
+                    //string strInputDate = strInputDateTemp.Substring(strInputDateTemp.Length - 4) +
+                    //    "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 7, 2) +
+                    //    "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 10, 2);
 
                     // 向表(DailyUser)中插入数据
                     Console.WriteLine("DailyUser Insert Start.");

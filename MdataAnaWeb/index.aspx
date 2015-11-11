@@ -12,7 +12,6 @@
     <link href="/Scripts/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen" />
     <link href="/Scripts/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen" />
     <link href="/LXUI/css/lxui.css" rel="stylesheet" media="screen" />
-
 </head>
 <body>
 <div class="container-fluid">
@@ -47,10 +46,15 @@
                  <option>killer</option> 
                  <option>task</option> 
              </select>
-		     <asp:Button CssClass="btn btn-info" ID="search" runat="server" Text="按钮" OnClick="search_Click" />
+
+		     <div style="display: inline" id="searchDiv">
+                 <asp:Button CssClass="btn btn-info" ID="search" runat="server" Text="按钮" OnClick="search_Click" />
+		     </div>
 		</div>
 	</div>    
-             
+    <div id="query_hint" class="query_hint">
+        <img src="http://static.oschina.net/uploads/space/2014/0430/115223_oFLD_1163935_thumb.gif" />正在查询，请稍等．．．
+    </div>  
 	<div class="row row-fluid">
 		<div class="col-md-2">
 		</div>
@@ -231,7 +235,7 @@
 		startView: 2,
 		minView: 2,
 		forceParse: 0
-    });
+	});
 	$('.form_time').datetimepicker({
         language:  'fr',
         weekStart: 1,
@@ -243,13 +247,11 @@
 		maxView: 1,
 		forceParse: 0
 	});
+
 	function jsFunction() {
-        alert("11111")
-	    var stamp = document.getElementById("search");
-	    alert(stamp)
-	    stamp.disabled = true;
-        alert("22222")
-        //return true;
+	    
+	    $("#searchDiv").hide()
+        return true
         //alert("33333")
         //if (confirm("确定添加员工吗?")) {
         //    //document.getElementById("search").setAttribute('disabled', 'disabled');
@@ -257,6 +259,7 @@
 	    //}
 	    //return false;
 	}
+
 </script>
 </body>
 </html>

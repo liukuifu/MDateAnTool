@@ -41,7 +41,7 @@
 		<div class="col-md-2">
 			 <select class="form-control" runat="server" id="ctype" name="ctype" style="width:auto;display: inline"> 
                  <option selected>go</option> 
-                 <option>go 2.0</option> 
+                 <option>go2.0</option> 
                  <option>C#</option> 
                  <option>killer</option> 
                  <option>task</option> 
@@ -51,10 +51,7 @@
                  <asp:Button CssClass="btn btn-info" ID="search" runat="server" Text="按钮" OnClick="search_Click" />
 		     </div>
 		</div>
-	</div>    
-    <div id="query_hint" class="query_hint">
-        <img src="http://static.oschina.net/uploads/space/2014/0430/115223_oFLD_1163935_thumb.gif" />正在查询，请稍等．．．
-    </div>  
+	</div> 
 	<div class="row row-fluid">
 		<div class="col-md-2">
 		</div>

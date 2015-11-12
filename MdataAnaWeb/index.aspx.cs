@@ -45,10 +45,28 @@ namespace MdataAn
         //protected void searchData(object sender, EventArgs e)
         //public string searchData(string strInput1,string strInput2)
         {
+
+            LogHelper.writeInfoLog("search_Click Start");
+            bool updateFlg = false;
+
+            Int64 intCount = 0;
+            Int64 intdaycount = 0;
+
+            Int64 inttaskcount = 0;
+            Int64 intreturncount = 0;
+            
+            Int64 intnewcount = 0;
+            Int64 intsecondnewcount = 0;
+            Int64 intthirdnewcount = 0;
+            Int64 intthreenewcount = 0;
+            Int64 integg1usercount = 0;
+            Int64 intkillusercount = 0;
+
             //this.search.Enabled = false;
             //string rtn = string.Empty;
             string strInput = string.Empty;
             string strCType = string.Empty;
+            DailyVisitUserStatisticsData dvusd = new DailyVisitUserStatisticsData();
 
             strInput = this.input2.Value;
             //strInput = strInput1;
@@ -76,12 +94,12 @@ namespace MdataAn
                 strDailyTableName = "GoDailyUser";
                 this.lblTitle.Text = "GO";
             }
-            else if ("go 2.0".Equals(strCType))
+            else if ("go2.0".Equals(strCType))
             {
                 strDataTableName = "Go20SourceData";
                 strUserTableName = "Go20UserInfo";
                 strDailyTableName = "Go20DailyUser";
-                this.lblTitle.Text = "go 2.0";
+                this.lblTitle.Text = "go2.0";
             }
             else if ("C#".Equals(strCType))
             {
@@ -107,9 +125,16 @@ namespace MdataAn
 
             DataTable table = new DataTable();
             DataRow dr = null;
+
+            LogHelper.writeDebugLog("strInput = "+ strInput);
+            LogHelper.writeDebugLog("strCType = " + strCType);
+
+            dvusd = dbc.GetDailyVisitUserStatistics(strInput, strCType);
+
+            LogHelper.writeDebugLog("dvusd = " + dvusd.ToString());
+
             if ("task".Equals(strCType))
             {
-
                 table.Columns.Add("date");
                 table.Columns.Add("count");
                 table.Columns.Add("daycount");
@@ -119,12 +144,45 @@ namespace MdataAn
                 table.Columns.Add("returnp");
 
                 dr = table.NewRow();
+                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
+                {
+                    intCount = dbc.GetTaskCount(strInput, strDataTableName);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
+                }
 
-                Int64 intCount = dbc.GetTaskCount(strInput, strDataTableName);
-                Int64 intdaycount = dbc.GetTaskDayCount(strInput, strDataTableName);
-                
-                Int64 inttaskcount = dbc.GetTaskResultCount(strInput, strDataTableName);
-                Int64 intreturncount = dbc.GetTaskResultReturnCount(strInput, strDataTableName);
+                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
+                {
+                    intdaycount = dbc.GetTaskDayCount(strInput, strDataTableName);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.TaskNumber))
+                {
+                    inttaskcount = dbc.GetTaskResultCount(strInput, strDataTableName);
+                    updateFlg = true;
+                }
+                else
+                {
+                    inttaskcount = Convert.ToInt64(dvusd.TaskNumber);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.TaskNumberOfSuccess))
+                {
+                    intreturncount = dbc.GetTaskResultReturnCount(strInput, strDataTableName);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intreturncount = Convert.ToInt64(dvusd.TaskNumberOfSuccess);
+                }
 
                 dr["date"] = strInput;
                 dr["count"] = intCount;
@@ -136,6 +194,29 @@ namespace MdataAn
 
                 table.Rows.Add(dr);
 
+                if (string.IsNullOrEmpty(dvusd.UType) &&
+                    string.IsNullOrEmpty(dvusd.UDate))
+                {
+                    dvusd.UType = strCType;
+                    dvusd.UDate = strInput;
+                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                    dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
+                    dvusd.TaskNumber = Convert.ToString(inttaskcount);
+                    dvusd.TaskNumberOfSuccess = Convert.ToString(intreturncount);
+                    dbc.InsertDailyVisitUserStatisticsForTask(dvusd);
+                }
+                else
+                {
+                    if (updateFlg)
+                    {
+                        dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                        dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
+                        dvusd.TaskNumber = Convert.ToString(inttaskcount);
+                        dvusd.TaskNumberOfSuccess = Convert.ToString(intreturncount);
+                        dbc.UpdateDailyVisitUserStatistics(dvusd);
+                    }
+                }
+
                 this.GridView1.Visible = false;
                 this.GridView2.Visible = true;
                 this.GridView3.Visible = false;
@@ -144,7 +225,7 @@ namespace MdataAn
                 this.GridView2.DataBind();
 
             }
-            else if ("go 2.0".Equals(strCType))
+            else if ("go2.0".Equals(strCType))
             {
                 table.Columns.Add("date");
                 table.Columns.Add("count");
@@ -161,14 +242,97 @@ namespace MdataAn
 
                 dr = table.NewRow();
 
-                Int64 intCount = dbc.GetTCount(strInput, strDataTableName);
-                Int64 intdaycount = dbc.GetDayCount(strInput, strDailyTableName);
-                Int64 intnewcount = dbc.GetNewCount(strInput, strDataTableName, strUserTableName);
-                Int64 intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDailyTableName, strUserTableName);
-                Int64 intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
-                Int64 intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
-                Int64 integg1usercount = dbc.GetEgg1UserCount(strInput, strUserTableName);
-                Int64 intkillusercount = dbc.GetKillUserCount(strInput, strDailyTableName);
+                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
+                {
+                    intCount = dbc.GetTCount(strInput, strDataTableName);
+                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
+                }
+
+
+                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
+                {
+                    intdaycount = dbc.GetDayCount(strInput, strDailyTableName);
+                    dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.DayNumberOfUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers))
+                {
+                    intnewcount = dbc.GetNewCount(strInput, strDataTableName, strUserTableName);
+                    dvusd.NumberOfDaysNewUsers = Convert.ToString(intnewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.NumberOfDaysNewUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.NextDayNumberOfNewUsers)
+                    || "0".Equals(dvusd.NextDayNumberOfNewUsers))
+                {
+                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDailyTableName, strUserTableName);
+                    dvusd.NextDayNumberOfNewUsers = Convert.ToString(intsecondnewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.NextDayNumberOfNewUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.ThirdDayNumberOfNewUsers)
+                    || "0".Equals(dvusd.ThirdDayNumberOfNewUsers))
+                {
+                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
+                    dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.ThirdDayNumberOfNewUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.ThreeDayNumberOfNewUsers)
+                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers))
+                {
+                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
+                    dvusd.ThreeDayNumberOfNewUsers = Convert.ToString(intthreenewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.ThreeDayNumberOfNewUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.NumberOfNewUsersEgg1))
+                {
+                    integg1usercount = dbc.GetEgg1UserCount(strInput, strUserTableName);
+                    dvusd.NumberOfNewUsersEgg1 = Convert.ToString(integg1usercount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.NumberOfNewUsersEgg1);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsersKillInstallation))
+                {
+                    intkillusercount = dbc.GetKillUserCount(strInput, strDailyTableName);
+                    dvusd.DayNumberOfUsersKillInstallation = Convert.ToString(intkillusercount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.DayNumberOfUsersKillInstallation);
+                }
 
                 dr["date"] = strInput;
                 dr["count"] = intCount;
@@ -184,6 +348,21 @@ namespace MdataAn
                 dr["killuser"] = intkillusercount;
 
                 table.Rows.Add(dr);
+
+                if (string.IsNullOrEmpty(dvusd.UType) &&
+                    string.IsNullOrEmpty(dvusd.UDate))
+                {
+                    dvusd.UType = strCType;
+                    dvusd.UDate = strInput;
+                    dbc.InsertDailyVisitUserStatisticsForGo20(dvusd);
+                }
+                else
+                {
+                    if (updateFlg)
+                    {
+                        dbc.UpdateDailyVisitUserStatistics(dvusd);
+                    }
+                }
 
                 this.GridView3.DataSource = table;
                 this.GridView3.DataBind();
@@ -207,12 +386,87 @@ namespace MdataAn
 
                 dr = table.NewRow();
 
-                Int64 intCount = dbc.GetTCount(strInput, strDataTableName);
-                Int64 intdaycount = dbc.GetDayCount(strInput, strDailyTableName);
-                Int64 intnewcount = dbc.GetNewCount(strInput, strDataTableName, strUserTableName);
-                Int64 intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDailyTableName, strUserTableName);
-                Int64 intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
-                Int64 intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
+                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
+                {
+                    LogHelper.writeDebugLog("1111111");
+
+                    intCount = dbc.GetTCount(strInput, strDataTableName);
+                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
+                {
+                    LogHelper.writeDebugLog("222222");
+
+                    intdaycount = dbc.GetDayCount(strInput, strDailyTableName);
+                    dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers))
+                {
+                    LogHelper.writeDebugLog("33333");
+
+                    intnewcount = dbc.GetNewCount(strInput, strDataTableName, strUserTableName);
+                    dvusd.NumberOfDaysNewUsers = Convert.ToString(intnewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intnewcount = Convert.ToInt64(dvusd.NumberOfDaysNewUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.NextDayNumberOfNewUsers)
+                    || "0".Equals(dvusd.NextDayNumberOfNewUsers))
+                {
+                    LogHelper.writeDebugLog("44444");
+
+                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDailyTableName, strUserTableName);
+                    dvusd.NextDayNumberOfNewUsers = Convert.ToString(intsecondnewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intsecondnewcount = Convert.ToInt64(dvusd.NextDayNumberOfNewUsers);
+                }
+
+
+                if (string.IsNullOrEmpty(dvusd.ThirdDayNumberOfNewUsers)
+                    || "0".Equals(dvusd.ThirdDayNumberOfNewUsers))
+                {
+                    LogHelper.writeDebugLog("55555");
+
+                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
+                    dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intthirdnewcount = Convert.ToInt64(dvusd.ThirdDayNumberOfNewUsers);
+                }
+
+                if (string.IsNullOrEmpty(dvusd.ThreeDayNumberOfNewUsers)
+                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers))
+                {
+                    LogHelper.writeDebugLog("666666");
+
+                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
+                    dvusd.ThreeDayNumberOfNewUsers = Convert.ToString(intthreenewcount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intthreenewcount = Convert.ToInt64(dvusd.ThreeDayNumberOfNewUsers);
+                }
 
                 dr["date"] = strInput;
                 dr["count"] = intCount;
@@ -227,6 +481,27 @@ namespace MdataAn
 
                 table.Rows.Add(dr);
 
+                if (string.IsNullOrEmpty(dvusd.UType) &&
+                    string.IsNullOrEmpty(dvusd.UDate))
+                {
+                    LogHelper.writeDebugLog("77777");
+
+                    dvusd.UType = strCType;
+                    dvusd.UDate = strInput;
+                    dbc.InsertDailyVisitUserStatistics(dvusd);
+                }
+                else
+                {
+                    LogHelper.writeDebugLog("888888");
+
+                    if (updateFlg)
+                    {
+                        LogHelper.writeDebugLog("9999999");
+
+                        dbc.UpdateDailyVisitUserStatistics(dvusd);
+                    }
+                }
+
                 this.GridView1.DataSource = table;
                 this.GridView1.DataBind();
 
@@ -236,6 +511,7 @@ namespace MdataAn
 
             }
             this.search.Enabled = true;
+            LogHelper.writeInfoLog("search_Click End");
         }
     }
 }

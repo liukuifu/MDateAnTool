@@ -1,0 +1,10 @@
+E:\Test\MDataIm20\MDataIm20\bin\Debug\MDataIm20.exe.config
+E:\Test\MDataIm20\MDataIm20\bin\Debug\MDataIm20.exe
+E:\Test\MDataIm20\MDataIm20\bin\Debug\MDataIm20.pdb
+E:\Test\MDataIm20\MDataIm20\bin\Debug\log4net.dll
+E:\Test\MDataIm20\MDataIm20\bin\Debug\Newtonsoft.Json.dll
+E:\Test\MDataIm20\MDataIm20\bin\Debug\log4net.xml
+E:\Test\MDataIm20\MDataIm20\bin\Debug\Newtonsoft.Json.xml
+E:\Test\MDataIm20\MDataIm20\obj\Debug\MDataIm20.csprojResolveAssemblyReference.cache
+E:\Test\MDataIm20\MDataIm20\obj\Debug\MDataIm20.exe
+E:\Test\MDataIm20\MDataIm20\obj\Debug\MDataIm20.pdb

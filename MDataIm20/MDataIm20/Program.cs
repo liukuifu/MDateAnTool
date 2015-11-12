@@ -59,7 +59,7 @@ namespace MDataIm20
             string strUITableName = string.Empty;
             try
             {
-                if ("go".Equals(strDBType))
+                if ("go2.0".Equals(strDBType))
                 {
                     strTableName = "Go20SourceData";
                     strDUTableName = "Go20DailyUser";

@@ -254,5 +254,172 @@ namespace MDataIm20Update
             LogHelper.writeInfoLog("InsertUserInfo End");
             return strRtn;
         }
+
+
+        /// <summary>
+        /// 取得(SourceData)单日件数
+        /// </summary>
+        public int GetSourceDataCount(string date, string strDataTableName)
+        {
+            LogHelper.writeInfoLog("GetSourceDataCount Start");
+
+            int strRtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+                string sql = "SELECT count(1) FROM "
+                    + strDataTableName
+                    + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
+                SqlCommand comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = 240;
+                strRtn = (int)comm.ExecuteScalar();
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("GetSourceDataCount End");
+            return strRtn;
+        }
+
+        public int InsertDailyVisitUserStatistics(string strDBType, string strInputDate, int intSourceDataCount, int intInsertDU, int intInsertUI)
+        {
+            LogHelper.writeInfoLog("InsertDailyVisitUserStatistics Start");
+            int strRtn = 0;
+            try
+            {
+                DateTime dt = DateTime.Now;
+                SqlConnection conn = ConnectionOpen();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "insert into DailyVisitUserStatistics(UType, UDate, TotalNumberOfDays, DayNumberOfUsers, NumberOfDaysNewUsers, createdate, updatedate) values (@UType,@UDate,@TotalNumberOfDays,@DayNumberOfUsers,@NumberOfDaysNewUsers,@createdate,@updatedate)";
+                    //清除上一次的参数
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new SqlParameter("@UType", strDBType));
+                    cmd.Parameters.Add(new SqlParameter("@UDate", strInputDate));
+                    cmd.Parameters.Add(new SqlParameter("@TotalNumberOfDays", intSourceDataCount));
+                    cmd.Parameters.Add(new SqlParameter("@DayNumberOfUsers", intInsertDU));
+                    cmd.Parameters.Add(new SqlParameter("@NumberOfDaysNewUsers", intInsertUI));
+                    cmd.Parameters.Add(new SqlParameter("@createdate", dt));
+                    cmd.Parameters.Add(new SqlParameter("@updatedate", dt));
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                return strRtn;
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("InsertDailyVisitUserStatistics End");
+            return strRtn;
+        }
+
+
+        public int GetTaskDayCount(string date, string strDataTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(distinct uid) FROM "
+                + strDataTableName
+                + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = 240;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+
+            return rtn;
+        }
+
+        public int GetTaskResultCount(string date, string strDataTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(distinct uid) FROM "
+                + strDataTableName
+                + " where Convert(varchar, udate,120) LIKE '"
+                + date
+                + "%' and data_parameter = 'task result'";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = 240;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+
+        public int GetTaskResultReturnCount(string date, string strDataTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(distinct uid) FROM "
+                + strDataTableName
+                + " where Convert(varchar, udate,120) LIKE '"
+                + date
+                + "%' and data_parameter = 'task result' and data_return = '0'";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = 240;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+        public int InsertDailyVisitUserStatistics(string strDBType, 
+            string strInputDate, 
+            int intSourceDataCount, 
+            int intdaycount, 
+            int inttaskcount,
+            int intreturncount)
+        {
+            LogHelper.writeInfoLog("InsertDailyVisitUserStatistics For Task Start");
+            int strRtn = 0;
+            try
+            {
+                DateTime dt = DateTime.Now;
+                SqlConnection conn = ConnectionOpen();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "insert into DailyVisitUserStatistics(UType, UDate, TotalNumberOfDays, DayNumberOfUsers, TaskNumber, TaskNumberOfSuccess, createdate, updatedate) values (@UType,@UDate,@TotalNumberOfDays,@DayNumberOfUsers,@TaskNumber,@TaskNumberOfSuccess,@createdate,@updatedate)";
+                    //清除上一次的参数
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new SqlParameter("@UType", strDBType));
+                    cmd.Parameters.Add(new SqlParameter("@UDate", strInputDate));
+                    cmd.Parameters.Add(new SqlParameter("@TotalNumberOfDays", intSourceDataCount));
+                    cmd.Parameters.Add(new SqlParameter("@DayNumberOfUsers", intdaycount));
+                    cmd.Parameters.Add(new SqlParameter("@TaskNumber", inttaskcount));
+                    cmd.Parameters.Add(new SqlParameter("@TaskNumberOfSuccess", intreturncount));
+                    cmd.Parameters.Add(new SqlParameter("@createdate", dt));
+                    cmd.Parameters.Add(new SqlParameter("@updatedate", dt));
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                return strRtn;
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("InsertDailyVisitUserStatistics For Task End");
+            return strRtn;
+        }
+
     }
 }

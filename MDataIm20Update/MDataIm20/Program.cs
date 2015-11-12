@@ -42,6 +42,10 @@ namespace MDataIm20Update
             }
 
             Int64 itemCount = 0;
+            int intSourceDataCount = 0;
+            int intInsertDU = 0;
+            int intInsertUI = 0;
+            int intCount = 0;
             string[] s;
             //List<MData> list = new List<MData>();
             MData md = null;
@@ -59,7 +63,7 @@ namespace MDataIm20Update
             string strUITableName = string.Empty;
             try
             {
-                if ("go".Equals(strDBType))
+                if ("go2.0".Equals(strDBType))
                 {
                     strTableName = "Go20SourceData";
                     strDUTableName = "Go20DailyUser";
@@ -79,17 +83,18 @@ namespace MDataIm20Update
                     strDUTableName = string.Empty;
                     strUITableName = string.Empty;
                 }
-                
-                if ("go".Equals(strDBType))
-                {
-                    //string strInputDateTemp = strFileName.Substring(strFileName.Length - 10);
-                    //string strInputDate = strInputDateTemp.Substring(strInputDateTemp.Length - 4) +
-                    //    "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 7, 2) +
-                    //    "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 10, 2);
 
+                // 取得(SourceData)单日件数
+                Console.WriteLine("GetSourceDataCount Start.");
+                intSourceDataCount = db.GetSourceDataCount(strInputDate, strTableName);
+                Console.WriteLine("GetSourceDataCount Count = " + intSourceDataCount);
+                Console.WriteLine("GetSourceDataCount Insert End.");
+
+                if ("go2.0".Equals(strDBType))
+                {
                     // 向表(DailyUser)中插入数据
                     Console.WriteLine("DailyUser Insert Start.");
-                    int intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
+                    intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
                     Console.WriteLine("DailyUser Insert Count = " + intInsertDU);
                     Console.WriteLine("DailyUser Insert End.");
 
@@ -103,10 +108,30 @@ namespace MDataIm20Update
 
                         Console.WriteLine("UserInfo Insert Start.");
                         // 向表(UserInfo)中插入数据
-                        int intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
+                        intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
                         Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
                         Console.WriteLine("UserInfo Insert End.");
                     }
+                    Console.WriteLine("InsertDailyVisitUserStatistics For Go2.0 Start.");
+                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);
+                    Console.WriteLine("InsertDailyVisitUserStatistics For Go2.0 Count = " + intCount);
+                    Console.WriteLine("InsertDailyVisitUserStatistics For Go2.0 End.");
+
+                }
+                else if ("task".Equals(strDBType))
+                {
+                    int intdaycount = 0;
+                    int inttaskcount = 0;
+                    int intreturncount = 0;
+
+                    intdaycount = db.GetTaskDayCount(strInputDate, strTableName);
+                    inttaskcount = db.GetTaskResultCount(strInputDate, strTableName);
+                    intreturncount = db.GetTaskResultReturnCount(strInputDate, strTableName);
+
+                    Console.WriteLine("InsertDailyVisitUserStatistics For Task Start.");
+                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intdaycount, inttaskcount, intreturncount);
+                    Console.WriteLine("InsertDailyVisitUserStatistics For Task Count = " + intCount);
+                    Console.WriteLine("InsertDailyVisitUserStatistics For Task End.");
                 }
 
             }

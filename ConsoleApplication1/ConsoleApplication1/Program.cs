@@ -45,6 +45,10 @@ namespace ConsoleApplication1
             }
 
             Int64 itemCount = 0;
+            int intSourceDataCount = 0;
+            int intInsertDU = 0;
+            int intInsertUI = 0;
+
             string[] s;
             //List<MData> list = new List<MData>();
             MData md = null;
@@ -358,21 +362,34 @@ namespace ConsoleApplication1
                     "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 7, 2) +
                     "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 10, 2);
 
-                // 向表(DailyUser)中插入数据
-                Console.WriteLine("DailyUser Insert Start.");
-                int intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
-                Console.WriteLine("DailyUser Insert Count = " + intInsertDU);
-                Console.WriteLine("DailyUser Insert End.");
+                // 取得(SourceData)单日件数
+                Console.WriteLine("GetSourceDataCount Start.");
+                intSourceDataCount = db.GetSourceDataCount(strInputDate, strTableName);
+                Console.WriteLine("GetSourceDataCount Count = " + intSourceDataCount);
+                Console.WriteLine("GetSourceDataCount Insert End.");
 
-                if (intInsertDU > 0)
+                if (intSourceDataCount > 0)
                 {
-                    Console.WriteLine("UserInfo Insert Start.");
-                    // 向表(UserInfo)中插入数据
-                    int intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
-                    Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
-                    Console.WriteLine("UserInfo Insert End.");
+                    // 向表(DailyUser)中插入数据
+                    Console.WriteLine("DailyUser Insert Start.");
+                    intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
+                    Console.WriteLine("DailyUser Insert Count = " + intInsertDU);
+                    Console.WriteLine("DailyUser Insert End.");
+
+                    if (intInsertDU > 0)
+                    {
+                        Console.WriteLine("UserInfo Insert Start.");
+                        // 向表(UserInfo)中插入数据
+                        intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
+                        Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
+                        Console.WriteLine("UserInfo Insert End.");
+                    }
                 }
 
+                Console.WriteLine("InsertDailyVisitUserStatistics Start.");
+                int intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);
+                Console.WriteLine("InsertDailyVisitUserStatistics Count = " + intCount);
+                Console.WriteLine("InsertDailyVisitUserStatistics End.");
             }
             catch (Exception ex)
             {

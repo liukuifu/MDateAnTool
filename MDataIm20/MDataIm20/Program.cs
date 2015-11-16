@@ -51,9 +51,9 @@ namespace MDataIm20
 
             string strJson = string.Empty;
             string strDBType = args[0];
-            //string strDBType = "task";
+            //string strDBType = "go2.0";
             string strFileName = args[1];
-            //string strFileName = @"E:\导入数据\temp.eggdata.log.2015-10-29.001";
+            //string strFileName = @"E:\导入数据\egg_go_20\3\eggdata.log.2015-11-15.003";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;
             string strUITableName = string.Empty;
@@ -65,10 +65,12 @@ namespace MDataIm20
                     strDUTableName = "Go20DailyUser";
                     strUITableName = "Go20UserInfo";
                 }
-                //else if ("C#".Equals(strDBType))
-                //{
-                //    strTableName = "CSharp20SourceData";
-                //}
+                else if ("C#2.0".Equals(strDBType))
+                {
+                    strTableName = "Cs20SourceData";
+                    strDUTableName = "Cs20DailyUser";
+                    strUITableName = "Cs20UserInfo";
+                }
                 //else if ("killer".Equals(strDBType))
                 //{
                 //    strTableName = "Killer20SourceData";
@@ -168,6 +170,7 @@ namespace MDataIm20
                 }
                 String line;
 
+                //int intline = 0;
                 do
                 {
                     // 建立缓存文件
@@ -179,7 +182,6 @@ namespace MDataIm20
                     using (var stream = mmf.CreateViewStream(offset, length, MemoryMappedFileAccess.Read))
                     using (var reader = new StreamReader(stream, Encoding.UTF8))
                     {
-
                         do
                         {
                             //string t = reader.ReadLine();
@@ -188,9 +190,11 @@ namespace MDataIm20
                             try
                             {
                                 line = reader.ReadLine();
+                                //intline = intline + 1;
                             }
                             catch (OutOfMemoryException oome)
                             {
+                                //LogHelper.writeErrorLog("error: intline = " + intline);
                                 LogHelper.writeErrorLog("error: lsTemp = " + lsTemp.Count);
                                 LogHelper.writeErrorLog(oome);
 
@@ -206,10 +210,12 @@ namespace MDataIm20
                                     && line.IndexOf("\"event\":\"taskresult") > 0)
                                 {
 
+                                    //LogHelper.writeInfoLog("intline = " + intline);
                                     s = line.Split(' ');
 
                                     if (s.Length >= 7 && "req".Equals(s[5]))
                                     {
+                                        //LogHelper.writeInfoLog("intline = " + intline);
                                         strJson = line.Substring(line.IndexOf("{"));
                                         td = new TaskData();
                                         //创建数据行
@@ -350,12 +356,14 @@ namespace MDataIm20
 
                                     if (s.Length >= 7 && "req".Equals(s[5]))
                                     {
+                                        //LogHelper.writeInfoLog("intline = " + intline);
                                         strJson = line.Substring(line.IndexOf("{"));
                                         md = new MData();
                                         //创建数据行
                                         DataRow dr = table.NewRow();
                                         try
                                         {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
                                             JsonSerializer serializer = new JsonSerializer();
                                             StringReader srt = new StringReader(strJson);
 
@@ -364,6 +372,7 @@ namespace MDataIm20
                                         }
                                         catch (JsonException je)
                                         {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
                                             LogHelper.writeDebugLog("debug: " + line);
                                             LogHelper.writeErrorLog("error: itemCount = " + itemCount);
                                             LogHelper.writeErrorLog(je);
@@ -372,6 +381,7 @@ namespace MDataIm20
                                         }
                                         catch (OutOfMemoryException oome)
                                         {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
                                             LogHelper.writeDebugLog("debug: " + line);
                                             LogHelper.writeErrorLog("error: itemCount = " + itemCount);
                                             LogHelper.writeErrorLog(oome);
@@ -380,6 +390,7 @@ namespace MDataIm20
                                         }
                                         catch (Exception ex)
                                         {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
                                             LogHelper.writeErrorLog("error: itemCount = " + itemCount);
                                             LogHelper.writeErrorLog("error: s[0] = " + s[0]);
                                             LogHelper.writeErrorLog(ex);
@@ -506,6 +517,7 @@ namespace MDataIm20
                                             }
                                             catch (Exception ex)
                                             {
+                                                //LogHelper.writeInfoLog("intline = " + intline);
                                                 LogHelper.writeErrorLog("error: itemCount = " + itemCount);
                                                 LogHelper.writeErrorLog("error: s[0]+s[1] = " + s[0] + s[1]);
                                                 LogHelper.writeErrorLog(ex);
@@ -517,11 +529,11 @@ namespace MDataIm20
                                 }
                             }
 
-                            if (itemCount != 0 && itemCount % 1000 == 0)
+                            if (itemCount != 0 && itemCount % 50000 == 0)
                             {
                                 try
                                 {
-                                    db.InsertTable(table, strTableName);
+                                    //db.InsertTable(table, strTableName);
                                 }
                                 catch (Exception ex)
                                 {
@@ -533,9 +545,9 @@ namespace MDataIm20
                             }
                         } while (!reader.EndOfStream);
 
-                        if (itemCount % 1000 > 0)
+                        if (itemCount % 50000 > 0)
                         {
-                            db.InsertTable(table, strTableName);
+                            //db.InsertTable(table, strTableName);
                             table.Clear();
                             itemCount = 0;
                         }
@@ -554,36 +566,7 @@ namespace MDataIm20
 
                     tempCount = tempCount + 1;
                 }
-                while (tempCount <= readCount);
-
-                //if ("go".Equals(strDBType))
-                //{
-                //    string strInputDateTemp = strFileName.Substring(strFileName.Length - 10);
-                //    string strInputDate = strInputDateTemp.Substring(strInputDateTemp.Length - 4) +
-                //        "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 7, 2) +
-                //        "-" + strInputDateTemp.Substring(strInputDateTemp.Length - 10, 2);
-
-                //    // 向表(DailyUser)中插入数据
-                //    Console.WriteLine("DailyUser Insert Start.");
-                //    int intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
-                //    Console.WriteLine("DailyUser Insert Count = " + intInsertDU);
-                //    Console.WriteLine("DailyUser Insert End.");
-
-                //    if (intInsertDU > 0)
-                //    {
-                //        // 更新表(DailyUser)中数据
-                //        Console.WriteLine("DailyUser Update Start.");
-                //        int intUpdateDU = db.UpdateDailyUser(strInputDate, strTableName, strDUTableName);
-                //        Console.WriteLine("DailyUser Update Count = " + intInsertDU);
-                //        Console.WriteLine("DailyUser Update End.");
-
-                //        Console.WriteLine("UserInfo Insert Start.");
-                //        // 向表(UserInfo)中插入数据
-                //        int intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
-                //        Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
-                //        Console.WriteLine("UserInfo Insert End.");
-                //    }
-                //}
+                while (tempCount <= readCount);                
 
             }
             catch (Exception ex)

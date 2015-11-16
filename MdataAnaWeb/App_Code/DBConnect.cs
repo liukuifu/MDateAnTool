@@ -429,6 +429,40 @@ namespace MdataAn
             return rtn;
         }
 
+        public Int64 GetVCount(string strInput, string strDailyTableName, string v)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDailyTableName
+                + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version = '" + v + "'";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = 240;
+            rtn = (int)comm.ExecuteScalar();
+
+            conn.Close();
+            return rtn;
+        }
+
+        public long GetNotVCount(string strInput, string strDailyTableName, string v1, string v2)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDailyTableName
+                + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version not in ('" + v1+"','"+ v2 + "')";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = 240;
+            rtn = (int)comm.ExecuteScalar();
+
+            conn.Close();
+            return rtn;
+        }
+
         public Int64 GetKillUserCount(string date, string strDailyTableName)
         {
             Int64 rtn = 0;

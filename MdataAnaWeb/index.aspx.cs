@@ -48,6 +48,7 @@ namespace MdataAn
 
             LogHelper.writeInfoLog("search_Click Start");
             bool updateFlg = false;
+            bool ThreeDayNumberOfNewUsersUpdateFlg = false;
 
             Int64 intCount = 0;
             Int64 intdaycount = 0;
@@ -61,6 +62,10 @@ namespace MdataAn
             Int64 intthreenewcount = 0;
             Int64 integg1usercount = 0;
             Int64 intkillusercount = 0;
+
+            Int64 intv112 = 0;
+            Int64 v107 = 0;
+            Int64 vother = 0;
 
             //this.search.Enabled = false;
             //string rtn = string.Empty;
@@ -119,6 +124,13 @@ namespace MdataAn
             {
                 strDataTableName = "Go20TaskSD";
                 this.lblTitle.Text = "Task Result";
+            }
+            else if ("C#2.0".Equals(strCType))
+            {
+                strDataTableName = "Cs20SourceData";
+                strUserTableName = "Cs20UserInfo";
+                strDailyTableName = "Cs20DailyUser";
+                this.lblTitle.Text = "C#2.0";
             }
 
             DBConnect dbc = new DBConnect();
@@ -225,7 +237,8 @@ namespace MdataAn
                 this.GridView2.DataBind();
 
             }
-            else if ("go2.0".Equals(strCType))
+            else if ("go2.0".Equals(strCType)
+                || "C#2.0".Equals(strCType))
             {
                 table.Columns.Add("date");
                 table.Columns.Add("count");
@@ -239,6 +252,9 @@ namespace MdataAn
                 table.Columns.Add("threenewp");
                 table.Columns.Add("egg1user");
                 table.Columns.Add("killuser");
+                table.Columns.Add("v112");
+                table.Columns.Add("v107");
+                table.Columns.Add("vother");
 
                 dr = table.NewRow();
 
@@ -262,7 +278,7 @@ namespace MdataAn
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.DayNumberOfUsers);
+                    intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
                 }
 
                 if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers))
@@ -273,7 +289,7 @@ namespace MdataAn
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.NumberOfDaysNewUsers);
+                    intnewcount = Convert.ToInt64(dvusd.NumberOfDaysNewUsers);
                 }
 
                 if (string.IsNullOrEmpty(dvusd.NextDayNumberOfNewUsers)
@@ -285,7 +301,7 @@ namespace MdataAn
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.NextDayNumberOfNewUsers);
+                    intsecondnewcount = Convert.ToInt64(dvusd.NextDayNumberOfNewUsers);
                 }
 
                 if (string.IsNullOrEmpty(dvusd.ThirdDayNumberOfNewUsers)
@@ -294,14 +310,16 @@ namespace MdataAn
                     intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
                     dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
                     updateFlg = true;
+                    ThreeDayNumberOfNewUsersUpdateFlg = true;
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.ThirdDayNumberOfNewUsers);
+                    intthirdnewcount = Convert.ToInt64(dvusd.ThirdDayNumberOfNewUsers);
                 }
 
                 if (string.IsNullOrEmpty(dvusd.ThreeDayNumberOfNewUsers)
-                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers))
+                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers)
+                    || ThreeDayNumberOfNewUsersUpdateFlg)
                 {
                     intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
                     dvusd.ThreeDayNumberOfNewUsers = Convert.ToString(intthreenewcount);
@@ -309,7 +327,7 @@ namespace MdataAn
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.ThreeDayNumberOfNewUsers);
+                    intthreenewcount = Convert.ToInt64(dvusd.ThreeDayNumberOfNewUsers);
                 }
 
                 if (string.IsNullOrEmpty(dvusd.NumberOfNewUsersEgg1))
@@ -320,7 +338,7 @@ namespace MdataAn
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.NumberOfNewUsersEgg1);
+                    integg1usercount = Convert.ToInt64(dvusd.NumberOfNewUsersEgg1);
                 }
 
                 if (string.IsNullOrEmpty(dvusd.DayNumberOfUsersKillInstallation))
@@ -331,7 +349,7 @@ namespace MdataAn
                 }
                 else
                 {
-                    intCount = Convert.ToInt64(dvusd.DayNumberOfUsersKillInstallation);
+                    intkillusercount = Convert.ToInt64(dvusd.DayNumberOfUsersKillInstallation);
                 }
 
                 dr["date"] = strInput;
@@ -346,6 +364,13 @@ namespace MdataAn
                 dr["threenewp"] = ((double)intthreenewcount / (double)intnewcount).ToString("P");
                 dr["egg1user"] = integg1usercount;
                 dr["killuser"] = intkillusercount;
+
+                intv112 = dbc.GetVCount(strInput, strDailyTableName, "1000.0.0.112");
+                v107 = dbc.GetVCount(strInput, strDailyTableName, "1000.0.0.107");
+                vother = dbc.GetNotVCount(strInput, strDailyTableName, "1000.0.0.107", "1000.0.0.112"); ;
+                dr["v112"] = intv112;
+                dr["v107"] = v107;
+                dr["vother"] = vother;
 
                 table.Rows.Add(dr);
 
@@ -448,6 +473,7 @@ namespace MdataAn
                     intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
                     dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
                     updateFlg = true;
+                    ThreeDayNumberOfNewUsersUpdateFlg = true;
                 }
                 else
                 {
@@ -455,7 +481,8 @@ namespace MdataAn
                 }
 
                 if (string.IsNullOrEmpty(dvusd.ThreeDayNumberOfNewUsers)
-                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers))
+                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers)
+                    || ThreeDayNumberOfNewUsersUpdateFlg)
                 {
                     LogHelper.writeDebugLog("666666");
 

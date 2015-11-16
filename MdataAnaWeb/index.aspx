@@ -28,7 +28,7 @@
                 <fieldset>
 			        <div class="form-group">
                         <label for="dtp_input2" class="col-md-1 control-label">日 期 ： </label>
-                        <div class="input-group date form_date col-md-2" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                        <div class="input-group date form_date col-md-2" id="datetimepicker" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
                             <input class="form-control" size="10" type="text" value="" readonly runat="server" id="input2" name="input2" />
                             <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 					        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -43,6 +43,7 @@
                  <option selected>go</option> 
                  <option>go2.0</option> 
                  <option>C#</option> 
+                 <option>C#2.0</option> 
                  <option>killer</option> 
                  <option>task</option> 
              </select>
@@ -189,6 +190,15 @@
                 <asp:BoundField DataField="killuser" HeaderText="kill安装用户数" >
                 <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
                 </asp:BoundField>
+                <asp:BoundField DataField="v112" HeaderText=".112个数" >
+                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                </asp:BoundField>
+                <asp:BoundField DataField="v107" HeaderText=".107个数" >
+                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                </asp:BoundField>
+                <asp:BoundField DataField="vother" HeaderText="其它版本个数" >
+                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                </asp:BoundField>
             </Columns>
             <FooterStyle BackColor="White" ForeColor="#000066" />
             <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
@@ -217,7 +227,7 @@
         //language:  'fr',
         weekStart: 1,
         todayBtn:  1,
-		autoclose: 1,
+		autoclose: 0,
 		todayHighlight: 1,
 		startView: 2,
 		forceParse: 0,
@@ -244,6 +254,17 @@
 		maxView: 1,
 		forceParse: 0
 	});
+	$(document).ready(function () {
+	    var myDate = new Date()
+	    //alert("111111")
+	    //alert(myDate.toLocaleDateString())
+	    //alert("22222")
+	    var dn = myDate.toLocaleDateString()
+	    var newdn = dn.replace('/', '-')
+	    newdn = newdn.replace('/', '-')
+	    //alert(newdn)
+	    $('#datetimepicker').datetimepicker('setEndDate', newdn);
+	})
 
 	function jsFunction() {
 	    

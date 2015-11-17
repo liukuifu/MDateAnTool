@@ -69,10 +69,12 @@ namespace MDataIm20Update
                     strDUTableName = "Go20DailyUser";
                     strUITableName = "Go20UserInfo";
                 }
-                //else if ("C#".Equals(strDBType))
-                //{
-                //    strTableName = "CSharp20SourceData";
-                //}
+                else if ("C#2.0".Equals(strDBType))
+                {
+                    strTableName = "Cs20SourceData";
+                    strDUTableName = "Cs20DailyUser";
+                    strUITableName = "Cs20UserInfo";
+                }
                 //else if ("killer".Equals(strDBType))
                 //{
                 //    strTableName = "Killer20SourceData";
@@ -80,7 +82,7 @@ namespace MDataIm20Update
                 else if ("task".Equals(strDBType))
                 {
                     strTableName = "Go20TaskSD";
-                    strDUTableName = string.Empty;
+                    strDUTableName = "Go20TaskInfo";
                     strUITableName = string.Empty;
                 }
 
@@ -90,36 +92,15 @@ namespace MDataIm20Update
                 Console.WriteLine("GetSourceDataCount Count = " + intSourceDataCount);
                 Console.WriteLine("GetSourceDataCount Insert End.");
 
-                if ("go2.0".Equals(strDBType))
+                if ("task".Equals(strDBType))
                 {
                     // 向表(DailyUser)中插入数据
-                    Console.WriteLine("DailyUser Insert Start.");
-                    intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
-                    Console.WriteLine("DailyUser Insert Count = " + intInsertDU);
-                    Console.WriteLine("DailyUser Insert End.");
+                    Console.WriteLine("TaskInfo Insert Start.");
+                    Console.WriteLine("strDUTableName = " + strDUTableName);
+                    intInsertDU = db.InsertTaskInfo(strInputDate, strTableName, strDUTableName);
+                    Console.WriteLine("TaskInfo Insert Count = " + intInsertDU);
+                    Console.WriteLine("TaskInfo Insert End.");
 
-                    if (intInsertDU > 0)
-                    {
-                        // 更新表(DailyUser)中数据
-                        Console.WriteLine("DailyUser Update Start.");
-                        int intUpdateDU = db.UpdateDailyUser(strInputDate, strTableName, strDUTableName);
-                        Console.WriteLine("DailyUser Update Count = " + intInsertDU);
-                        Console.WriteLine("DailyUser Update End.");
-
-                        Console.WriteLine("UserInfo Insert Start.");
-                        // 向表(UserInfo)中插入数据
-                        intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
-                        Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
-                        Console.WriteLine("UserInfo Insert End.");
-                    }
-                    Console.WriteLine("InsertDailyVisitUserStatistics For Go2.0 Start.");
-                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);
-                    Console.WriteLine("InsertDailyVisitUserStatistics For Go2.0 Count = " + intCount);
-                    Console.WriteLine("InsertDailyVisitUserStatistics For Go2.0 End.");
-
-                }
-                else if ("task".Equals(strDBType))
-                {
                     int intdaycount = 0;
                     int inttaskcount = 0;
                     int intreturncount = 0;
@@ -132,6 +113,33 @@ namespace MDataIm20Update
                     intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intdaycount, inttaskcount, intreturncount);
                     Console.WriteLine("InsertDailyVisitUserStatistics For Task Count = " + intCount);
                     Console.WriteLine("InsertDailyVisitUserStatistics For Task End.");
+                } 
+                else
+                {
+                    // 向表(DailyUser)中插入数据
+                    Console.WriteLine("DailyUser Insert Start.");
+                    intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
+                    Console.WriteLine("DailyUser Insert Count = " + intInsertDU);
+                    Console.WriteLine("DailyUser Insert End.");
+
+                    if (intInsertDU > 0)
+                    {
+                        // 更新表(DailyUser)中数据
+                        Console.WriteLine("DailyUser Update Start.");
+                        int intUpdateDU = db.UpdateDailyUser(strInputDate, strTableName, strDUTableName);
+                        Console.WriteLine("DailyUser Update End.");
+
+                        Console.WriteLine("UserInfo Insert Start.");
+                        // 向表(UserInfo)中插入数据
+                        intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
+                        Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
+                        Console.WriteLine("UserInfo Insert End.");
+                    }
+                    Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 Start.");
+                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);
+                    Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 Count = " + intCount);
+                    Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 End.");
+
                 }
 
             }

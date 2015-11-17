@@ -11,13 +11,14 @@ namespace MDataIm20Update
 {
     public class DBConnect
     {
-        //private static string connectionString =
+        //private string connectionString =
         //"Server = 10.1.7.126;" +
-        //"Database = MDataTemp;" +
+        //"Database = MDataAn;" +
         //"User ID = sa;" +
         //"Password = 12345678;";
 
         private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+        private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
 
         /// <summary>
         /// 连接数据库
@@ -130,6 +131,51 @@ namespace MDataIm20Update
         }
 
         /// <summary>
+        /// 向表(TaskInfo)中插入数据
+        /// </summary>
+        public int InsertTaskInfo(string strInputDate, string strTableName, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("InsertTaskInfo Start");
+
+            int strRtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandTimeout = intTimeout;
+                    
+                    //当日新规则访问用户
+                    cmd.CommandText = "insert "
+                        + strDUTableName
+                        + " SELECT DISTINCT '"
+                        + strInputDate
+                        + "', [uid], data_taskid, data_return, data_parameter FROM "
+                        + strTableName
+                        + " where Convert(varchar, udate,120) like '"
+                        + strInputDate +
+                        "%' and [uid] <> '' and [uid] is not null group by [uid], data_taskid, data_return, data_parameter order by [uid]";
+
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("InsertTaskInfo End");
+            return strRtn;
+        }
+
+        /// <summary>
         /// 向表(DailyUser)中插入数据
         /// </summary>
         public int InsertDailyUser(string inputDate, string strTableName, string strDUTableName)
@@ -143,16 +189,18 @@ namespace MDataIm20Update
                 SqlConnection conn = ConnectionOpen();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = intTimeout;
                     //当日新规则访问用户
                     cmd.CommandText = "insert "
                         + strDUTableName
-                        + " SELECT DISTINCT[uid],'"
+                        + " SELECT DISTINCT uid,'"
                         + inputDate
-                        + "' ,null FROM "
+                        + "',null,null FROM "
                         + strTableName
                         + " where Convert(varchar, udate,120) like '"
                         + inputDate + "%' group by uid,[kill] order by uid";
+
+                    LogHelper.writeInfoLog("cmd.CommandText =  " + cmd.CommandText);
 
                     strRtn = cmd.ExecuteNonQuery();                    
                 }
@@ -184,9 +232,11 @@ namespace MDataIm20Update
             try
             {
                 SqlConnection conn = ConnectionOpen();
+
+                // 更新KILL
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = intTimeout;
                     //当日新规则访问用户
                     cmd.CommandText = "UPDATE "
                         + strDUTableName
@@ -199,7 +249,71 @@ namespace MDataIm20Update
                         + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
                         + inputDate + "%' and g2sd.[kill] <> ''";
                     strRtn = cmd.ExecuteNonQuery();
+                    Console.WriteLine("DailyUser Update kill Count = " + strRtn);
                 }
+
+                // 更新version
+                using (SqlCommand cmd2 = conn.CreateCommand())
+                {
+                    cmd2.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd2.CommandText = "UPDATE "
+                        + strDUTableName
+                        + " SET version = g2sd.version from "
+                        + strDUTableName
+                        + " g2du , "
+                        + strTableName
+                        + " g2sd "
+                        + " where g2du.uid = g2sd.uid and g2du.udate = '"
+                        + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
+                        + inputDate + "%' and g2sd.version = '1000.0.0.107'";
+
+                    strRtn = cmd2.ExecuteNonQuery();
+                    Console.WriteLine("DailyUser Update version 1000.0.0.107 Count = " + strRtn);
+                }
+
+                using (SqlCommand cmd3 = conn.CreateCommand())
+                {
+                    cmd3.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd3.CommandText = "UPDATE "
+                        + strDUTableName
+                        + " SET version = g2sd.version from "
+                        + strDUTableName
+                        + " g2du , "
+                        + strTableName
+                        + " g2sd "
+                        + " where g2du.uid = g2sd.uid and g2du.udate = '"
+                        + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
+                        + inputDate + "%' and g2sd.version = '1000.0.0.112'";
+
+                    strRtn = cmd3.ExecuteNonQuery();
+                    Console.WriteLine("DailyUser Update version 1000.0.0.112 Count = " + strRtn);
+                }
+
+                using (SqlCommand cmd4 = conn.CreateCommand())
+                {
+                    cmd4.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd4.CommandText = "UPDATE "
+                        + strDUTableName
+                        + " SET version = g2sd.version from "
+                        + strDUTableName
+                        + " g2du , "
+                        + strTableName
+                        + " g2sd "
+                        + " where g2du.uid = g2sd.uid and g2du.udate = '"
+                        + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
+                        + inputDate 
+                        + "%' and g2sd.uid in (SELECT uid FROM "
+                        + strDUTableName
+                        + " where udate = '" + inputDate + "' and version is null)";
+                    
+                    strRtn = cmd4.ExecuteNonQuery();
+                    Console.WriteLine("DailyUser Update version 1000.0.0.107 1000.0.0.112 以外 Count = " + strRtn);
+                }
+
+
                 conn.Close();
             }
             catch (SqlException se)
@@ -231,8 +345,8 @@ namespace MDataIm20Update
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
 
-                    cmd.CommandTimeout = 240;
-                    cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT[uid],'"
+                    cmd.CommandTimeout = intTimeout;
+                    cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
                         + inputDate
                         + " 00:00:01.000' FROM " + strDUTableName + " g2du where g2du.udate = '"
                         + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
@@ -272,7 +386,7 @@ namespace MDataIm20Update
                     + strDataTableName
                     + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
                 SqlCommand comm = new SqlCommand(sql, conn);
-                comm.CommandTimeout = 240;
+                comm.CommandTimeout = intTimeout;
                 strRtn = (int)comm.ExecuteScalar();
                 conn.Close();
             }
@@ -336,7 +450,7 @@ namespace MDataIm20Update
                 + strDataTableName
                 + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = intTimeout;
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
 
@@ -355,7 +469,7 @@ namespace MDataIm20Update
                 + date
                 + "%' and data_parameter = 'task result'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = intTimeout;
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
@@ -374,7 +488,7 @@ namespace MDataIm20Update
                 + date
                 + "%' and data_parameter = 'task result' and data_return = '0'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = intTimeout;
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;

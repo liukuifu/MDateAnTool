@@ -412,7 +412,7 @@ namespace MDataIm20
                                                 //DateTime dtResult = dtStart.Add(toNow);
 
                                                 //dr["udate"] = dtResult.AddHours(-8);// Convert.ToDateTime(md.Date);
-                                                dr["udate"] = Convert.ToDateTime(s[0] + " " + s[1]);
+                                                dr["udate"] = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8);
                                                 dr["id"] = "";
                                                 dr["appid"] = md.Appid;
 
@@ -533,7 +533,7 @@ namespace MDataIm20
                             {
                                 try
                                 {
-                                    //db.InsertTable(table, strTableName);
+                                    db.InsertTable(table, strTableName);
                                 }
                                 catch (Exception ex)
                                 {
@@ -547,7 +547,7 @@ namespace MDataIm20
 
                         if (itemCount % 50000 > 0)
                         {
-                            //db.InsertTable(table, strTableName);
+                            db.InsertTable(table, strTableName);
                             table.Clear();
                             itemCount = 0;
                         }

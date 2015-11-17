@@ -18,6 +18,7 @@ namespace MDataIm20
         //"Password = 12345678;";
 
         private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+        private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
 
         /// <summary>
         /// 连接数据库
@@ -143,7 +144,7 @@ namespace MDataIm20
                 SqlConnection conn = ConnectionOpen();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = intTimeout;
                     //当日新规则访问用户
                     cmd.CommandText = "insert "
                         + strDUTableName
@@ -186,7 +187,7 @@ namespace MDataIm20
                 SqlConnection conn = ConnectionOpen();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = intTimeout;
                     //当日新规则访问用户
                     cmd.CommandText = "UPDATE "
                         + strDUTableName
@@ -231,7 +232,7 @@ namespace MDataIm20
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
 
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = intTimeout;
                     cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT[uid],'"
                         + inputDate
                         + " 00:00:01.000' FROM " + strDUTableName + " g2du where g2du.udate = '"

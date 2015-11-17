@@ -39,7 +39,7 @@ namespace MdataAn
                                 + "FROM DailyVisitUserStatistics where UType = '" + strCType + "' and UDate = '" + date + "'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -160,7 +160,7 @@ namespace MdataAn
                 + date 
                 + "%'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 120;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             int intUserInfoCount = (int)comm.ExecuteScalar();
             if (intUserInfoCount > 0)
             {
@@ -199,7 +199,7 @@ namespace MdataAn
                 + strDataTableName 
                 + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
@@ -217,7 +217,7 @@ namespace MdataAn
                 + date 
                 + "'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
 
             //SqlDataReader reader = comm.ExecuteReader();
@@ -242,7 +242,7 @@ namespace MdataAn
                 + "%') and uid like '{%'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -270,7 +270,7 @@ namespace MdataAn
                 + "%') and uid like '{%'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -299,7 +299,7 @@ namespace MdataAn
                 + date
                 + "%') and uid like '{%'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -319,7 +319,7 @@ namespace MdataAn
                 + strDataTableName
                 + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
@@ -336,7 +336,7 @@ namespace MdataAn
                 + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -360,7 +360,7 @@ namespace MdataAn
                 + "%' and data_parameter = 'task result'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -385,7 +385,7 @@ namespace MdataAn
                 + "%' and data_parameter = 'task result' and data_return = '0'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
 
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
@@ -403,7 +403,7 @@ namespace MdataAn
             SqlConnection conn = ConnectionOpen();
             string sql = "SELECT DISTINCT uid FROM GoSourceData where Convert(varchar, udate,120) LIKE '" + date + "%' and uid not like '{%' and uid <> '' group by uid";
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 60;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             SqlDataReader reader = comm.ExecuteReader();
             while (reader.Read())
             {
@@ -423,7 +423,7 @@ namespace MdataAn
                 + " where uid in (select uif.uid from UserInfo uif) and Convert(varchar, udate,120) LIKE '" + date + "%'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
@@ -439,7 +439,7 @@ namespace MdataAn
                 + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version = '" + v + "'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
 
             conn.Close();
@@ -456,7 +456,7 @@ namespace MdataAn
                 + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version not in ('" + v1+"','"+ v2 + "')";
 
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
 
             conn.Close();
@@ -473,7 +473,7 @@ namespace MdataAn
                 + " where Convert(varchar, udate,120) LIKE '" + date + "' and [kill] <> ''";
             
             SqlCommand comm = new SqlCommand(sql, conn);
-            comm.CommandTimeout = 240;
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
@@ -612,7 +612,7 @@ namespace MdataAn
                 SqlConnection conn = ConnectionOpen();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
                     if ("task".Equals(dvusd.UType))
                     {
                         cmd.CommandText = "UPDATE DailyVisitUserStatistics"
@@ -621,8 +621,8 @@ namespace MdataAn
                             + ",[DayNumberOfUsers] = " + dvusd.DayNumberOfUsers
                             + ",[TaskNumber] = " + dvusd.TaskNumber
                             + ",[TaskNumberOfSuccess] = " + dvusd.TaskNumberOfSuccess
-                            + ",[updatedate] = " + dt
-                            + " where keys = "
+                            + ",[updatedate] = '" + dt
+                            + "' where keys = "
                             + dvusd.keys;
                     }
                     else if ("go2.0".Equals(dvusd.UType))
@@ -637,8 +637,8 @@ namespace MdataAn
                             + ",[ThreeDayNumberOfNewUsers] = " + dvusd.ThreeDayNumberOfNewUsers
                             + ",[NumberOfNewUsersEgg1] = " + dvusd.NumberOfNewUsersEgg1
                             + ",[DayNumberOfUsersKillInstallation] = " + dvusd.DayNumberOfUsersKillInstallation
-                            + ",[updatedate] = " + dt
-                            + " where keys = "
+                            + ",[updatedate] = '" + dt
+                            + "' where keys = "
                             + dvusd.keys;
                     }
                     else
@@ -651,8 +651,8 @@ namespace MdataAn
                             + ",[NextDayNumberOfNewUsers] = " + dvusd.NextDayNumberOfNewUsers
                             + ",[ThirdDayNumberOfNewUsers] = " + dvusd.ThirdDayNumberOfNewUsers
                             + ",[ThreeDayNumberOfNewUsers] = " + dvusd.ThreeDayNumberOfNewUsers
-                            + ",[updatedate] = " + dt
-                            + " where keys = "
+                            + ",[updatedate] = '" + dt
+                            + "' where keys = "
                             + dvusd.keys;
                     }
                     strRtn = cmd.ExecuteNonQuery();

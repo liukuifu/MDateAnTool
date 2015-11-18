@@ -346,11 +346,21 @@ namespace MDataIm20Update
                 {
 
                     cmd.CommandTimeout = intTimeout;
-                    cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
-                        + inputDate
-                        + " 00:00:01.000' FROM " + strDUTableName + " g2du where g2du.udate = '"
-                        + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
+                    if ("Go20UserInfo".Equals(strUITableName))
+                    {
+                        cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
+                            + inputDate
+                            + " 00:00:01.000',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null FROM " + strDUTableName + " g2du where g2du.udate = '"
+                            + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
+                    }
+                    else
+                    {
+                        cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
+                            + inputDate
+                            + " 00:00:01.000' FROM " + strDUTableName + " g2du where g2du.udate = '"
+                            + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
 
+                    }
                     strRtn = cmd.ExecuteNonQuery();
                 }
                 conn.Close();

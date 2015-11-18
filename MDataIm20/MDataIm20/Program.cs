@@ -257,7 +257,8 @@ namespace MDataIm20
                                             try
                                             {
 
-                                                dr["udate"] = Convert.ToDateTime(s[0] + " " + s[1]);
+                                                //dr["udate"] = Convert.ToDateTime(s[0] + " " + s[1]);
+                                                dr["udate"] = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8);
                                                 dr["appid"] = td.Appid;
 
                                                 dr["channel"] = td.Channel;

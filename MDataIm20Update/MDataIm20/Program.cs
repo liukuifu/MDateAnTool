@@ -75,6 +75,12 @@ namespace MDataIm20Update
                     strDUTableName = "Cs20DailyUser";
                     strUITableName = "Cs20UserInfo";
                 }
+                else if ("killer2.0".Equals(strDBType))
+                {
+                    strTableName = "Killer20SourceData";
+                    strDUTableName = "Killer20DailyUser";
+                    strUITableName = "Killer20UserInfo";
+                }
                 //else if ("killer".Equals(strDBType))
                 //{
                 //    strTableName = "Killer20SourceData";
@@ -134,6 +140,12 @@ namespace MDataIm20Update
                         intInsertUI = db.InsertUserInfo(strInputDate, strDUTableName, strUITableName);
                         Console.WriteLine("UserInfo Insert Count = " + intInsertUI);
                         Console.WriteLine("UserInfo Insert End.");
+                        //if(intInsertUI>0 && "Go20UserInfo".Equals(strUITableName))
+                        //{
+                        //    Console.WriteLine("UpdateGo20UserInfo Start.");
+                        //    db.UpdateGo20UserInfo(strInputDate, strTableName, strUITableName);
+                        //    Console.WriteLine("UpdateGo20UserInfo End.");
+                        //}
                     }
                     Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 Start.");
                     intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);

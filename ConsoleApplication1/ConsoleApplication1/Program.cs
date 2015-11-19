@@ -318,7 +318,7 @@ namespace ConsoleApplication1
                                 }
                             }
 
-                            if (itemCount!=0 && itemCount % 1000 == 0)
+                            if (itemCount!=0 && itemCount % 50000 == 0)
                             {
                                 try
                                 {
@@ -334,7 +334,7 @@ namespace ConsoleApplication1
                             }
                         } while (!reader.EndOfStream);
 
-                        if (itemCount % 1000 > 0)
+                        if (itemCount % 50000 > 0)
                         {
                             db.InsertTable(table, strTableName);
                             table.Clear();

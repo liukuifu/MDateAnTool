@@ -45,6 +45,7 @@
                  <option>C#</option> 
                  <option>C#2.0</option> 
                  <option>killer</option> 
+                 <option>killer2.0</option> 
                  <option>task</option> 
              </select>
 

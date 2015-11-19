@@ -5,7 +5,7 @@ using System.Web;
 using log4net;
 using System.Reflection;
 
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "web.config", Watch = true)]
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 namespace MdataAn
 {
     /// <summary>
@@ -14,7 +14,7 @@ namespace MdataAn
     public class LogHelper
     {
         //public static ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger("UserInfoEdit");
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger("LogHelper");
         //记录错误日志
         public static void writeErrorLog(Exception ex)
         {

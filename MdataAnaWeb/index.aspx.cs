@@ -70,14 +70,14 @@ namespace MdataAn
             //this.search.Enabled = false;
             //string rtn = string.Empty;
             string strInput = string.Empty;
-            string strCType = string.Empty;
+            string strDBType = string.Empty;
             DailyVisitUserStatisticsData dvusd = new DailyVisitUserStatisticsData();
 
             strInput = this.input2.Value;
             //strInput = strInput1;
 
-            strCType = this.ctype.Items[this.ctype.SelectedIndex].Text;
-            //strCType = strInput2;
+            strDBType = this.ctype.Items[this.ctype.SelectedIndex].Text;
+            //strDBType = strInput2;
             if (string.IsNullOrEmpty(strInput))
             {
                 return;
@@ -88,49 +88,56 @@ namespace MdataAn
             string strSecondDay = string.Format("{0:yyyy-MM-dd}", dt.AddDays(1));
             string strThirdDay = string.Format("{0:yyyy-MM-dd}", dt.AddDays(2));
 
-            string strDataTableName = "GoSourceData";
-            string strUserTableName = "UserInfo";
-            string strDailyTableName = "GoDailyUser";
+            string strTableName = "GoSourceData";
+            string strUITableName = "UserInfo";
+            string strDUTableName = "GoDailyUser";
 
-            if ("go".Equals(strCType))
+            if ("go".Equals(strDBType))
             {
-                strDataTableName = "GoSourceData";
-                strUserTableName = "UserInfo";
-                strDailyTableName = "GoDailyUser";
+                strTableName = "GoSourceData";
+                strUITableName = "UserInfo";
+                strDUTableName = "GoDailyUser";
                 this.lblTitle.Text = "GO";
             }
-            else if ("go2.0".Equals(strCType))
+            else if ("go2.0".Equals(strDBType))
             {
-                strDataTableName = "Go20SourceData";
-                strUserTableName = "Go20UserInfo";
-                strDailyTableName = "Go20DailyUser";
+                strTableName = "Go20SourceData";
+                strUITableName = "Go20UserInfo";
+                strDUTableName = "Go20DailyUser";
                 this.lblTitle.Text = "go2.0";
             }
-            else if ("C#".Equals(strCType))
+            else if ("C#".Equals(strDBType))
             {
-                strDataTableName = "CSharpSourceData";
-                strUserTableName = "CsUserInfo";
-                strDailyTableName = "CsDailyUser";
+                strTableName = "CSharpSourceData";
+                strUITableName = "CsUserInfo";
+                strDUTableName = "CsDailyUser";
                 this.lblTitle.Text = "C#";
             }
-            else if ("killer".Equals(strCType))
+            else if ("killer".Equals(strDBType))
             {
-                strDataTableName = "KillerSourceData";
-                strUserTableName = "KillerUserInfo";
-                strDailyTableName = "KillerDailyUser";
+                strTableName = "KillerSourceData";
+                strUITableName = "KillerUserInfo";
+                strDUTableName = "KillerDailyUser";
                 this.lblTitle.Text = "Killer";
             }
-            else if ("task".Equals(strCType))
+            else if ("task".Equals(strDBType))
             {
-                strDataTableName = "Go20TaskSD";
+                strTableName = "Go20TaskSD";
                 this.lblTitle.Text = "Task Result";
             }
-            else if ("C#2.0".Equals(strCType))
+            else if ("C#2.0".Equals(strDBType))
             {
-                strDataTableName = "Cs20SourceData";
-                strUserTableName = "Cs20UserInfo";
-                strDailyTableName = "Cs20DailyUser";
+                strTableName = "Cs20SourceData";
+                strUITableName = "Cs20UserInfo";
+                strDUTableName = "Cs20DailyUser";
                 this.lblTitle.Text = "C#2.0";
+            }
+            else if ("killer2.0".Equals(strDBType))
+            {
+                strTableName = "Killer20SourceData";
+                strDUTableName = "Killer20DailyUser";
+                strUITableName = "Killer20UserInfo";
+                this.lblTitle.Text = "killer2.0";
             }
 
             DBConnect dbc = new DBConnect();
@@ -139,13 +146,13 @@ namespace MdataAn
             DataRow dr = null;
 
             LogHelper.writeDebugLog("strInput = "+ strInput);
-            LogHelper.writeDebugLog("strCType = " + strCType);
+            LogHelper.writeDebugLog("strDBType = " + strDBType);
 
-            dvusd = dbc.GetDailyVisitUserStatistics(strInput, strCType);
+            dvusd = dbc.GetDailyVisitUserStatistics(strInput, strDBType);
 
             LogHelper.writeDebugLog("dvusd = " + dvusd.ToString());
 
-            if ("task".Equals(strCType))
+            if ("task".Equals(strDBType))
             {
                 table.Columns.Add("date");
                 table.Columns.Add("count");
@@ -158,7 +165,7 @@ namespace MdataAn
                 dr = table.NewRow();
                 if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
                 {
-                    intCount = dbc.GetTaskCount(strInput, strDataTableName);
+                    intCount = dbc.GetTaskCount(strInput, strTableName);
                     updateFlg = true;
                 }
                 else
@@ -168,7 +175,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
                 {
-                    intdaycount = dbc.GetTaskDayCount(strInput, strDataTableName);
+                    intdaycount = dbc.GetTaskDayCount(strInput, strTableName);
                     updateFlg = true;
                 }
                 else
@@ -178,7 +185,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.TaskNumber))
                 {
-                    inttaskcount = dbc.GetTaskResultCount(strInput, strDataTableName);
+                    inttaskcount = dbc.GetTaskResultCount(strInput, strTableName);
                     updateFlg = true;
                 }
                 else
@@ -188,7 +195,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.TaskNumberOfSuccess))
                 {
-                    intreturncount = dbc.GetTaskResultReturnCount(strInput, strDataTableName);
+                    intreturncount = dbc.GetTaskResultReturnCount(strInput, strTableName);
                     updateFlg = true;
                 }
                 else
@@ -209,7 +216,7 @@ namespace MdataAn
                 if (string.IsNullOrEmpty(dvusd.UType) &&
                     string.IsNullOrEmpty(dvusd.UDate))
                 {
-                    dvusd.UType = strCType;
+                    dvusd.UType = strDBType;
                     dvusd.UDate = strInput;
                     dvusd.TotalNumberOfDays = Convert.ToString(intCount);
                     dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
@@ -237,8 +244,9 @@ namespace MdataAn
                 this.GridView2.DataBind();
 
             }
-            else if ("go2.0".Equals(strCType)
-                || "C#2.0".Equals(strCType))
+            else if ("go2.0".Equals(strDBType)
+                || "C#2.0".Equals(strDBType)
+                || "killer2.0".Equals(strDBType))
             {
                 table.Columns.Add("date");
                 table.Columns.Add("count");
@@ -260,7 +268,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
                 {
-                    intCount = dbc.GetTCount(strInput, strDataTableName);
+                    intCount = dbc.GetTCount(strInput, strTableName);
                     dvusd.TotalNumberOfDays = Convert.ToString(intCount);
                     updateFlg = true;
                 }
@@ -272,7 +280,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
                 {
-                    intdaycount = dbc.GetDayCount(strInput, strDailyTableName);
+                    intdaycount = dbc.GetDayCount(strInput, strDUTableName);
                     dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
                     updateFlg = true;
                 }
@@ -283,7 +291,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers))
                 {
-                    intnewcount = dbc.GetNewCount(strInput, strDataTableName, strUserTableName);
+                    intnewcount = dbc.GetNewCount(strInput, strTableName, strUITableName);
                     dvusd.NumberOfDaysNewUsers = Convert.ToString(intnewcount);
                     updateFlg = true;
                 }
@@ -295,7 +303,7 @@ namespace MdataAn
                 if (string.IsNullOrEmpty(dvusd.NextDayNumberOfNewUsers)
                     || "0".Equals(dvusd.NextDayNumberOfNewUsers))
                 {
-                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDailyTableName, strUserTableName);
+                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDUTableName, strUITableName);
                     dvusd.NextDayNumberOfNewUsers = Convert.ToString(intsecondnewcount);
                     updateFlg = true;
                 }
@@ -307,7 +315,7 @@ namespace MdataAn
                 if (string.IsNullOrEmpty(dvusd.ThirdDayNumberOfNewUsers)
                     || "0".Equals(dvusd.ThirdDayNumberOfNewUsers))
                 {
-                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
+                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDUTableName, strUITableName);
                     dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
                     updateFlg = true;
                     ThreeDayNumberOfNewUsersUpdateFlg = true;
@@ -321,7 +329,7 @@ namespace MdataAn
                     || "0".Equals(dvusd.ThreeDayNumberOfNewUsers)
                     || ThreeDayNumberOfNewUsersUpdateFlg)
                 {
-                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
+                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDUTableName, strUITableName);
                     dvusd.ThreeDayNumberOfNewUsers = Convert.ToString(intthreenewcount);
                     updateFlg = true;
                 }
@@ -332,7 +340,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.NumberOfNewUsersEgg1))
                 {
-                    integg1usercount = dbc.GetEgg1UserCount(strInput, strUserTableName);
+                    integg1usercount = dbc.GetEgg1UserCount(strInput, strUITableName);
                     dvusd.NumberOfNewUsersEgg1 = Convert.ToString(integg1usercount);
                     updateFlg = true;
                 }
@@ -343,7 +351,7 @@ namespace MdataAn
 
                 if (string.IsNullOrEmpty(dvusd.DayNumberOfUsersKillInstallation))
                 {
-                    intkillusercount = dbc.GetKillUserCount(strInput, strDailyTableName);
+                    intkillusercount = dbc.GetKillUserCount(strInput, strDUTableName);
                     dvusd.DayNumberOfUsersKillInstallation = Convert.ToString(intkillusercount);
                     updateFlg = true;
                 }
@@ -365,9 +373,9 @@ namespace MdataAn
                 dr["egg1user"] = integg1usercount;
                 dr["killuser"] = intkillusercount;
 
-                intv112 = dbc.GetVCount(strInput, strDailyTableName, "1000.0.0.112");
-                v107 = dbc.GetVCount(strInput, strDailyTableName, "1000.0.0.107");
-                vother = dbc.GetNotVCount(strInput, strDailyTableName, "1000.0.0.107", "1000.0.0.112"); ;
+                intv112 = dbc.GetVCount(strInput, strDUTableName, "1000.0.0.112");
+                v107 = dbc.GetVCount(strInput, strDUTableName, "1000.0.0.107");
+                vother = dbc.GetNotVCount(strInput, strDUTableName, "1000.0.0.107", "1000.0.0.112"); ;
                 dr["v112"] = intv112;
                 dr["v107"] = v107;
                 dr["vother"] = vother;
@@ -377,7 +385,7 @@ namespace MdataAn
                 if (string.IsNullOrEmpty(dvusd.UType) &&
                     string.IsNullOrEmpty(dvusd.UDate))
                 {
-                    dvusd.UType = strCType;
+                    dvusd.UType = strDBType;
                     dvusd.UDate = strInput;
                     dbc.InsertDailyVisitUserStatisticsForGo20(dvusd);
                 }
@@ -415,7 +423,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("1111111");
 
-                    intCount = dbc.GetTCount(strInput, strDataTableName);
+                    intCount = dbc.GetTCount(strInput, strTableName);
                     dvusd.TotalNumberOfDays = Convert.ToString(intCount);
                     updateFlg = true;
                 }
@@ -428,7 +436,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("222222");
 
-                    intdaycount = dbc.GetDayCount(strInput, strDailyTableName);
+                    intdaycount = dbc.GetDayCount(strInput, strDUTableName);
                     dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
                     updateFlg = true;
                 }
@@ -441,7 +449,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("33333");
 
-                    intnewcount = dbc.GetNewCount(strInput, strDataTableName, strUserTableName);
+                    intnewcount = dbc.GetNewCount(strInput, strTableName, strUITableName);
                     dvusd.NumberOfDaysNewUsers = Convert.ToString(intnewcount);
                     updateFlg = true;
                 }
@@ -455,7 +463,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("44444");
 
-                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDailyTableName, strUserTableName);
+                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDUTableName, strUITableName);
                     dvusd.NextDayNumberOfNewUsers = Convert.ToString(intsecondnewcount);
                     updateFlg = true;
                 }
@@ -470,7 +478,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("55555");
 
-                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDailyTableName, strUserTableName);
+                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDUTableName, strUITableName);
                     dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
                     updateFlg = true;
                     ThreeDayNumberOfNewUsersUpdateFlg = true;
@@ -486,7 +494,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("666666");
 
-                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDailyTableName, strUserTableName);
+                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDUTableName, strUITableName);
                     dvusd.ThreeDayNumberOfNewUsers = Convert.ToString(intthreenewcount);
                     updateFlg = true;
                 }
@@ -513,7 +521,7 @@ namespace MdataAn
                 {
                     LogHelper.writeDebugLog("77777");
 
-                    dvusd.UType = strCType;
+                    dvusd.UType = strDBType;
                     dvusd.UDate = strInput;
                     dbc.InsertDailyVisitUserStatistics(dvusd);
                 }

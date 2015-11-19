@@ -71,6 +71,12 @@ namespace MDataIm20
                     strDUTableName = "Cs20DailyUser";
                     strUITableName = "Cs20UserInfo";
                 }
+                else if ("killer2.0".Equals(strDBType))
+                {
+                    strTableName = "Killer20SourceData";
+                    strDUTableName = "Killer20DailyUser";
+                    strUITableName = "Killer20UserInfo";
+                }
                 //else if ("killer".Equals(strDBType))
                 //{
                 //    strTableName = "Killer20SourceData";

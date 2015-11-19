@@ -25,12 +25,18 @@ namespace UserInfoUpdate
             return conn;
         }
 
-        public void GetGo20UserInfo()
+        public void UpdateGo20UserInfo(string strInputDate, string strTableName, string strUITableName)
         {
             try
             {
                 //string qssd = "SELECT [keys]      ,[udate]      ,[id]      ,[appid]      ,[channel]      ,[event]      ,[eggid]      ,[locale]      ,[os]      ,[uid]      ,[version]      ,[amd64]      ,[antivirus_guid_1]      ,[antivirus_name_1]      ,[antivirus_guid_2]      ,[antivirus_name_2]      ,[antivirus_guid_3]      ,[antivirus_name_3]      ,[antivirus_guid_4]      ,[antivirus_name_4]      ,[antivirus_guid_5]      ,[antivirus_name_5]      ,[browser]      ,[bversion]      ,[dotnet_1]      ,[dotnet_2]      ,[dotnet_3]      ,[dotnet_4]      ,[dotnet_5]      ,[dx]      ,[base]      ,[bios]      ,[disk]      ,[network]      ,[ie]      ,[kill]      ,[createdate]      ,[updatedate] FROM [Go20SourceData] a where a.udate = (select max(udate) from [Go20SourceData] where uid = a.uid) order by a.[uid] desc";
-                string qssd = "SELECT [udate],[locale],[uid],[amd64],[antivirus_guid_1],[antivirus_name_1],[antivirus_guid_2],[antivirus_name_2],[antivirus_guid_3],[antivirus_name_3],[antivirus_guid_4],[antivirus_name_4],[antivirus_guid_5],[antivirus_name_5],[browser],[bversion],[dotnet_1],[dotnet_2],[dotnet_3],[dotnet_4],[dotnet_5],[dx],[base],[bios],[disk],[network],[ie] FROM [Go20SourceData]  a where a.udate = (select max(udate) from [Go20SourceData] where uid = a.uid) order by a.[uid] desc";
+
+                string qssd = "SELECT [udate],[locale],[uid],[amd64],[antivirus_guid_1],[antivirus_name_1],[antivirus_guid_2],"
+                    + "[antivirus_name_2],[antivirus_guid_3],[antivirus_name_3],[antivirus_guid_4],[antivirus_name_4],[antivirus_guid_5],"
+                    + "[antivirus_name_5],[browser],[bversion],[dotnet_1],[dotnet_2],[dotnet_3],[dotnet_4],[dotnet_5],[dx],[base],[bios],"
+                    + "[disk],[network],[ie] FROM "
+                    + strTableName + "  a where a.udate = (select max(udate) from "
+                    + strTableName + " where uid = a.uid) order by a.[uid] desc";
                 DataTable dtsd = new DataTable();
                 //1.SqlConnection
                 SqlConnection connsd = ConnectionOpen();
@@ -53,7 +59,7 @@ namespace UserInfoUpdate
                 }
                 connsd.Close();
                 DataTable dt = new DataTable();
-                string qs = "SELECT * FROM Go20UserInfo where Convert(varchar,udate,120) LIKE '2015-11-17%' and [locale] is null";
+                string qs = "SELECT * FROM " + strUITableName + " where Convert(varchar,udate,120) LIKE '" + strInputDate + "%' and [locale] is null";
                 //1.SqlConnection
                 SqlConnection conn = ConnectionOpen();
                 //2.SqlCommand

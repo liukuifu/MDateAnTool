@@ -508,7 +508,8 @@ namespace MDataIm20Update
                 {
 
                     cmd.CommandTimeout = intTimeout;
-                    if ("Go20UserInfo".Equals(strUITableName))
+                    if ("Go20UserInfo".Equals(strUITableName)
+                        || "Killer20UserInfo".Equals(strUITableName))
                     {
                         cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
                             + inputDate

@@ -51,9 +51,9 @@ namespace MDataIm20
 
             string strJson = string.Empty;
             string strDBType = args[0];
-            //string strDBType = "go2.0";
+            //string strDBType = "killer2.0";
             string strFileName = args[1];
-            //string strFileName = @"E:\导入数据\egg_go_20\3\eggdata.log.2015-11-15.003";
+            //string strFileName = @"E:\导入数据\egg_killer_20\eggdata.log.2015-11-20.001";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;
             string strUITableName = string.Empty;

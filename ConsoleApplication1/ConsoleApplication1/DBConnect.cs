@@ -230,7 +230,7 @@ namespace ConsoleApplication1
                 SqlConnection conn = ConnectionOpen();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = 720;
                     //当日新规则访问用户
                     cmd.CommandText = "insert " 
                         + strDUTableName 
@@ -283,7 +283,7 @@ namespace ConsoleApplication1
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
 
-                    cmd.CommandTimeout = 240;
+                    cmd.CommandTimeout = 720;
                     cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT[uid],'"
                         + inputDate
                         + " 00:00:01.000' FROM " + strTableName + " where Convert(varchar, udate,120) like '"
@@ -331,7 +331,7 @@ namespace ConsoleApplication1
                     + strDataTableName
                     + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
                 SqlCommand comm = new SqlCommand(sql, conn);
-                comm.CommandTimeout = 240;
+                comm.CommandTimeout = 720;
                 strRtn = (int)comm.ExecuteScalar();
                 conn.Close();
             }

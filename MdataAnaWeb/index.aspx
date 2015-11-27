@@ -15,15 +15,46 @@
 </head>
 <body>
 <div class="container-fluid">
+	<div class="row row-fluid">
+		<div class="col-md-12" style="height:50px">
+		</div>
+	</div>
+	<div class="row row-fluid">
+		<div class="col-md-2">
+		</div>
+		<div class="col-md-8">
+			<nav class="navbar navbar-default" role="navigation">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-11"> <span class="sr-only">响应菜单</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="/index.aspx">MData</a>
+					</div>					
+					<div class="navbar-collapse collapse" id="bs-example-navbar-collapse-11">
+						<ul class="nav navbar-nav">
+							<li class="active">
+								<a href="#">日统计</a>
+							</li>
+							<li>
+								<a href="/weekwf.aspx">周统计</a>
+							</li>
+						</ul>
+					</div>
+					
+				</div>
+				
+			</nav>
+		</div>
+		<div class="col-md-4">
+		</div>
+	</div>
     <form id="form1" runat="server">
 	<div class="row row-fluid">
 	    <div class="row row-fluid">
-		    <div class="col-md-12" style="height:100px">
+		    <div class="col-md-12" style="height:10px">
 		    </div>
 	    </div>
 		<div class="col-md-2">
 		</div>
-		<div class="col-md-2" style="height:100px;">
+		<div class="col-md-2" style="height:50px;">
             <div class="container">
                 <fieldset>
 			        <div class="form-group">
@@ -39,7 +70,8 @@
             </div>
 		</div>
 		<div class="col-md-2">
-			 <select class="form-control" runat="server" id="ctype" name="ctype" style="width:auto;display: inline"> 
+            <div class="container">
+			 <select class="form-control" runat="server" id="ctype" name="ctype" style="width:auto;display:inline" onchange="chg(this.value);"> 
                  <option selected>go</option> 
                  <option>go2.0</option> 
                  <option>C#</option> 
@@ -48,10 +80,11 @@
                  <option>killer2.0</option> 
                  <option>task</option> 
              </select>
-
-		     <div style="display: inline" id="searchDiv">
+            <asp:TextBox class="form-control" ID="tbTaskId" name="tbTaskId" runat="server" style="width:40px;display: inline"></asp:TextBox>
+		     <div style="display: inline" id="searchDiv">                 
                  <asp:Button CssClass="btn btn-info" ID="search" runat="server" Text="按钮" OnClick="search_Click" />
 		     </div>
+            </div>
 		</div>
 	</div> 
 	<div class="row row-fluid">
@@ -70,147 +103,164 @@
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-8" style="vertical-align:central;text-align:center">
-        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeaderWhenEmpty="True" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3"
-            style="vertical-align:central;text-align:center">
-            <Columns>
-                <asp:BoundField DataField="date" HeaderText="日期">
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="count" HeaderText="总访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="80px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="daycount" HeaderText="新规则访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="new" HeaderText="访问新用户数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="secondnew" HeaderText="新用户的次日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="secondnewp" HeaderText="新用户的次日留存比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="thirdnew" HeaderText="新用户的第三日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="thirdnewp" HeaderText="新用户的第三日留存比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="threenew" HeaderText="新用户的三日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="threenewp" HeaderText="新用户的三日留存比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-            </Columns>
-            <FooterStyle BackColor="White" ForeColor="#000066" />
-            <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-            <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-            <RowStyle ForeColor="#000066" />
-            <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
-            <SortedAscendingCellStyle BackColor="#F1F1F1" />
-            <SortedAscendingHeaderStyle BackColor="#007DBB" />
-            <SortedDescendingCellStyle BackColor="#CAC9C9" />
-            <SortedDescendingHeaderStyle BackColor="#00547E" />
-        </asp:GridView>
-        <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" ShowHeaderWhenEmpty="True" Visible="False" 
-            BackColor="White" BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4" ForeColor="Black" 
-            GridLines="Vertical">
-            <AlternatingRowStyle BackColor="White" />
-            <Columns>
-                <asp:BoundField DataField="date" HeaderText="日期" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="count" HeaderText="总访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="daycount" HeaderText="当日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="task" HeaderText="task result 数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="taskp" HeaderText="task result比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="return" HeaderText="task result return == 0 数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="returnp" HeaderText="task result return == 0 比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
-                </asp:BoundField>
-            </Columns>
-            <FooterStyle BackColor="#CCCC99" />
-            <HeaderStyle BackColor="#6B696B" Font-Bold="True" ForeColor="White" />
-            <PagerStyle BackColor="#F7F7DE" ForeColor="Black" HorizontalAlign="Right" />
-            <RowStyle BackColor="#F7F7DE" />
-            <SelectedRowStyle BackColor="#CE5D5A" Font-Bold="True" ForeColor="White" />
-            <SortedAscendingCellStyle BackColor="#FBFBF2" />
-            <SortedAscendingHeaderStyle BackColor="#848384" />
-            <SortedDescendingCellStyle BackColor="#EAEAD3" />
-            <SortedDescendingHeaderStyle BackColor="#575357" />
-        </asp:GridView>
-        <asp:GridView ID="GridView3" runat="server" AutoGenerateColumns="False" ShowHeaderWhenEmpty="True" Visible="False"
-            BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3"
-            style="vertical-align:central;text-align:center">
-            <Columns>
-                <asp:BoundField DataField="date" HeaderText="日期">
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
-                </asp:BoundField>
-                <asp:BoundField DataField="count" HeaderText="总访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="80px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="daycount" HeaderText="新规则访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="new" HeaderText="访问新用户数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="secondnew" HeaderText="新用户的次日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="secondnewp" HeaderText="新用户的次日留存比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="thirdnew" HeaderText="新用户的第三日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="thirdnewp" HeaderText="新用户的第三日留存比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="threenew" HeaderText="新用户的三日访问数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="threenewp" HeaderText="新用户的三日留存比例" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="egg1user" HeaderText="egg1中存在用户数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="killuser" HeaderText="kill安装用户数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="v112" HeaderText=".112个数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="v107" HeaderText=".107个数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-                <asp:BoundField DataField="vother" HeaderText="其它版本个数" >
-                <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
-                </asp:BoundField>
-            </Columns>
-            <FooterStyle BackColor="White" ForeColor="#000066" />
-            <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-            <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-            <RowStyle ForeColor="#000066" />
-            <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
-            <SortedAscendingCellStyle BackColor="#F1F1F1" />
-            <SortedAscendingHeaderStyle BackColor="#007DBB" />
-            <SortedDescendingCellStyle BackColor="#CAC9C9" />
-            <SortedDescendingHeaderStyle BackColor="#00547E" />
-        </asp:GridView>
+            <div style="vertical-align:central;text-align:center;padding-left:50px">
+                <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeaderWhenEmpty="True" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3"
+                    style="vertical-align:central;text-align:center">
+                    <Columns>
+                        <asp:BoundField DataField="date" HeaderText="日期">
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="count" HeaderText="总访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="80px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="daycount" HeaderText="新规则访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="new" HeaderText="访问新用户数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="secondnew" HeaderText="新用户的次日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="secondnewp" HeaderText="新用户的次日留存比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="thirdnew" HeaderText="新用户的第三日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="thirdnewp" HeaderText="新用户的第三日留存比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="threenew" HeaderText="新用户的三日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="threenewp" HeaderText="新用户的三日留存比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                    </Columns>
+                    <FooterStyle BackColor="White" ForeColor="#000066" />
+                    <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
+                    <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
+                    <RowStyle ForeColor="#000066" />
+                    <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
+                    <SortedAscendingCellStyle BackColor="#F1F1F1" />
+                    <SortedAscendingHeaderStyle BackColor="#007DBB" />
+                    <SortedDescendingCellStyle BackColor="#CAC9C9" />
+                    <SortedDescendingHeaderStyle BackColor="#00547E" />
+                </asp:GridView>
+                <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" ShowHeaderWhenEmpty="True" Visible="False" 
+                    BackColor="White" BorderColor="#DEDFDE" BorderStyle="None" BorderWidth="1px" CellPadding="4" ForeColor="Black" 
+                    GridLines="Vertical">
+                    <AlternatingRowStyle BackColor="White" />
+                    <Columns>
+                        <asp:BoundField DataField="date" HeaderText="日期" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="count" HeaderText="总访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="daycount" HeaderText="当日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="task" HeaderText="task result 数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="taskp" HeaderText="task result比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="return" HeaderText="task result return == 0 数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="returnp" HeaderText="task result return == 0 比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="taskid" HeaderText="指定taskID 的 result 数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="taskidreturn" HeaderText="指定taskID 的 result return == 0 数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="taskidreturnp" HeaderText="指定taskID 的 result return == 0 比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="200px" />                    
+                        </asp:BoundField>
+                    </Columns>
+                    <FooterStyle BackColor="#CCCC99" />
+                    <HeaderStyle BackColor="#6B696B" Font-Bold="True" ForeColor="White" />
+                    <PagerStyle BackColor="#F7F7DE" ForeColor="Black" HorizontalAlign="Right" />
+                    <RowStyle BackColor="#F7F7DE" />
+                    <SelectedRowStyle BackColor="#CE5D5A" Font-Bold="True" ForeColor="White" />
+                    <SortedAscendingCellStyle BackColor="#FBFBF2" />
+                    <SortedAscendingHeaderStyle BackColor="#848384" />
+                    <SortedDescendingCellStyle BackColor="#EAEAD3" />
+                    <SortedDescendingHeaderStyle BackColor="#575357" />
+                </asp:GridView>
+                <asp:GridView ID="GridView3" runat="server" AutoGenerateColumns="False" ShowHeaderWhenEmpty="True" Visible="False"
+                    BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3"
+                    style="vertical-align:central;text-align:center">
+                    <Columns>
+                        <asp:BoundField DataField="date" HeaderText="日期">
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
+                        </asp:BoundField>
+                        <asp:BoundField DataField="count" HeaderText="总访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="80px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="daycount" HeaderText="新规则访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="new" HeaderText="访问新用户数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="secondnew" HeaderText="新用户的次日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="secondnewp" HeaderText="新用户的次日留存比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="thirdnew" HeaderText="新用户的第三日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="thirdnewp" HeaderText="新用户的第三日留存比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="threenew" HeaderText="新用户的三日访问数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="threenewp" HeaderText="新用户的三日留存比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="weekACount" HeaderText="DAU在一周后的存活数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="weekACountp" HeaderText="DAU在一周后的存活数比例" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="egg1user" HeaderText="egg1中存在用户数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="killuser" HeaderText="kill安装用户数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="v112" HeaderText=".112个数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="v107" HeaderText=".107个数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                        <asp:BoundField DataField="vother" HeaderText="其它版本个数" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        </asp:BoundField>
+                    </Columns>
+                    <FooterStyle BackColor="White" ForeColor="#000066" />
+                    <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
+                    <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
+                    <RowStyle ForeColor="#000066" />
+                    <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
+                    <SortedAscendingCellStyle BackColor="#F1F1F1" />
+                    <SortedAscendingHeaderStyle BackColor="#007DBB" />
+                    <SortedDescendingCellStyle BackColor="#CAC9C9" />
+                    <SortedDescendingHeaderStyle BackColor="#00547E" />
+                </asp:GridView>
+		    </div>
 		</div>
 		<div class="col-md-2">
 		</div>
@@ -265,6 +315,12 @@
 	    newdn = newdn.replace('/', '-')
 	    //alert(newdn)
 	    $('#datetimepicker').datetimepicker('setEndDate', newdn);
+	    $('#tbTaskId').attr("disabled", "disabled");
+	    //alert($("#ctype").val());
+	    if ($("#ctype").val() == "task") {
+	        //alert("removeAttr");
+	        $('#tbTaskId').removeAttr("disabled");
+	    }
 	})
 
 	function jsFunction() {
@@ -279,6 +335,13 @@
 	    //return false;
 	}
 
+	function chg(locationid) {
+	    if (locationid == "task") {
+	        $('#tbTaskId').removeAttr("disabled");
+	    } else {
+	        $('#tbTaskId').attr("disabled", "disabled");
+	    }
+	}
 </script>
 </body>
 </html>

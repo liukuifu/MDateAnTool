@@ -413,46 +413,46 @@ namespace MDataIm20Update
                     strRtn = cmd.ExecuteNonQuery();
                     Console.WriteLine("DailyUser Update kill Count = " + strRtn);
                 }
-
-                // 更新version
-                using (SqlCommand cmd2 = conn.CreateCommand())
+                if ("Go20SourceData".Equals(strTableName))
                 {
-                    cmd2.CommandTimeout = intTimeout;
-                    //当日新规则访问用户
-                    cmd2.CommandText = "UPDATE "
-                        + strDUTableName
-                        + " SET version = g2sd.version from "
-                        + strDUTableName
-                        + " g2du , "
-                        + strTableName
-                        + " g2sd "
-                        + " where g2du.uid = g2sd.uid and g2du.udate = '"
-                        + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
-                        + inputDate + "%' and g2sd.version = '1000.0.0.107'";
+                    // 更新version
+                    using (SqlCommand cmd2 = conn.CreateCommand())
+                    {
+                        cmd2.CommandTimeout = intTimeout;
+                        //当日新规则访问用户
+                        cmd2.CommandText = "UPDATE "
+                            + strDUTableName
+                            + " SET version = g2sd.version from "
+                            + strDUTableName
+                            + " g2du , "
+                            + strTableName
+                            + " g2sd "
+                            + " where g2du.uid = g2sd.uid and g2du.udate = '"
+                            + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
+                            + inputDate + "%' and g2sd.version = '1000.0.0.107'";
 
-                    strRtn = cmd2.ExecuteNonQuery();
-                    Console.WriteLine("DailyUser Update version 1000.0.0.107 Count = " + strRtn);
-                }
+                        strRtn = cmd2.ExecuteNonQuery();
+                        Console.WriteLine("DailyUser Update version 1000.0.0.107 Count = " + strRtn);
+                    }
 
-                using (SqlCommand cmd3 = conn.CreateCommand())
-                {
-                    cmd3.CommandTimeout = intTimeout;
-                    //当日新规则访问用户
-                    cmd3.CommandText = "UPDATE "
-                        + strDUTableName
-                        + " SET version = g2sd.version from "
-                        + strDUTableName
-                        + " g2du , "
-                        + strTableName
-                        + " g2sd "
-                        + " where g2du.uid = g2sd.uid and g2du.udate = '"
-                        + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
-                        + inputDate + "%' and g2sd.version = '1000.0.0.112'";
+                    using (SqlCommand cmd3 = conn.CreateCommand())
+                    {
+                        cmd3.CommandTimeout = intTimeout;
+                        //当日新规则访问用户
+                        cmd3.CommandText = "UPDATE "
+                            + strDUTableName
+                            + " SET version = g2sd.version from "
+                            + strDUTableName
+                            + " g2du , "
+                            + strTableName
+                            + " g2sd "
+                            + " where g2du.uid = g2sd.uid and g2du.udate = '"
+                            + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
+                            + inputDate + "%' and g2sd.version = '1000.0.0.112'";
 
-                    strRtn = cmd3.ExecuteNonQuery();
-                    Console.WriteLine("DailyUser Update version 1000.0.0.112 Count = " + strRtn);
-                }
-
+                        strRtn = cmd3.ExecuteNonQuery();
+                        Console.WriteLine("DailyUser Update version 1000.0.0.112 Count = " + strRtn);
+                    }
                 using (SqlCommand cmd4 = conn.CreateCommand())
                 {
                     cmd4.CommandTimeout = intTimeout;
@@ -473,6 +473,7 @@ namespace MDataIm20Update
                     
                     strRtn = cmd4.ExecuteNonQuery();
                     Console.WriteLine("DailyUser Update version 1000.0.0.107 1000.0.0.112 以外 Count = " + strRtn);
+                    }
                 }
 
 

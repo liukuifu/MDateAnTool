@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -18,6 +19,7 @@ namespace MdataAn
         //"User ID = sa;" +
         //"Password = 12345678;";
         private static string connectionString = WebConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+
         /// <summary>
         /// 连接数据库
         /// </summary>
@@ -148,6 +150,58 @@ namespace MdataAn
             return rtn;
         }
 
+        public void GetWeekCount(string strInput, string strDUTableName, ref DataTable table)
+        {
+            DataRow dr;
+            DateTime startDT;
+            DateTime endDT;
+            DateTime searchDT;
+            for (int i = 0; i < 7; i++)
+            {
+                dr = table.NewRow();
+                searchDT = Convert.ToDateTime(strInput).AddDays(i);
+                startDT = Convert.ToDateTime(strInput).AddDays(7 + i);
+                endDT = Convert.ToDateTime(strInput).AddDays(13 + i);
+
+                SqlConnection conn = ConnectionOpen();
+                string sql =
+                    "SELECT count(DISTINCT [uid]) FROM "
+                    + strDUTableName
+                    + " where udate = '"
+                    + searchDT.ToString("yyyy-MM-dd")
+                    + "'";
+
+                SqlCommand comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+                Int64 dayCount = (int)comm.ExecuteScalar();
+
+                sql = "SELECT count(DISTINCT gsd.[uid]) FROM "
+                    + strDUTableName
+                    + " gsd where gsd.udate between '"
+                    + startDT.ToString("yyyy-MM-dd")
+                    + "' and '"
+                    + endDT.ToString("yyyy-MM-dd")
+                    + "' and gsd.uid in (SELECT DISTINCT [uid] FROM "
+                    + strDUTableName
+                    + " where udate = '"
+                    + searchDT.ToString("yyyy-MM-dd")
+                    + "')";
+
+                comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+                Int64 weekACount = (int)comm.ExecuteScalar();
+                conn.Close();
+
+                dr["date"] = searchDT.ToString("yyyy-MM-dd");
+                //dr["week"] = searchDT.DayOfWeek;
+                dr["week"] = searchDT.ToString("dddd", new System.Globalization.CultureInfo("zh-CN"));
+                dr["daycount"] = dayCount;
+                dr["weekACount"] = weekACount;
+                dr["weekACountp"] = ((double)weekACount / (double)dayCount).ToString("P");
+                table.Rows.Add(dr);
+            }
+            
+        }
 
         public Int64 GetNewCount(string date, string strDataTableName, string strUserTableName)
         {
@@ -225,6 +279,36 @@ namespace MdataAn
             //{
             //    rtn = rtn + 1;
             //}
+            conn.Close();
+            return rtn;
+        }
+
+        public long GetTaskIdReturnCount(string date, string inputTaskId, string strDUTableName)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(distinct [uid]) FROM "
+                + strDUTableName
+                + " where udate = '" + date + "' and data_taskid = '" + inputTaskId + "' and data_return ='0' ";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+        public long GetTaskIdCount(string date, string inputTaskId, string strDUTableName)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(distinct [uid]) FROM "
+                + strDUTableName
+                + " where udate = '" + date + "' and data_taskid = '"+ inputTaskId + "'";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
         }
@@ -396,23 +480,50 @@ namespace MdataAn
             return rtn;
         }
 
-        public Int64 GetOldCount(string date)
+        //public Int64 GetOldCount(string date)
+        //{
+        //    Int64 rtn = 0;
+
+        //    SqlConnection conn = ConnectionOpen();
+        //    string sql = "SELECT DISTINCT uid FROM GoSourceData where Convert(varchar, udate,120) LIKE '" + date + "%' and uid not like '{%' and uid <> '' group by uid";
+        //    SqlCommand comm = new SqlCommand(sql, conn);
+        //    comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+        //    SqlDataReader reader = comm.ExecuteReader();
+        //    while (reader.Read())
+        //    {
+        //        rtn = rtn + 1;
+        //    }
+        //    conn.Close();
+        //    return rtn;
+        //}
+
+        public long GetAfterWeekcount(string strInput, string strDUTableName)
         {
             Int64 rtn = 0;
+            DateTime startDT = Convert.ToDateTime(strInput).AddDays(7);
+            DateTime endDT = Convert.ToDateTime(strInput).AddDays(13);
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT DISTINCT uid FROM GoSourceData where Convert(varchar, udate,120) LIKE '" + date + "%' and uid not like '{%' and uid <> '' group by uid";
+            string sql =
+                "SELECT count(DISTINCT gsd.[uid]) FROM "
+                + strDUTableName 
+                + " gsd where gsd.udate between '" 
+                + startDT.ToString("yyyy-MM-dd") 
+                + "' and '" 
+                + endDT.ToString("yyyy-MM-dd") 
+                + "' and gsd.uid in (SELECT DISTINCT [uid] FROM " 
+                + strDUTableName 
+                + " where udate in ('" 
+                + strInput 
+                + "'))";
+
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
-            SqlDataReader reader = comm.ExecuteReader();
-            while (reader.Read())
-            {
-                rtn = rtn + 1;
-            }
+            rtn = (int)comm.ExecuteScalar();
             conn.Close();
             return rtn;
         }
-        
+
         public Int64 GetEgg1UserCount(string date, string strUserTableName)
         {
             Int64 rtn = 0;
@@ -478,7 +589,6 @@ namespace MdataAn
             conn.Close();
             return rtn;
         }
-
 
         public int InsertDailyVisitUserStatisticsForTask(DailyVisitUserStatisticsData dvusd)
         {

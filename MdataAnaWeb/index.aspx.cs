@@ -62,6 +62,10 @@ namespace MdataAn
             Int64 intthreenewcount = 0;
             Int64 integg1usercount = 0;
             Int64 intkillusercount = 0;
+            Int64 intAfterWeekcount = 0;
+
+            Int64 intTaskIdcount = 0;
+            Int64 intTaskIdReturncount = 0;
 
             Int64 intv112 = 0;
             Int64 v107 = 0;
@@ -123,6 +127,7 @@ namespace MdataAn
             else if ("task".Equals(strDBType))
             {
                 strTableName = "Go20TaskSD";
+                strDUTableName = "Go20TaskInfo";
                 this.lblTitle.Text = "Task Result";
             }
             else if ("C#2.0".Equals(strDBType))
@@ -154,6 +159,7 @@ namespace MdataAn
 
             if ("task".Equals(strDBType))
             {
+                string inputTaskId = this.tbTaskId.Text;
                 table.Columns.Add("date");
                 table.Columns.Add("count");
                 table.Columns.Add("daycount");
@@ -161,6 +167,12 @@ namespace MdataAn
                 table.Columns.Add("taskp");
                 table.Columns.Add("return");
                 table.Columns.Add("returnp");
+                //if (!string.IsNullOrEmpty(inputTaskId))
+                //{
+                    table.Columns.Add("taskid");
+                    table.Columns.Add("taskidreturn");
+                    table.Columns.Add("taskidreturnp");
+                //}
 
                 dr = table.NewRow();
                 if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
@@ -211,6 +223,19 @@ namespace MdataAn
                 dr["return"] = intreturncount;
                 dr["returnp"] = ((double)intreturncount / (double)intdaycount).ToString("P");
 
+                if (!string.IsNullOrEmpty(inputTaskId))
+                {
+                    intTaskIdcount = dbc.GetTaskIdCount(strInput, inputTaskId, strDUTableName);
+                    intTaskIdReturncount = dbc.GetTaskIdReturnCount(strInput, inputTaskId, strDUTableName);
+                }
+                else
+                {
+                    intTaskIdcount = 0;
+                    intTaskIdReturncount = 0;
+                }
+                dr["taskid"] = intTaskIdcount;
+                    dr["taskidreturn"] = intTaskIdReturncount;
+                    dr["taskidreturnp"] = ((double)intTaskIdReturncount / (double)intTaskIdcount).ToString("P");
                 table.Rows.Add(dr);
 
                 if (string.IsNullOrEmpty(dvusd.UType) &&
@@ -240,6 +265,35 @@ namespace MdataAn
                 this.GridView2.Visible = true;
                 this.GridView3.Visible = false;
 
+                if (!string.IsNullOrEmpty(inputTaskId))
+                {
+                    //if (this.GridView2.Columns.Count < 9)
+                    //{
+                    //    DataControlField dcf = new DataControlField()
+                    //    dcf.ShowHeader = true;
+                    //    dcf.HeaderText = "指定taskID : " + inputTaskId + " 的 result 数";
+                    //    this.GridView2.Columns.Insert(7, dcf);
+                    //} else {
+                        this.GridView2.HeaderRow.Cells[7].Text = "指定taskID : " + inputTaskId + " 的 result 数";
+                        this.GridView2.HeaderRow.Cells[8].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 数";
+                        this.GridView2.HeaderRow.Cells[9].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 比例";
+                    //}
+                }
+                //else
+                //{
+                //    if (this.GridView2.Columns.Count >= 9)
+                //    {
+                //        this.GridView2.Columns.RemoveAt(9);
+                //    }
+                //    if (this.GridView2.Columns.Count >= 8)
+                //    {
+                //        this.GridView2.Columns.RemoveAt(8);
+                //    }
+                //    if (this.GridView2.Columns.Count >= 8)
+                //    {
+                //        this.GridView2.Columns.RemoveAt(7);
+                //    }
+                //}
                 this.GridView2.DataSource = table;
                 this.GridView2.DataBind();
 
@@ -258,6 +312,8 @@ namespace MdataAn
                 table.Columns.Add("thirdnewp");
                 table.Columns.Add("threenew");
                 table.Columns.Add("threenewp");
+                table.Columns.Add("weekACount");
+                table.Columns.Add("weekACountp");
                 table.Columns.Add("egg1user");
                 table.Columns.Add("killuser");
                 table.Columns.Add("v112");
@@ -360,6 +416,8 @@ namespace MdataAn
                     intkillusercount = Convert.ToInt64(dvusd.DayNumberOfUsersKillInstallation);
                 }
 
+                intAfterWeekcount = dbc.GetAfterWeekcount(strInput, strDUTableName);
+
                 dr["date"] = strInput;
                 dr["count"] = intCount;
                 dr["daycount"] = intdaycount;
@@ -372,6 +430,8 @@ namespace MdataAn
                 dr["threenewp"] = ((double)intthreenewcount / (double)intnewcount).ToString("P");
                 dr["egg1user"] = integg1usercount;
                 dr["killuser"] = intkillusercount;
+                dr["weekACount"] = intAfterWeekcount;
+                dr["weekACountp"] = ((double)intAfterWeekcount / (double)intdaycount).ToString("P"); ;
 
                 intv112 = dbc.GetVCount(strInput, strDUTableName, "1000.0.0.112");
                 v107 = dbc.GetVCount(strInput, strDUTableName, "1000.0.0.107");

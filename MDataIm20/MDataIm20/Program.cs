@@ -536,7 +536,7 @@ namespace MDataIm20
                                 }
                             }
 
-                            if (itemCount != 0 && itemCount % 50000 == 0)
+                            if (itemCount != 0 && itemCount % 100000 == 0)
                             {
                                 try
                                 {
@@ -552,7 +552,7 @@ namespace MDataIm20
                             }
                         } while (!reader.EndOfStream);
 
-                        if (itemCount % 50000 > 0)
+                        if (itemCount % 100000 > 0)
                         {
                             db.InsertTable(table, strTableName);
                             table.Clear();

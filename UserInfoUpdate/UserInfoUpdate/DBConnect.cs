@@ -36,7 +36,7 @@ namespace UserInfoUpdate
                     + "[antivirus_name_5],[browser],[bversion],[dotnet_1],[dotnet_2],[dotnet_3],[dotnet_4],[dotnet_5],[dx],[base],[bios],"
                     + "[disk],[network],[ie] FROM "
                     + strTableName + "  a where a.udate = (select max(udate) from "
-                    + strTableName + " where uid = a.uid) order by a.[uid] desc";
+                    + strTableName + " where uid = a.uid and Convert(varchar,udate,120) LIKE '" + strInputDate + "%') order by a.[uid] desc";
                 DataTable dtsd = new DataTable();
                 //1.SqlConnection
                 SqlConnection connsd = ConnectionOpen();
@@ -71,8 +71,8 @@ namespace UserInfoUpdate
                     using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
                         StringBuilder sb = new StringBuilder();
-                        sb.Append("UPDATE [Go20UserInfo]");
-                        sb.Append("SET [locale] = @locale");
+                        sb.Append("UPDATE " + strUITableName);
+                        sb.Append(" SET [locale] = @locale");
                         sb.Append(",[amd64] = @amd64");
                         sb.Append(",[antivirus_guid_1] = @antivirus_guid_1");
                         sb.Append(",[antivirus_name_1] = @antivirus_name_1");
@@ -141,7 +141,7 @@ namespace UserInfoUpdate
                         //if (dt != null && dt.Rows.Count > 0)
                         if (ds != null && ds.Tables["guit"] != null && ds.Tables["guit"].Rows.Count > 0)
                         {
-                            LogHelper.writeErrorLog("dt.Rows.Count = " + dt.Rows.Count);
+                            //LogHelper.writeErrorLog("dt.Rows.Count = " + dt.Rows.Count);
 
                             //for (int i = 0; i < dt.Rows.Count; i++)
                             for (int i = 0; i <= ds.Tables["guit"].Rows.Count - 1; i++)

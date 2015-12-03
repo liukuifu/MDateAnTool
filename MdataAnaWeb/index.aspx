@@ -79,6 +79,7 @@
                  <option>killer</option> 
                  <option>killer2.0</option> 
                  <option>task</option> 
+                 <option>task2.0</option> 
              </select>
             <asp:TextBox class="form-control" ID="tbTaskId" name="tbTaskId" runat="server" style="width:40px;display: inline"></asp:TextBox>
 		     <div style="display: inline" id="searchDiv">                 

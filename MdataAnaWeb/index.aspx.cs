@@ -130,6 +130,12 @@ namespace MdataAn
                 strDUTableName = "Go20TaskInfo";
                 this.lblTitle.Text = "Task Result";
             }
+            else if ("task2.0".Equals(strDBType))
+            {
+                strTableName = "Go20TaskSD";
+                strDUTableName = "Go20TaskInfo";
+                this.lblTitle.Text = "Task Result";
+            }
             else if ("C#2.0".Equals(strDBType))
             {
                 strTableName = "Cs20SourceData";
@@ -157,7 +163,8 @@ namespace MdataAn
 
             LogHelper.writeDebugLog("dvusd = " + dvusd.ToString());
 
-            if ("task".Equals(strDBType))
+            if ("task".Equals(strDBType) ||
+                "task2.0".Equals(strDBType))
             {
                 string inputTaskId = this.tbTaskId.Text;
                 table.Columns.Add("date");
@@ -274,9 +281,9 @@ namespace MdataAn
                     //    dcf.HeaderText = "指定taskID : " + inputTaskId + " 的 result 数";
                     //    this.GridView2.Columns.Insert(7, dcf);
                     //} else {
-                        this.GridView2.HeaderRow.Cells[7].Text = "指定taskID : " + inputTaskId + " 的 result 数";
-                        this.GridView2.HeaderRow.Cells[8].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 数";
-                        this.GridView2.HeaderRow.Cells[9].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 比例";
+                        //this.GridView2.HeaderRow.Cells[7].Text = "指定taskID : " + inputTaskId + " 的 result 数";
+                        //this.GridView2.HeaderRow.Cells[8].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 数";
+                        //this.GridView2.HeaderRow.Cells[9].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 比例";
                     //}
                 }
                 //else
@@ -334,7 +341,8 @@ namespace MdataAn
                 }
 
 
-                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
+                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers) 
+                    || "0".Equals(dvusd.DayNumberOfUsers))
                 {
                     intdaycount = dbc.GetDayCount(strInput, strDUTableName);
                     dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
@@ -345,7 +353,8 @@ namespace MdataAn
                     intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
                 }
 
-                if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers))
+                if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers)
+                    || "0".Equals(dvusd.NumberOfDaysNewUsers))
                 {
                     intnewcount = dbc.GetNewCount(strInput, strTableName, strUITableName);
                     dvusd.NumberOfDaysNewUsers = Convert.ToString(intnewcount);

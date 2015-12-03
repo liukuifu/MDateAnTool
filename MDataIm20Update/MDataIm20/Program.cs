@@ -122,6 +122,7 @@ namespace MDataIm20Update
                 } 
                 else
                 {
+                    int intLossCount = 0;
                     // 向表(DailyUser)中插入数据
                     Console.WriteLine("DailyUser Insert Start.");
                     intInsertDU = db.InsertDailyUser(strInputDate, strTableName, strDUTableName);
@@ -130,10 +131,13 @@ namespace MDataIm20Update
 
                     if (intInsertDU > 0)
                     {
-                        // 更新表(DailyUser)中数据
-                        Console.WriteLine("DailyUser Update Start.");
-                        int intUpdateDU = db.UpdateDailyUser(strInputDate, strTableName, strDUTableName);
-                        Console.WriteLine("DailyUser Update End.");
+                        if ("go2.0".Equals(strDBType))
+                        {
+                            // 更新表(DailyUser)中数据
+                            Console.WriteLine("DailyUser Update Start.");
+                            int intUpdateDU = db.UpdateDailyUser(strInputDate, strTableName, strDUTableName);
+                            Console.WriteLine("DailyUser Update End.");
+                        }
 
                         Console.WriteLine("UserInfo Insert Start.");
                         // 向表(UserInfo)中插入数据
@@ -146,9 +150,34 @@ namespace MDataIm20Update
                         //    db.UpdateGo20UserInfo(strInputDate, strTableName, strUITableName);
                         //    Console.WriteLine("UpdateGo20UserInfo End.");
                         //}
+                        if ("go2.0".Equals(strDBType))
+                        {
+                            int intUpdateUI = 0;
+                            // 更新第一次访问时间
+                            Console.WriteLine("UserInfo2.0 Update Start.");
+                            intUpdateUI = db.UpdateSadateForUserInfo20(strInputDate, strUITableName, strDUTableName);
+                            Console.WriteLine("UserInfo2.0 Update Count = " + intUpdateUI);
+                            Console.WriteLine("UserInfo2.0 Update End.");
+
+                            intUpdateUI = 0;
+                            // 更新最后一次访问时间
+                            Console.WriteLine("UserInfo2.0 Update Start.");
+                            intUpdateUI = db.UpdateEadateForUserInfo20(strInputDate, strUITableName, strDUTableName);
+                            Console.WriteLine("UserInfo2.0 Update Count = " + intUpdateUI);
+                            Console.WriteLine("UserInfo2.0 Update End.");
+
+                            intLossCount = db.GetLossCount(strUITableName);
+                        }
                     }
                     Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 Start.");
-                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);
+                    if ("go2.0".Equals(strDBType))
+                    {
+                        intCount = db.InsertDailyVisitUserStatisticsForLoss(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI, intLossCount);
+                    }
+                    else
+                    {
+                        intCount = db.InsertDailyVisitUserStatistics(strDBType, strInputDate, intSourceDataCount, intInsertDU, intInsertUI);
+                    }
                     Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 Count = " + intCount);
                     Console.WriteLine("InsertDailyVisitUserStatistics For 2.0 End.");
 

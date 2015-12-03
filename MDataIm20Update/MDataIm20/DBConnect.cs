@@ -352,8 +352,23 @@ namespace MDataIm20Update
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandTimeout = intTimeout;
-                    //当日新规则访问用户
-                    cmd.CommandText = "insert "
+                    if ("Go20DailyUser".Equals(strDUTableName))
+                    {
+                        //当日新规则访问用户
+                        cmd.CommandText = "insert "
+                        + strDUTableName
+                        + " SELECT DISTINCT uid,'"
+                        + inputDate
+                        + "',null,null,null FROM "
+                        + strTableName
+                        + " where Convert(varchar, udate,120) like '"
+                        + inputDate + "%' group by uid,[kill] order by uid";
+
+                    }
+                    else
+                    {
+                        //当日新规则访问用户
+                        cmd.CommandText = "insert "
                         + strDUTableName
                         + " SELECT DISTINCT uid,'"
                         + inputDate
@@ -362,6 +377,8 @@ namespace MDataIm20Update
                         + " where Convert(varchar, udate,120) like '"
                         + inputDate + "%' group by uid,[kill] order by uid";
 
+
+                    }
                     LogHelper.writeInfoLog("cmd.CommandText =  " + cmd.CommandText);
 
                     strRtn = cmd.ExecuteNonQuery();                    
@@ -475,6 +492,24 @@ namespace MDataIm20Update
                     Console.WriteLine("DailyUser Update version 1000.0.0.107 1000.0.0.112 以外 Count = " + strRtn);
                     }
                 }
+                // 更新channel
+                using (SqlCommand cmd5 = conn.CreateCommand())
+                {
+                    cmd5.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd5.CommandText = "UPDATE "
+                        + strDUTableName
+                        + " SET [channel] = g2sd.[channel] from "
+                        + strDUTableName
+                        + " g2du , "
+                        + strTableName
+                        + " g2sd "
+                        + " where g2du.uid = g2sd.uid and g2du.udate = '"
+                        + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
+                        + inputDate + "%' and g2sd.[channel] <> ''";
+                    strRtn = cmd5.ExecuteNonQuery();
+                    Console.WriteLine("DailyUser Update channel Count = " + strRtn);
+                }
 
 
                 conn.Close();
@@ -490,6 +525,161 @@ namespace MDataIm20Update
 
             LogHelper.writeInfoLog("strRtn = " + strRtn);
             LogHelper.writeInfoLog("UpdateDailyUser End");
+            return strRtn;
+        }
+
+        internal int UpdateSadateForUserInfo20(string strImportDate, string strUITableName, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("UpdateSadateForUserInfo20 Start");
+
+            int strRtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+
+                // 更新KILL
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd.CommandText = "UPDATE "
+                        + strUITableName
+                        + " SET [sadate] = (select min(udate) from "
+                        + strDUTableName
+                        + " where uid = "
+                        + strUITableName
+                        + ".uid) "
+                        + " where Convert(varchar, " + strUITableName + ".udate,120) like '"
+                        + strImportDate + "%'";
+
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("UpdateSadateForUserInfo20 End");
+            return strRtn;
+        }
+
+        internal int UpdateEadateForUserInfo20(string strImportDate, string strUITableName, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("UpdateEadateForUserInfo20 Start");
+
+            int strRtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+
+                // 更新KILL
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd.CommandText = "UPDATE "
+                        + strUITableName
+                        + " SET [eadate] = (select max(udate) from "
+                        + strDUTableName
+                        + " where uid = "
+                        + strUITableName
+                        + ".uid) ";
+
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("UpdateEadateForUserInfo20 End");
+            return strRtn;
+        }
+
+        internal int GetLossCount(string strUITableName)
+        {
+            LogHelper.writeInfoLog("UpdateEadateForUserInfo20 Start");
+
+            int rtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+
+                string sql = "SELECT count(1) FROM "
+                    + strUITableName
+                    + " where DATEDIFF(day, convert(datetime, sadate, 110), convert(datetime, eadate, 110)) < 7";
+
+                SqlCommand comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = intTimeout;
+                rtn = (int)comm.ExecuteScalar();
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+            LogHelper.writeInfoLog("UpdateEadateForUserInfo20 End");
+
+            return rtn;
+        }
+
+        internal int InsertDailyVisitUserStatisticsForLoss(string strDBType,
+            string strImportDate,
+            int intSourceDataCount,
+            int intInsertDU,
+            int intInsertUI,
+            int intLossCount)
+        {
+            LogHelper.writeInfoLog("InsertDailyVisitUserStatisticsForLoss Start");
+            int strRtn = 0;
+            try
+            {
+                DateTime dt = DateTime.Now;
+                SqlConnection conn = ConnectionOpen();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "insert into DailyVisitUserStatistics(UType, UDate, TotalNumberOfDays, DayNumberOfUsers, NumberOfDaysNewUsers, Extension1,createdate, updatedate) values (@UType,@UDate,@TotalNumberOfDays,@DayNumberOfUsers,@NumberOfDaysNewUsers,@Extension1,@createdate,@updatedate)";
+                    //清除上一次的参数
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new SqlParameter("@UType", strDBType));
+                    cmd.Parameters.Add(new SqlParameter("@UDate", strImportDate));
+                    cmd.Parameters.Add(new SqlParameter("@TotalNumberOfDays", intSourceDataCount));
+                    cmd.Parameters.Add(new SqlParameter("@DayNumberOfUsers", intInsertDU));
+                    cmd.Parameters.Add(new SqlParameter("@NumberOfDaysNewUsers", intInsertUI));
+                    cmd.Parameters.Add(new SqlParameter("@Extension1", intLossCount));
+                    cmd.Parameters.Add(new SqlParameter("@createdate", dt));
+                    cmd.Parameters.Add(new SqlParameter("@updatedate", dt));
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                return strRtn;
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("InsertDailyVisitUserStatisticsForLoss End");
             return strRtn;
         }
 

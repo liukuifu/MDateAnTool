@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "exportExcel", "exportExcel\exportExcel.csproj", "{47226150-03CB-4CC9-914D-29193D2EBD0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SendMail", "SendMail\SendMail.csproj", "{061AC760-F369-4609-9BBE-5786EE44D3F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47226150-03CB-4CC9-914D-29193D2EBD0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47226150-03CB-4CC9-914D-29193D2EBD0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47226150-03CB-4CC9-914D-29193D2EBD0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47226150-03CB-4CC9-914D-29193D2EBD0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{061AC760-F369-4609-9BBE-5786EE44D3F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{061AC760-F369-4609-9BBE-5786EE44D3F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{061AC760-F369-4609-9BBE-5786EE44D3F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{061AC760-F369-4609-9BBE-5786EE44D3F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

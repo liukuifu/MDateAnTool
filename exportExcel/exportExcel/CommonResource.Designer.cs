@@ -79,6 +79,15 @@ namespace exportExcel {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 10.
+        /// </summary>
+        internal static string TaskId {
+            get {
+                return ResourceManager.GetString("TaskId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to E:\MD\UnZipFile.
         /// </summary>
         internal static string UnZipPath {

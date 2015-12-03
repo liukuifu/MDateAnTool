@@ -54,6 +54,13 @@ namespace MDAutoImport
                                 //hm.Add(file[i], DlFullPath + "/" + file[i]);
                                 LogHelper.writeDebugLog("Add file [" + i + "] : " + file[i]);
                                 ht.Add(file[i], DlFullPath + "\\" + file[i]);
+                                string fileName = string.Empty;
+                                string unZipPath = string.Empty;
+                                bool retF = UnZip(file[i], DlFullPath + "\\" + file[i], UnFullPath,out fileName,out unZipPath);
+                                if (retF)
+                                {
+                                    ImportData(fileName, unZipPath);
+                                }
                                 if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
                                 //if (ht.Count == 3)
                                 {
@@ -71,46 +78,46 @@ namespace MDAutoImport
                     Thread.Sleep(30000);
                 }
 
-                Hashtable imht = new Hashtable();
+                //Hashtable imht = new Hashtable();
 
-                foreach (DictionaryEntry de in ht)//i = 0; i < hm.Count(); i++)
-                {
-                    string fileFullName = de.Key.ToString();
-                    string fileName = fileFullName.Substring(fileFullName.LastIndexOf("\\") + 1);
-                    string unZipToPath = UnFullPath + "\\" + fileName.Substring(0, fileName.IndexOf(".zip"));
+                //foreach (DictionaryEntry de in ht)//i = 0; i < hm.Count(); i++)
+                //{
+                //    string fileFullName = de.Key.ToString();
+                //    string fileName = fileFullName.Substring(fileFullName.LastIndexOf("\\") + 1);
+                //    string unZipToPath = UnFullPath + "\\" + fileName.Substring(0, fileName.IndexOf(".zip"));
 
-                    //判断文件路径是否存在，不存在则创建文件夹
-                    if (!Directory.Exists(unZipToPath))
-                    {
-                        Directory.CreateDirectory(unZipToPath);//不存在就创建目录
-                    }
-                    LogHelper.writeDebugLog("fileName : " + fileName);
-                    LogHelper.writeDebugLog("fileFullName : " + fileFullName);
-                    LogHelper.writeDebugLog("unZipToPath : " + unZipToPath);
-                    try
-                    {
-                        using (ZipFile zip = ZipFile.Read(fileFullName))
-                        {   //遍历zip文件中每一个文件对象，然后解压到指定目录
-                            foreach (ZipEntry e in zip)
-                            {
-                                e.Extract(unZipToPath);
-                            }
-                            //也可以通过索引访问文件对象
-                            //ZipEntry e = zip["MyReport.doc"];
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogHelper.writeErrorLog(ex);
-                        continue;
-                    }
+                //    //判断文件路径是否存在，不存在则创建文件夹
+                //    if (!Directory.Exists(unZipToPath))
+                //    {
+                //        Directory.CreateDirectory(unZipToPath);//不存在就创建目录
+                //    }
+                //    LogHelper.writeDebugLog("fileName : " + fileName);
+                //    LogHelper.writeDebugLog("fileFullName : " + fileFullName);
+                //    LogHelper.writeDebugLog("unZipToPath : " + unZipToPath);
+                //    try
+                //    {
+                //        using (ZipFile zip = ZipFile.Read(fileFullName))
+                //        {   //遍历zip文件中每一个文件对象，然后解压到指定目录
+                //            foreach (ZipEntry e in zip)
+                //            {
+                //                e.Extract(unZipToPath);
+                //            }
+                //            //也可以通过索引访问文件对象
+                //            //ZipEntry e = zip["MyReport.doc"];
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        LogHelper.writeErrorLog(ex);
+                //        continue;
+                //    }
 
-                    imht.Add(fileName, unZipToPath);
-                }
-                //imht.Add("cegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\cegg20151201");
-                //imht.Add("egg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\egg20151201");
-                //imht.Add("kegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\kegg20151201");
-                bool flg = ImportData(imht);
+                //    imht.Add(fileName, unZipToPath);
+                //}
+                ////imht.Add("cegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\cegg20151201");
+                ////imht.Add("egg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\egg20151201");
+                ////imht.Add("kegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\kegg20151201");
+                //bool flg = ImportData(imht);
 
                 LogHelper.writeInfoLog("Main End");
             }catch(Exception ex)
@@ -119,9 +126,45 @@ namespace MDAutoImport
             }
         }
 
+        private static bool UnZip(string deKey, string v2,string UnFullPath,out string fileName,out string unZipToPath)
+        {
+            string fileFullName = deKey;
+            fileName = fileFullName.Substring(fileFullName.LastIndexOf("\\") + 1);
+            unZipToPath = UnFullPath + "\\" + fileName.Substring(0, fileName.IndexOf(".zip"));
+
+            //判断文件路径是否存在，不存在则创建文件夹
+            if (!Directory.Exists(unZipToPath))
+            {
+                Directory.CreateDirectory(unZipToPath);//不存在就创建目录
+            }
+            LogHelper.writeDebugLog("fileName : " + fileName);
+            LogHelper.writeDebugLog("fileFullName : " + fileFullName);
+            LogHelper.writeDebugLog("unZipToPath : " + unZipToPath);
+            try
+            {
+                using (ZipFile zip = ZipFile.Read(fileFullName))
+                {   //遍历zip文件中每一个文件对象，然后解压到指定目录
+                    foreach (ZipEntry e in zip)
+                    {
+                        e.Extract(unZipToPath);
+                    }
+                    //也可以通过索引访问文件对象
+                    //ZipEntry e = zip["MyReport.doc"];
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                return false;
+            }
+
+            //imht.Add(fileName, unZipToPath);
+            return true;
+        }
+
         private static bool ImportData(Hashtable imht)
         {
-            LogHelper.writeDebugLog("ImportData start");
+            LogHelper.writeDebugLog("ImportData 1 start");
             bool retFlag = true;
             DateTime dt = DateTime.Now.AddDays(-1);
             foreach (DictionaryEntry de in imht)
@@ -170,6 +213,55 @@ namespace MDAutoImport
 
             }
             LogHelper.writeDebugLog("ImportData end");
+            return retFlag;
+        }
+
+        private static bool ImportData(string strFileName,string strFilePath)
+        {
+            LogHelper.writeDebugLog("ImportData 2 start");
+            bool retFlag = true;
+            DateTime dt = DateTime.Now.AddDays(-1);
+
+            //strFileName : mdata.csharp.26.zip
+            //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\mdata.csharp.26
+            if (strFileName.ToString().IndexOf("mdata.csharp") == 0)
+            {
+                retFlag = FileToTable10("C#", dt.ToString("yyyy-MM-dd"), strFilePath);
+            }
+            //strFileName : mdata.killer.26.zip
+            //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\mdata.killer.26
+            else if (strFileName.ToString().IndexOf("mdata.killer") == 0)
+            {
+                retFlag = FileToTable10("killer", dt.ToString("yyyy-MM-dd"), strFilePath);
+            }
+            //strFileName : mdata.go.26.zip
+            //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\mdata.go.26
+            else if (strFileName.ToString().IndexOf("mdata.go") == 0)
+            {
+                retFlag = FileToTable10("go", dt.ToString("yyyy-MM-dd"), strFilePath);
+            }
+            //strFileName : kegg20151126.zip
+            //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\kegg20151126
+            else if (strFileName.ToString().IndexOf("kegg") == 0)
+            {
+                retFlag = FileToTable20("killer2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+            }
+            //strFileName : cegg20151126.zip
+            //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\cegg20151126
+            else if (strFileName.ToString().IndexOf("cegg") == 0)
+            {
+                retFlag = FileToTable20("C#2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+            }
+            //strFileName : egg20151126.zip
+            //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\egg20151126
+            else
+            {
+                retFlag = FileToTable20("go2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+
+                retFlag = FileToTable20ForTask("task2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+            }
+
+            LogHelper.writeDebugLog("ImportData 2 end");
             return retFlag;
         }
 

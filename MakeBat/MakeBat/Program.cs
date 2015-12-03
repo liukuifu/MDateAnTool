@@ -65,7 +65,7 @@ namespace MakeBat
                 // 写一个字符            
                 sw.WriteLine("e:");
                 sw.WriteLine("cd " + DlFullPath);
-                sw.WriteLine("THUNDERDL http://browserbased.info:8080/golog/egg" + dt.ToString("yyyyMMdd") + ".zip egg" + dt.ToString("yyyyMMdd") + @".zip egg20151202.zip E:\MD\MDZipFile\" + dt.ToString("yyyy-MM-dd"));
+                sw.WriteLine("THUNDERDL http://browserbased.info:8080/golog/egg" + dt.ToString("yyyyMMdd") + ".zip egg" + dt.ToString("yyyyMMdd") + @".zip E:\MD\MDZipFile\" + dt.ToString("yyyy-MM-dd"));
 
                 sw.Close();
 

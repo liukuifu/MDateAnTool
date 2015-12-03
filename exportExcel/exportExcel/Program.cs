@@ -19,17 +19,19 @@ namespace exportExcel
             //Hashtable ht = new Hashtable();
             //ht.Add("go", "go");
             System.Data.DataTable dtb = new System.Data.DataTable();
-            DateTime startDt = DateTime.Now.AddDays(-7);
+            DateTime startDt = DateTime.Now.AddDays(-15);
             DateTime nowDt = DateTime.Now;
             string strTableName = string.Empty;
             string strUITableName = string.Empty;
             string strDUTableName = string.Empty;
             string strSheetName = string.Empty;
             string strExcelName = "数据分析-" + nowDt.ToString("yyyyMMdd");
-            string[] strArry = new string[] { "go", "C#", "killer", "go2.0", "C#2.0", "killer2.0", "task20" };
+            string[] strArry = new string[] { "go2.0周统计","go2.0", "C#2.0", "killer2.0", "task2.0"};
+            //{ "go", "C#", "killer", "go2.0", "C#2.0", "killer2.0", "task20" };
             int i = 1;
             foreach (string strT in strArry)//i = 0; i < hm.Count(); i++)
             {
+                dtb.Clear();
                 switch (strT)
                 {
                     case "go":
@@ -74,11 +76,18 @@ namespace exportExcel
                         strSheetName = "killer2.0";
                         dtb = Get20DataToTable(startDt, strTableName, strUITableName, strDUTableName, strSheetName);
                         break;
-                    case "task20":
+                    case "task2.0":
                         strTableName = "Go20TaskSD";
                         strDUTableName = "Go20TaskInfo";
-                        strSheetName = "task20";
+                        strSheetName = "task2.0";
                         dtb = GetTask20DataToTable(startDt, strTableName, strUITableName, strDUTableName, strSheetName);
+                        break;
+                    case "go2.0周统计":
+                        strTableName = "Go20SourceData";
+                        strUITableName = "Go20UserInfo";
+                        strDUTableName = "Go20DailyUser";
+                        strSheetName = "go2.0周统计";
+                        dtb = GetGo20WeekDataToTable(startDt, strTableName, strUITableName, strDUTableName, strSheetName);
                         break;
                     default:
                         return;
@@ -87,6 +96,7 @@ namespace exportExcel
                 i = i + 1;
             }
         }
+
 
         private static void exportToExcel(int index,string strExcelName, string strSheetName, System.Data.DataTable dtb)
         {
@@ -110,7 +120,7 @@ namespace exportExcel
                 {
                     // 不存在
                     book = excel.Workbooks.Add(Type.Missing);
-                    book.Sheets.Add(Missing.Value, Missing.Value, 7, Microsoft.Office.Interop.Excel.XlSheetType.xlWorksheet);
+                    book.Sheets.Add(Missing.Value, Missing.Value, 5, Microsoft.Office.Interop.Excel.XlSheetType.xlWorksheet);
                 }
 
                 //if(book.Sheets.Count < index)
@@ -216,7 +226,7 @@ namespace exportExcel
             table.Columns.Add("新用户第三日访问比例");
             table.Columns.Add("新用户三日内访问比例");
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 15; i++)
             {
                 dr = table.NewRow();
 
@@ -401,7 +411,7 @@ namespace exportExcel
 
             DataRow dr = null;
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 15; i++)
             {
                 strInput = startDt.AddDays(i).ToString("yyyy-MM-dd");
 
@@ -557,7 +567,9 @@ namespace exportExcel
             {
                 dr = table.NewRow();              
                 dr["统计日期"] = "总UID数";
-                dr["日总访问量"] = "=sum(C2:C8)";
+                //dr["日总访问量"] = "=sum(C2:C8)";
+                int userCount = dbc.GetGo20UserInfoCount(strUITableName);
+                dr["日总访问量"] = userCount;
                 table.Rows.Add(dr);
 
                 dr = table.NewRow();
@@ -617,18 +629,18 @@ namespace exportExcel
             table.Columns.Add("统计日期");
             table.Columns.Add("日总访问量");
             table.Columns.Add("DAU");
-            table.Columns.Add("task");
-            table.Columns.Add("taskp");
-            table.Columns.Add("return");
-            table.Columns.Add("returnp");
+            table.Columns.Add("task result");
+            table.Columns.Add("task result比例");
+            table.Columns.Add("task result return == 0");
+            table.Columns.Add("task result return == 0比例");
             table.Columns.Add("taskid");
-            table.Columns.Add("taskidreturn");
-            table.Columns.Add("taskidreturnp");
+            table.Columns.Add("taskid return == 0");
+            table.Columns.Add("taskid return == 0 比例");
 
             DataRow dr = null;
-            string inputTaskId = "8";
+            string inputTaskId = CommonResource.TaskId;
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 15; i++)
             {
                 strInput = startDt.AddDays(i).ToString("yyyy-MM-dd");
 
@@ -686,10 +698,10 @@ namespace exportExcel
                 dr["统计日期"] = strInput;
                 dr["日总访问量"] = intCount;
                 dr["DAU"] = intdaycount;
-                dr["task"] = inttaskcount;
-                dr["taskp"] = ((double)inttaskcount / (double)intdaycount).ToString("P");
-                dr["return"] = intreturncount;
-                dr["returnp"] = ((double)intreturncount / (double)intdaycount).ToString("P");
+                dr["task result"] = inttaskcount;
+                dr["task result比例"] = ((double)inttaskcount / (double)intdaycount).ToString("P");
+                dr["task result return == 0"] = intreturncount;
+                dr["task result return == 0比例"] = ((double)intreturncount / (double)intdaycount).ToString("P");
 
                 if (!string.IsNullOrEmpty(inputTaskId))
                 {
@@ -702,8 +714,8 @@ namespace exportExcel
                     intTaskIdReturncount = 0;
                 }
                 dr["taskid"] = intTaskIdcount;
-                dr["taskidreturn"] = intTaskIdReturncount;
-                dr["taskidreturnp"] = ((double)intTaskIdReturncount / (double)intTaskIdcount).ToString("P");
+                dr["taskid return == 0"] = intTaskIdReturncount;
+                dr["taskid return == 0 比例"] = ((double)intTaskIdReturncount / (double)intTaskIdcount).ToString("P");
                 table.Rows.Add(dr);
 
                 if (string.IsNullOrEmpty(dvusd.UType) &&
@@ -732,5 +744,114 @@ namespace exportExcel
 
             return table;
         }
+        
+        private static System.Data.DataTable GetGo20WeekDataToTable(DateTime startDt, string strTableName, string strUITableName, string strDUTableName, string strSheetName)
+        {
+
+            LogHelper.writeInfoLog("GetGo20WeekDataToTable Start");
+
+            int intWeekDAUCount = 0;
+            int intWeekDAUDisCount = 0;
+            int intNextWeekDAUDisCount = 0;
+
+            string strInput = string.Empty;
+            string strSecondDay = string.Empty;
+            string strThirdDay = string.Empty;
+
+            DateTime dtNow = DateTime.Now;
+
+            DailyVisitUserStatisticsData dvusd = new DailyVisitUserStatisticsData();
+
+            DBConnect dbc = new DBConnect();
+
+            System.Data.DataTable table = new System.Data.DataTable();
+
+            table.Columns.Add("自然周单位");
+            table.Columns.Add("本周总访问数(DAU)");
+            table.Columns.Add("本周用户");
+            table.Columns.Add("次周存活");
+            table.Columns.Add("次周存活/本周新用户");
+
+            DataRow dr = null;
+
+            DateTime dtTwoWeeksAgoS = Common.getmondaydate(dtNow.AddDays(-14));
+            DateTime dtTwoWeeksAgoE = Common.getsundaydate(dtNow.AddDays(-14));
+            DateTime ThePreviousWeekS = Common.getmondaydate(dtNow.AddDays(-7));
+            DateTime ThePreviousWeekE = Common.getsundaydate(dtNow.AddDays(-7));
+            DateTime ThisWeekS = Common.getmondaydate(dtNow);
+            DateTime ThisWeekE = Common.getsundaydate(dtNow);
+
+            // 前两周
+            dr = table.NewRow();
+
+            dr["自然周单位"] = dtTwoWeeksAgoS.ToString("yyyy-MM-dd")+"——"+ dtTwoWeeksAgoE.ToString("yyyy-MM-dd");
+
+            intWeekDAUCount = dbc.GetWeekDAUCount(dtTwoWeeksAgoS.ToString("yyyy-MM-dd"), dtTwoWeeksAgoE.ToString("yyyy-MM-dd"), strDUTableName);
+            dr["本周总访问数(DAU)"] = intWeekDAUCount;
+
+            intWeekDAUDisCount = dbc.GetWeekDAUDisCount(dtTwoWeeksAgoS.ToString("yyyy-MM-dd"), dtTwoWeeksAgoE.ToString("yyyy-MM-dd"), strDUTableName);
+            dr["本周用户"] = intWeekDAUDisCount;
+
+            intNextWeekDAUDisCount = dbc.GetNextWeekDAUDisCount(dtTwoWeeksAgoS.ToString("yyyy-MM-dd"), 
+                dtTwoWeeksAgoE.ToString("yyyy-MM-dd"),
+                ThePreviousWeekS.ToString("yyyy-MM-dd"), 
+                ThePreviousWeekE.ToString("yyyy-MM-dd"), 
+                strDUTableName);
+
+            dr["次周存活"] = intNextWeekDAUDisCount;
+            dr["次周存活/本周新用户"] = ((double)intNextWeekDAUDisCount / (double)intWeekDAUDisCount).ToString("P");
+
+            table.Rows.Add(dr);
+            intWeekDAUCount = 0;
+            intWeekDAUDisCount = 0;
+            intNextWeekDAUDisCount = 0;
+
+            // 前一周
+            dr = table.NewRow();
+
+            dr["自然周单位"] = ThePreviousWeekS.ToString("yyyy-MM-dd") + "——" + ThePreviousWeekE.ToString("yyyy-MM-dd");
+
+            intWeekDAUCount = dbc.GetWeekDAUCount(ThePreviousWeekS.ToString("yyyy-MM-dd"), ThePreviousWeekE.ToString("yyyy-MM-dd"), strDUTableName);
+            dr["本周总访问数(DAU)"] = intWeekDAUCount;
+
+            intWeekDAUDisCount = dbc.GetWeekDAUDisCount(ThePreviousWeekS.ToString("yyyy-MM-dd"), ThePreviousWeekE.ToString("yyyy-MM-dd"), strDUTableName);
+            dr["本周用户"] = intWeekDAUDisCount;
+
+            intNextWeekDAUDisCount = dbc.GetNextWeekDAUDisCount(ThePreviousWeekS.ToString("yyyy-MM-dd"),
+                ThePreviousWeekE.ToString("yyyy-MM-dd"),
+                ThisWeekS.ToString("yyyy-MM-dd"),
+                ThisWeekE.ToString("yyyy-MM-dd"),
+                strDUTableName);
+
+            dr["次周存活"] = intNextWeekDAUDisCount;
+            dr["次周存活/本周新用户"] = ((double)intNextWeekDAUDisCount / (double)intWeekDAUDisCount).ToString("P");
+
+            table.Rows.Add(dr);
+            intWeekDAUCount = 0;
+            intWeekDAUDisCount = 0;
+            intNextWeekDAUDisCount = 0;
+
+            // 本周
+            dr = table.NewRow();
+
+            dr["自然周单位"] = ThisWeekS.ToString("yyyy-MM-dd") + "——" + ThisWeekE.ToString("yyyy-MM-dd");
+
+            intWeekDAUCount = dbc.GetWeekDAUCount(ThisWeekS.ToString("yyyy-MM-dd"), ThisWeekE.ToString("yyyy-MM-dd"), strDUTableName);
+            dr["本周总访问数(DAU)"] = intWeekDAUCount;
+
+            intWeekDAUDisCount = dbc.GetWeekDAUDisCount(ThisWeekS.ToString("yyyy-MM-dd"), ThisWeekE.ToString("yyyy-MM-dd"), strDUTableName);
+            dr["本周用户"] = intWeekDAUDisCount;            
+
+            dr["次周存活"] = intNextWeekDAUDisCount;
+            dr["次周存活/本周新用户"] = ((double)intNextWeekDAUDisCount / (double)intWeekDAUDisCount).ToString("P");
+
+            table.Rows.Add(dr);
+            intWeekDAUCount = 0;
+            intWeekDAUDisCount = 0;
+            intNextWeekDAUDisCount = 0;
+            
+            return table;
+        }
+
     }
 }

@@ -599,6 +599,22 @@ namespace exportExcel
             return rtn;
         }
 
+        internal int GetGo20UserInfoCount(string strUITableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strUITableName;
+                //+ " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version not in ('" + v1 + "','" + v2 + "')";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            rtn = (int)comm.ExecuteScalar();
+
+            conn.Close();
+            return rtn;
+        }
 
         public Int64 GetTaskResultReturnCount(string date, string strDataTableName)
         {
@@ -690,5 +706,53 @@ namespace exportExcel
             return strRtn;
         }
 
+        internal int GetWeekDAUCount(string weeks, string weeke, string strDUTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDUTableName
+                + " where udate between '" + weeks + "' and '" + weeke + "'";
+                        
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+        internal int GetWeekDAUDisCount(string weeks, string weeke, string strDUTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(distinct [uid]) FROM "
+                + strDUTableName
+                + " where udate between '" + weeks + "' and '" + weeke + "'";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+        internal int GetNextWeekDAUDisCount(string pweeks, string pweeke, string weeks, string weeke, string strDUTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(distinct [uid]) FROM "
+                + strDUTableName
+                + " gsd where gsd.udate between '" + pweeks + "' and '" + pweeke + "' and gsd.uid in (SELECT distinct [uid] FROM "
+                + strDUTableName 
+                + " where udate between '" + weeks + "' and '" + weeke + "')";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
     }
 }

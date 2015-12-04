@@ -12,7 +12,10 @@ namespace MDAutoImport
     public class DBConnect
     {
         private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
-        private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
+        //private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
+        private static int intTimeout = Convert.ToInt32(ConfigurationManager.AppSettings["DBCommandTimeout"]);
+        private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
+        private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
 
         /// <summary>
         /// 连接数据库
@@ -440,10 +443,10 @@ namespace MDAutoImport
                             + " g2sd "
                             + " where g2du.uid = g2sd.uid and g2du.udate = '"
                             + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
-                            + inputDate + "%' and g2sd.version = '" + CommonResource.LowVersion + "'";
+                            + inputDate + "%' and g2sd.version = '" + LowVersion + "'";
 
                         strRtn = cmd2.ExecuteNonQuery();
-                        Console.WriteLine("DailyUser Update version " + CommonResource.LowVersion + " Count = " + strRtn);
+                        Console.WriteLine("DailyUser Update version " + LowVersion + " Count = " + strRtn);
                     }
 
                     using (SqlCommand cmd3 = conn.CreateCommand())
@@ -459,10 +462,10 @@ namespace MDAutoImport
                             + " g2sd "
                             + " where g2du.uid = g2sd.uid and g2du.udate = '"
                             + inputDate + "' and Convert(varchar, g2sd.udate,120) like '"
-                            + inputDate + "%' and g2sd.version = '" + CommonResource.HighVersion + "'";
+                            + inputDate + "%' and g2sd.version = '" + HighVersion + "'";
 
                         strRtn = cmd3.ExecuteNonQuery();
-                        Console.WriteLine("DailyUser Update version " + CommonResource.HighVersion + " Count = " + strRtn);
+                        Console.WriteLine("DailyUser Update version " + HighVersion + " Count = " + strRtn);
                     }
                     using (SqlCommand cmd4 = conn.CreateCommand())
                     {
@@ -483,7 +486,7 @@ namespace MDAutoImport
                             + " where udate = '" + inputDate + "' and version is null)";
 
                         strRtn = cmd4.ExecuteNonQuery();
-                        Console.WriteLine("DailyUser Update version " + CommonResource.LowVersion + "和" + CommonResource.HighVersion + " 以外 Count = " + strRtn);
+                        Console.WriteLine("DailyUser Update version " + LowVersion + "和" + HighVersion + " 以外 Count = " + strRtn);
                     }
                     // 更新channel
                     using (SqlCommand cmd5 = conn.CreateCommand())

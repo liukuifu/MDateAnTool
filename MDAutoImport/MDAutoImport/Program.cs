@@ -10,13 +10,17 @@ using System.Collections;
 using System.Data;
 using System.IO.MemoryMappedFiles;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace MDAutoImport
 {
     class Program
     {
-        private static object lonic;
+        //private static object lonic;
 
+        private static string DownLoadPath = ConfigurationManager.AppSettings["DownLoadPath"];
+        private static string UnZipPath = ConfigurationManager.AppSettings["UnZipPath"];
+        private static int ZipCount = Convert.ToInt32(ConfigurationManager.AppSettings["ZipCount"]);
         static void Main(string[] args)
         {
             LogHelper.writeInfoLog("Main Start");
@@ -24,9 +28,13 @@ namespace MDAutoImport
             Dictionary<string, string> hm = new Dictionary<string, string>();
             Hashtable ht = new Hashtable();
             try {
-                string DlFullPath = CommonResource.DownLoadPath.ToString() + "\\" + dt.ToString("yyyy-MM-dd");
-                string UnFullPath = CommonResource.UnZipPath.ToString() + "\\" + dt.ToString("yyyy-MM-dd");
 
+                string DlFullPath = DownLoadPath + "\\" + dt.ToString("yyyy-MM-dd");
+                string UnFullPath = UnZipPath + "\\" + dt.ToString("yyyy-MM-dd");
+
+                //string DlFullPath = CommonResource.DownLoadPath.ToString() + "\\" + dt.ToString("yyyy-MM-dd");
+                //string UnFullPath = CommonResource.UnZipPath.ToString() + "\\" + dt.ToString("yyyy-MM-dd");
+                
                 LogHelper.writeDebugLog("DlFullPath : " + DlFullPath);
                 LogHelper.writeDebugLog("UnFullPath : " + UnFullPath);
 
@@ -61,7 +69,9 @@ namespace MDAutoImport
                                 {
                                     ImportData(fileName, unZipPath);
                                 }
-                                if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                                
+                                if (ht.Count == ZipCount)
+                                //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
                                 //if (ht.Count == 3)
                                 {
                                     break;
@@ -70,7 +80,8 @@ namespace MDAutoImport
                         }
                         //}                
                     }
-                    if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                    //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                    if (ht.Count == ZipCount)
                     {
                         break;
                     }
@@ -994,7 +1005,7 @@ namespace MDAutoImport
                 // for test sssssssssssssssssssss
 
                 int intLossCount = 0;
-                int intWeekCount = 0;
+                //int intWeekCount = 0;
 
                 Console.WriteLine("SDTableName ： "+ strTableName);
                 // 取得(SourceData)单日件数
@@ -1079,11 +1090,11 @@ namespace MDAutoImport
             Int64 itemCount = 0;
             int intSourceDataCount = 0;
             int intInsertDU = 0;
-            int intInsertUI = 0;
+            //int intInsertUI = 0;
             int intCount = 0;
             string[] s;
             //List<MData> list = new List<MData>();
-            MData md = null;
+            //MData md = null;
             TaskData20 td = null;
             DBConnect db = new DBConnect();
             DateTime dt = DateTime.Now;

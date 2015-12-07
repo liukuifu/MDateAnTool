@@ -45,7 +45,7 @@ namespace UserInfoUpdate
             //string strDBType = args[0];
             string strDBType = "go2.0";
             //string strInputDate = args[1];
-            string strInputDate = "2015-12-02";
+            string strInputDate = "2015-12-01";
             //string strFileName = @"E:\导入数据\temp.eggdata.log.2015-10-29.001";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;
@@ -80,6 +80,13 @@ namespace UserInfoUpdate
                     strTableName = "Go20TaskSD";
                     strDUTableName = "Go20TaskInfo";
                     strUITableName = string.Empty;
+                } 
+                else if ("go3.0".Equals(strDBType))
+                {
+                    strTableName = "Go30SD";
+                    //strTableName = "[Go20SourceData-bak]";
+                    strDUTableName = "Go30DailyUser";
+                    strUITableName = "Go30UserInfo";
                 }
 
                 if ("Go20UserInfo".Equals(strUITableName)
@@ -88,6 +95,12 @@ namespace UserInfoUpdate
                     Console.WriteLine("UpdateGo20UserInfo Start.");
                     db.UpdateGo20UserInfo(strInputDate, strTableName, strUITableName);
                     Console.WriteLine("UpdateGo20UserInfo End.");
+                }
+                else if ("Go30UserInfo".Equals(strUITableName))
+                {
+                    Console.WriteLine("UpdateGo30UserInfo Start.");
+                    db.UpdateGo30UserInfo(strInputDate, strTableName, strUITableName);
+                    Console.WriteLine("UpdateGo30UserInfo End.");
                 }
                 //db.GetGo20UserInfo();
 

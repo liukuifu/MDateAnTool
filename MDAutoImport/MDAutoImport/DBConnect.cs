@@ -11,19 +11,19 @@ namespace MDAutoImport
 {
     public class DBConnect
     {
-        private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
-        //private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
-        private static int intTimeout = Convert.ToInt32(ConfigurationManager.AppSettings["DBCommandTimeout"]);
-        private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
-        private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
+        //private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+        ////private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
+        //private static int intTimeout = Convert.ToInt32(ConfigurationManager.AppSettings["DBCommandTimeout"]);
+        //private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
+        //private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
 
-        //private string connectionString = "Server = 10.1.7.126;" +
-        //"Database = MDataAn;" +
-        //"User ID = sa;" +
-        //"Password = 12345678;";
-        //private int intTimeout = 1200;
-        //private string LowVersion = "1000.0.0.107";
-        //private string HighVersion = "1000.0.0.112";
+        private string connectionString = "Server = 10.1.7.126;" +
+        "Database = MDataAn;" +
+        "User ID = sa;" +
+        "Password = 12345678;";
+        private int intTimeout = 1200;
+        private string LowVersion = "1000.0.0.107";
+        private string HighVersion = "1000.0.0.112";
         //public DBConnect(){
         //    ConnectionOpen();
         //}
@@ -365,7 +365,8 @@ namespace MDAutoImport
                 {
                     cmd.CommandTimeout = intTimeout;
                     if ("Go20DailyUser".Equals(strDUTableName)
-                        || "Go30DailyUser".Equals(strDUTableName))
+                        || "Go30DailyUser".Equals(strDUTableName)
+                        || "Cs30DailyUser".Equals(strDUTableName))
                     {
                         //当日新规则访问用户
                         cmd.CommandText = "insert "
@@ -949,18 +950,22 @@ namespace MDAutoImport
                     //设置数据表table和数据库中表的列对应关系
                     bulkCopy.ColumnMappings.Add("keys", "keys");
                     bulkCopy.ColumnMappings.Add("udate", "udate");
-                    bulkCopy.ColumnMappings.Add("appid", "appid");
-                    bulkCopy.ColumnMappings.Add("channel", "channel");
-                    bulkCopy.ColumnMappings.Add("event", "event");
-                    bulkCopy.ColumnMappings.Add("eggid", "eggid");
-                    bulkCopy.ColumnMappings.Add("version", "version");
-                    bulkCopy.ColumnMappings.Add("locale", "locale");
-                    bulkCopy.ColumnMappings.Add("os", "os");
-                    bulkCopy.ColumnMappings.Add("uid", "uid");
                     bulkCopy.ColumnMappings.Add("amd64", "amd64");
+                    bulkCopy.ColumnMappings.Add("channel", "channel");
                     bulkCopy.ColumnMappings.Add("data_parameter", "data_parameter");
                     bulkCopy.ColumnMappings.Add("data_return", "data_return");
                     bulkCopy.ColumnMappings.Add("data_taskid", "data_taskid");
+                    bulkCopy.ColumnMappings.Add("eggid", "eggid");
+                    bulkCopy.ColumnMappings.Add("event", "event");
+                    bulkCopy.ColumnMappings.Add("hid", "hid");
+                    bulkCopy.ColumnMappings.Add("locale", "locale");
+                    bulkCopy.ColumnMappings.Add("os", "os");
+                    bulkCopy.ColumnMappings.Add("sid", "sid");
+                    bulkCopy.ColumnMappings.Add("sysid", "sysid");
+                    bulkCopy.ColumnMappings.Add("uid", "uid");
+                    bulkCopy.ColumnMappings.Add("version", "version");
+                    bulkCopy.ColumnMappings.Add("vid", "vid");
+                    bulkCopy.ColumnMappings.Add("vm", "vm");
                     bulkCopy.ColumnMappings.Add("createdate", "createdate");
                     bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
                 }
@@ -1033,8 +1038,8 @@ namespace MDAutoImport
                 {
 
                     cmd.CommandTimeout = intTimeout;
-                    if ("Go30UserInfo".Equals(strUITableName))
-                    {
+                    //if ("Go30UserInfo".Equals(strUITableName))
+                    //{
                         cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
                             + inputDate
                             + "',null,null,null,null,null,null,null,null,null,null,null,null,null,"
@@ -1043,7 +1048,7 @@ namespace MDAutoImport
                             +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,'"+dt+"','"+dt+"' FROM " 
                             + strDUTableName + " g2du where g2du.udate = '"
                             + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
-                    }
+                    //}
                     //else if ("Killer20UserInfo".Equals(strUITableName))
                     //{
                     //    cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
@@ -1160,6 +1165,7 @@ namespace MDAutoImport
             LogHelper.writeInfoLog("UpdateEadateForUserInfo30 End");
             return strRtn;
         }
+
 
     }
 }

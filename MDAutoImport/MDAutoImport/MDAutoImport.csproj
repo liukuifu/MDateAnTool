@@ -95,6 +95,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="TaskData20.cs" />
+    <Compile Include="TaskData30.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

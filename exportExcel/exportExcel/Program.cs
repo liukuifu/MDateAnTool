@@ -8,11 +8,19 @@ using Microsoft.Office.Interop;
 using System.IO;
 using Microsoft.Office.Interop.Excel;
 using System.Reflection;
+using System.Configuration;
 
 namespace exportExcel
 {
     class Program
     {
+
+        //private static string DownLoadPath = ConfigurationManager.AppSettings["DownLoadPath"];
+        private static string UnZipPath = ConfigurationManager.AppSettings["UnZipPath"];
+        //private static int ZipCount = Convert.ToInt32(ConfigurationManager.AppSettings["ZipCount"]);
+        private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
+        private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
+        private static string TaskId = ConfigurationManager.AppSettings["TaskId"];
         static void Main(string[] args)
         {
             //Dictionary<string, string> hm = new Dictionary<string, string>();
@@ -104,7 +112,7 @@ namespace exportExcel
             try
             {
                 DateTime dt = DateTime.Now.AddDays(-1);
-                string UnFullPath = CommonResource.UnZipPath.ToString() + "\\" + dt.ToString("yyyy-MM-dd");
+                string UnFullPath = UnZipPath + "\\" + dt.ToString("yyyy-MM-dd");
                 Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
                 excel.DisplayAlerts = false;
                 //excel.visible = true;
@@ -133,6 +141,10 @@ namespace exportExcel
                 //Microsoft.Office.Interop.Excel.Worksheet sheet = book.ActiveSheet as Microsoft.Office.Interop.Excel.Worksheet;                
                 sheet.Name = strSheetName;
 
+                //strSheetName = "go2.0";
+                //strSheetName = "C#2.0";
+                //strSheetName = "killer2.0";
+                //strSheetName = "task2.0";
                 for (int i = 0; i < dtb.Columns.Count; i++)
                 {
                     sheet.Cells[1, i + 1] = dtb.Columns[i].ColumnName;
@@ -361,7 +373,7 @@ namespace exportExcel
             bool updateFlg = false;
             bool ThreeDayNumberOfNewUsersUpdateFlg = false;
 
-            Int64 intCount = 0;
+            //Int64 intCount = 0;
             Int64 intdaycount = 0;
 
             Int64 inttaskcount = 0;
@@ -392,7 +404,7 @@ namespace exportExcel
             System.Data.DataTable table = new System.Data.DataTable();
 
             table.Columns.Add("统计日期");
-            table.Columns.Add("日总访问量");
+            //table.Columns.Add("日总访问量");
             table.Columns.Add("DAU");
             table.Columns.Add("日新增用户");
             table.Columns.Add("新用户次日访问数");
@@ -405,8 +417,8 @@ namespace exportExcel
             table.Columns.Add("DAU在一周后的存活比例");
             table.Columns.Add("egg1中存在用户数");
             table.Columns.Add("kill安装用户数");
-            table.Columns.Add(CommonResource.HighVersion);
-            table.Columns.Add(CommonResource.LowVersion);
+            table.Columns.Add(HighVersion);
+            table.Columns.Add(LowVersion);
             table.Columns.Add("其它版本");
 
             DataRow dr = null;
@@ -427,16 +439,16 @@ namespace exportExcel
 
                 dr = table.NewRow();
 
-                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
-                {
-                    intCount = dbc.GetTCount(strInput, strTableName);
-                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
-                }
+                //if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
+                //{
+                //    intCount = dbc.GetTCount(strInput, strTableName);
+                //    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                //    updateFlg = true;
+                //}
+                //else
+                //{
+                //    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
+                //}
 
 
                 if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
@@ -524,7 +536,7 @@ namespace exportExcel
                 intAfterWeekcount = dbc.GetAfterWeekcount(strInput, strDUTableName);
 
                 dr["统计日期"] = strInput;
-                dr["日总访问量"] = intCount;
+                //dr["日总访问量"] = intCount;
                 dr["DAU"] = intdaycount;
                 dr["日新增用户"] = intnewcount;
                 dr["新用户次日访问数"] = intsecondnewcount;
@@ -538,11 +550,11 @@ namespace exportExcel
                 dr["DAU在一周后的存活数"] = intAfterWeekcount;
                 dr["DAU在一周后的存活比例"] = ((double)intAfterWeekcount / (double)intdaycount).ToString("P"); 
 
-                intv112 = dbc.GetVCount(strInput, strDUTableName, CommonResource.HighVersion);
-                v107 = dbc.GetVCount(strInput, strDUTableName, CommonResource.LowVersion);
-                vother = dbc.GetNotVCount(strInput, strDUTableName, CommonResource.LowVersion, CommonResource.HighVersion); 
-                dr[CommonResource.HighVersion] = intv112;
-                dr[CommonResource.LowVersion] = v107;
+                intv112 = dbc.GetVCount(strInput, strDUTableName, HighVersion);
+                v107 = dbc.GetVCount(strInput, strDUTableName, LowVersion);
+                vother = dbc.GetNotVCount(strInput, strDUTableName, LowVersion, HighVersion); 
+                dr[HighVersion] = intv112;
+                dr[LowVersion] = v107;
                 dr["其它版本"] = vother;
 
                 table.Rows.Add(dr);
@@ -569,7 +581,7 @@ namespace exportExcel
                 dr["统计日期"] = "总UID数";
                 //dr["日总访问量"] = "=sum(C2:C8)";
                 int userCount = dbc.GetGo20UserInfoCount(strUITableName);
-                dr["日总访问量"] = userCount;
+                dr["DAU"] = userCount;
                 table.Rows.Add(dr);
 
                 dr = table.NewRow();
@@ -578,7 +590,7 @@ namespace exportExcel
                 strInput = nowDt.ToString("yyyy-MM-dd");
                 dvusd = dbc.GetDailyVisitUserStatistics(strInput, strDBType);
                 dr["统计日期"] = "流失数";
-                dr["日总访问量"] = dvusd.Extension1;
+                dr["DAU"] = dvusd.Extension1;
                 table.Rows.Add(dr);
 
             }
@@ -593,7 +605,7 @@ namespace exportExcel
             bool updateFlg = false;
             bool ThreeDayNumberOfNewUsersUpdateFlg = false;
 
-            Int64 intCount = 0;
+            //Int64 intCount = 0;
             Int64 intdaycount = 0;
 
             Int64 inttaskcount = 0;
@@ -627,7 +639,7 @@ namespace exportExcel
 
             System.Data.DataTable table = new System.Data.DataTable();
             table.Columns.Add("统计日期");
-            table.Columns.Add("日总访问量");
+            //table.Columns.Add("日总访问量");
             table.Columns.Add("DAU");
             table.Columns.Add("task result");
             table.Columns.Add("task result比例");
@@ -638,7 +650,7 @@ namespace exportExcel
             table.Columns.Add("taskid return == 0 比例");
 
             DataRow dr = null;
-            string inputTaskId = CommonResource.TaskId;
+            string inputTaskId = TaskId;
 
             for (int i = 0; i < 15; i++)
             {
@@ -655,15 +667,15 @@ namespace exportExcel
                 LogHelper.writeDebugLog("dvusd = " + dvusd.ToString());
 
                 dr = table.NewRow();
-                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
-                {
-                    intCount = dbc.GetTaskCount(strInput, strTableName);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
-                }
+                //if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
+                //{
+                //    intCount = dbc.GetTaskCount(strInput, strTableName);
+                //    updateFlg = true;
+                //}
+                //else
+                //{
+                //    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
+                //}
 
                 if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
                 {
@@ -696,7 +708,7 @@ namespace exportExcel
                 }
 
                 dr["统计日期"] = strInput;
-                dr["日总访问量"] = intCount;
+                //dr["日总访问量"] = intCount;
                 dr["DAU"] = intdaycount;
                 dr["task result"] = inttaskcount;
                 dr["task result比例"] = ((double)inttaskcount / (double)intdaycount).ToString("P");
@@ -723,7 +735,7 @@ namespace exportExcel
                 {
                     dvusd.UType = strDBType;
                     dvusd.UDate = strInput;
-                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                    //dvusd.TotalNumberOfDays = Convert.ToString(intCount);
                     dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
                     dvusd.TaskNumber = Convert.ToString(inttaskcount);
                     dvusd.TaskNumberOfSuccess = Convert.ToString(intreturncount);
@@ -733,7 +745,7 @@ namespace exportExcel
                 {
                     if (updateFlg)
                     {
-                        dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                        //dvusd.TotalNumberOfDays = Convert.ToString(intCount);
                         dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
                         dvusd.TaskNumber = Convert.ToString(inttaskcount);
                         dvusd.TaskNumberOfSuccess = Convert.ToString(intreturncount);

@@ -79,7 +79,7 @@ namespace MDAutoImport
         /// <summary>
         /// antivirus
         /// </summary>
-        public List<AntivirusItem> Antivirus { get; set; }
+        public List<AntivirusItem20> Antivirus { get; set; }
 
         /// <summary>
         /// browser

@@ -17,6 +17,18 @@ namespace MDAutoImport
         private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
         private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
 
+        //private string connectionString = "Server = 10.1.7.126;" +
+        //"Database = MDataAn;" +
+        //"User ID = sa;" +
+        //"Password = 12345678;";
+        //private int intTimeout = 1200;
+        //private string LowVersion = "1000.0.0.107";
+        //private string HighVersion = "1000.0.0.112";
+        //public DBConnect(){
+        //    ConnectionOpen();
+        //}
+
+
         /// <summary>
         /// 连接数据库
         /// </summary>
@@ -352,7 +364,8 @@ namespace MDAutoImport
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandTimeout = intTimeout;
-                    if ("Go20DailyUser".Equals(strDUTableName))
+                    if ("Go20DailyUser".Equals(strDUTableName)
+                        || "Go30DailyUser".Equals(strDUTableName))
                     {
                         //当日新规则访问用户
                         cmd.CommandText = "insert "
@@ -427,7 +440,8 @@ namespace MDAutoImport
                     strRtn = cmd.ExecuteNonQuery();
                     Console.WriteLine("DailyUser Update kill Count = " + strRtn);
                 }
-                if ("Go20SourceData".Equals(strTableName))
+                if ("Go20SourceData".Equals(strTableName)
+                    || "Go30SD".Equals(strTableName))
                 {
                     // 更新version
                     using (SqlCommand cmd2 = conn.CreateCommand())
@@ -875,8 +889,7 @@ namespace MDAutoImport
 
             return rtn;
         }
-
-
+        
         internal int InsertDailyVisitUserStatisticsForLoss(string strDBType, 
             string strImportDate, 
             int intSourceDataCount, 
@@ -917,5 +930,236 @@ namespace MDAutoImport
             LogHelper.writeInfoLog("InsertDailyVisitUserStatisticsForLoss End");
             return strRtn;
         }
+
+
+        /// <summary>
+        /// 向表(Table)中插入数据
+        /// </summary>
+        public void InsertTable30(DataTable table, string strTableName)
+        {
+            LogHelper.writeInfoLog("InsertTable30 Start");
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+                SqlBulkCopy bulkCopy = new SqlBulkCopy(conn);
+
+                bulkCopy.DestinationTableName = strTableName;//设置数据库中对象的表名
+                if ("Go30TaskSD".Equals(strTableName))
+                {
+                    //设置数据表table和数据库中表的列对应关系
+                    bulkCopy.ColumnMappings.Add("keys", "keys");
+                    bulkCopy.ColumnMappings.Add("udate", "udate");
+                    bulkCopy.ColumnMappings.Add("appid", "appid");
+                    bulkCopy.ColumnMappings.Add("channel", "channel");
+                    bulkCopy.ColumnMappings.Add("event", "event");
+                    bulkCopy.ColumnMappings.Add("eggid", "eggid");
+                    bulkCopy.ColumnMappings.Add("version", "version");
+                    bulkCopy.ColumnMappings.Add("locale", "locale");
+                    bulkCopy.ColumnMappings.Add("os", "os");
+                    bulkCopy.ColumnMappings.Add("uid", "uid");
+                    bulkCopy.ColumnMappings.Add("amd64", "amd64");
+                    bulkCopy.ColumnMappings.Add("data_parameter", "data_parameter");
+                    bulkCopy.ColumnMappings.Add("data_return", "data_return");
+                    bulkCopy.ColumnMappings.Add("data_taskid", "data_taskid");
+                    bulkCopy.ColumnMappings.Add("createdate", "createdate");
+                    bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
+                }
+                else
+                {
+                    //设置数据表table和数据库中表的列对应关系
+                    bulkCopy.ColumnMappings.Add("keys", "keys");
+                    bulkCopy.ColumnMappings.Add("udate", "udate");
+                    bulkCopy.ColumnMappings.Add("channel", "channel");
+                    bulkCopy.ColumnMappings.Add("uid", "uid");
+                    bulkCopy.ColumnMappings.Add("sid", "sid");
+                    bulkCopy.ColumnMappings.Add("hid", "hid");
+                    bulkCopy.ColumnMappings.Add("sysid", "sysid");
+                    bulkCopy.ColumnMappings.Add("vid", "vid");
+                    bulkCopy.ColumnMappings.Add("vm", "vm");
+                    bulkCopy.ColumnMappings.Add("eggid", "eggid");
+                    bulkCopy.ColumnMappings.Add("version", "version");
+                    bulkCopy.ColumnMappings.Add("workversion", "workversion");
+                    bulkCopy.ColumnMappings.Add("os", "os");
+                    bulkCopy.ColumnMappings.Add("amd64", "amd64");
+                    bulkCopy.ColumnMappings.Add("locale", "locale");
+                    bulkCopy.ColumnMappings.Add("event", "event");
+                    bulkCopy.ColumnMappings.Add("dx", "dx");
+                    bulkCopy.ColumnMappings.Add("ie", "ie");
+                    bulkCopy.ColumnMappings.Add("kill", "kill");
+                    bulkCopy.ColumnMappings.Add("data", "data");
+                    bulkCopy.ColumnMappings.Add("createdate", "createdate");
+                    bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
+                }
+
+                bulkCopy.WriteToServer(table);//将数据表table复制到数据库中
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                LogHelper.writeErrorLog("<<<<<<<<<<<<<<<<<<      sssss           >>>>>>>>>>>>>>>>>");
+                int ri = 1;
+                foreach (DataRow dr in table.Rows)
+                {
+                    LogHelper.writeErrorLog("<<<<<<<<<<<<<<<<<<      " + ri + "           >>>>>>>>>>>>>>>>>");
+
+                    for (int m = 0; m < dr.ItemArray.Length; m++)
+                    //foreach (string t in dr.ItemArray)
+                    {
+                        LogHelper.writeErrorLog(m + " : " + dr.ItemArray[m]);
+                    }
+                    ri = ri + 1;
+                }
+                LogHelper.writeErrorLog("<<<<<<<<<<<<<<<<<<      eeeee           >>>>>>>>>>>>>>>>>");
+            }
+            LogHelper.writeInfoLog("InsertTable20 End");
+        }
+
+
+        /// <summary>
+        /// 向表(UserInfo)中插入数据
+        /// </summary>
+        public int InsertUserInfo30(string inputDate, string strDUTableName, string strUITableName)
+        {
+            LogHelper.writeInfoLog("InsertUserInfo20 Start");
+
+            int strRtn = 0;
+            DateTime dt = DateTime.Now;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandTimeout = intTimeout;
+                    if ("Go30UserInfo".Equals(strUITableName))
+                    {
+                        cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
+                            + inputDate
+                            + "',null,null,null,null,null,null,null,null,null,null,null,null,null,"
+                            +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,"
+                            +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,"
+                            +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,'"+dt+"','"+dt+"' FROM " 
+                            + strDUTableName + " g2du where g2du.udate = '"
+                            + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
+                    }
+                    //else if ("Killer20UserInfo".Equals(strUITableName))
+                    //{
+                    //    cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
+                    //        + inputDate
+                    //        + " 00:00:01.000',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null FROM " + strDUTableName + " g2du where g2du.udate = '"
+                    //        + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
+                    //}
+                    //else
+                    //{
+                    //    cmd.CommandText = "insert " + strUITableName + " SELECT DISTINCT [uid],'"
+                    //        + inputDate
+                    //        + " 00:00:01.000' FROM " + strDUTableName + " g2du where g2du.udate = '"
+                    //        + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
+
+                    //}
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("InsertUserInfo20 End");
+            return strRtn;
+        }
+
+        internal int UpdateSadateForUserInfo30(string strImportDate, string strUITableName, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("UpdateSadateForUserInfo30 Start");
+
+            int strRtn = 0;
+            DateTime dt = DateTime.Now;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+
+                // 更新KILL
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd.CommandText = "UPDATE "
+                        + strUITableName
+                        + " SET [sadate] = (select min(udate) from "
+                        + strDUTableName
+                        + " where uid = "
+                        + strUITableName
+                        + ".uid),[updatedate] =  '" + dt 
+                        + "' where Convert(varchar, " + strUITableName + ".udate,120) = '"
+                        + strImportDate + "'";
+
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("UpdateSadateForUserInfo30 End");
+            return strRtn;
+        }
+
+        internal int UpdateEadateForUserInfo30(string strImportDate, string strUITableName, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("UpdateEadateForUserInfo30 Start");
+
+            int strRtn = 0;
+            DateTime dt = DateTime.Now;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+
+                // 更新KILL
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandTimeout = intTimeout;
+                    //当日新规则访问用户
+                    cmd.CommandText = "UPDATE "
+                        + strUITableName
+                        + " SET [eadate] = (select max(udate) from "
+                        + strDUTableName
+                        + " where uid = "
+                        + strUITableName
+                        + ".uid) ,[updatedate] = '" + dt + "'";
+
+                    strRtn = cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("UpdateEadateForUserInfo30 End");
+            return strRtn;
+        }
+
     }
 }

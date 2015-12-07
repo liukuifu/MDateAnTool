@@ -45,7 +45,7 @@ namespace UserInfoUpdate
             //string strDBType = args[0];
             string strDBType = "go2.0";
             //string strInputDate = args[1];
-            string strInputDate = "2015-11-30";
+            string strInputDate = "2015-12-02";
             //string strFileName = @"E:\导入数据\temp.eggdata.log.2015-10-29.001";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;
@@ -55,6 +55,7 @@ namespace UserInfoUpdate
                 if ("go2.0".Equals(strDBType))
                 {
                     strTableName = "Go20SourceData";
+                    //strTableName = "[Go20SourceData-bak]";
                     strDUTableName = "Go20DailyUser";
                     strUITableName = "Go20UserInfo";
                 }

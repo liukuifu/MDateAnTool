@@ -861,7 +861,7 @@ namespace MDAutoImport
 
         internal int GetLossCount(string strUITableName)
         {
-            LogHelper.writeInfoLog("UpdateEadateForUserInfo20 Start");
+            LogHelper.writeInfoLog("GetLossCount Start");
 
             int rtn = 0;
 
@@ -886,7 +886,7 @@ namespace MDAutoImport
             {
                 LogHelper.writeErrorLog(ex);
             }
-            LogHelper.writeInfoLog("UpdateEadateForUserInfo20 End");
+            LogHelper.writeInfoLog("GetLossCount End");
 
             return rtn;
         }

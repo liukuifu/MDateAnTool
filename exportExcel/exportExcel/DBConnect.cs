@@ -480,6 +480,8 @@ namespace exportExcel
                             + ",[ThreeDayNumberOfNewUsers] = " + dvusd.ThreeDayNumberOfNewUsers
                             + ",[NumberOfNewUsersEgg1] = " + dvusd.NumberOfNewUsersEgg1
                             + ",[DayNumberOfUsersKillInstallation] = " + dvusd.DayNumberOfUsersKillInstallation
+                            + ",[Extension1] = " + dvusd.Extension1
+                            + ",[Extension2] = " + dvusd.Extension2
                             + ",[updatedate] = '" + dt
                             + "' where keys = "
                             + dvusd.keys;
@@ -770,14 +772,14 @@ namespace exportExcel
             return rtn;
         }
 
-        internal int GetGo20UserInfoCount(string strUITableName)
+        internal int GetGo20UserInfoCount(string date, string strUITableName)
         {
             int rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
             string sql = "SELECT count(1) FROM "
-                + strUITableName;
-                //+ " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version not in ('" + v1 + "','" + v2 + "')";
+                + strUITableName
+                + " where udate < '" + date + "'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;

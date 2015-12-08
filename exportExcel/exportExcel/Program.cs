@@ -34,9 +34,9 @@ namespace exportExcel
             string strUITableName = string.Empty;
             string strDUTableName = string.Empty;
             string strSheetName = string.Empty;
-            string strExcelName = "new-数据分析-" + nowDt.ToString("yyyyMMdd");
-            //string[] strArry = new string[] { "go2.0", "go2.0周统计", "go2.0 channel", "C#2.0", "killer2.0", "task2.0"};
-            string[] strArry = new string[] { "task2.0" };
+            string strExcelName = "数据分析-" + nowDt.ToString("yyyyMMdd");
+            string[] strArry = new string[] { "go2.0", "go2.0周统计", "go2.0 channel", "C#2.0", "killer2.0", "task2.0" };
+            //string[] strArry = new string[] { "task2.0" };
             //{ "go", "C#", "killer", "go2.0", "C#2.0", "killer2.0", "task20" };
             int i = 1;
             foreach (string strT in strArry)//i = 0; i < hm.Count(); i++)
@@ -591,6 +591,7 @@ namespace exportExcel
 
             for (int i = 0; i < 15; i++)
             {
+                updateFlg = false;
                 strInput = startDt.AddDays(i).ToString("yyyy-MM-dd");
 
                 strSecondDay = string.Format("{0:yyyy-MM-dd}", startDt.AddDays(i + 1));
@@ -704,7 +705,7 @@ namespace exportExcel
                 // 总用户数
                 if (string.IsNullOrEmpty(dvusd.Extension2))
                 {
-                    intUIDCount = dbc.GetGo20UserInfoCount(strUITableName);
+                    intUIDCount = dbc.GetGo20UserInfoCount(strSecondDay, strUITableName);
                     dvusd.Extension2 = Convert.ToString(intUIDCount);
                     updateFlg = true;
                 }
@@ -717,7 +718,7 @@ namespace exportExcel
                 if (string.IsNullOrEmpty(dvusd.Extension1))
                 {
                     intLossCount = dbc.GetLossCount(strUITableName);
-                    dvusd.Extension1 = Convert.ToString(intUIDCount);
+                    dvusd.Extension1 = Convert.ToString(intLossCount);
                     updateFlg = true;
                 }
                 else
@@ -863,6 +864,7 @@ namespace exportExcel
 
             for (int i = 0; i < 15; i++)
             {
+                updateFlg = false;
                 strInput = startDt.AddDays(i).ToString("yyyy-MM-dd");
 
                 strSecondDay = string.Format("{0:yyyy-MM-dd}", startDt.AddDays(i + 1));

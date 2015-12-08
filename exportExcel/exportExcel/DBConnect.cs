@@ -302,6 +302,145 @@ namespace exportExcel
             return strRtn;
         }
 
+        internal long GetDnuThreeCount(string strInput, string strSecondDay, string strThirdDay, string strDUTableName, string strUITableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where (gsd.udate = '"
+                + strSecondDay
+                + "' or gsd.udate = '"
+                + strThirdDay
+                +"') and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%' and uid in (select uid from "
+                + strUITableName
+                + " where CONVERT(nvarchar,udate,120) like '"
+                + strInput
+                + "%'))";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDnuThirdCount(string strInput, string strThirdDay, string strDUTableName, string strUITableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where gsd.udate = '"
+                + strThirdDay
+                + "' and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%' and uid in (select uid from "
+                + strUITableName
+                + " where CONVERT(nvarchar,udate,120) like '"
+                + strInput
+                + "%'))";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDnuSecondCount(string strInput, string strSecondDay, string strDUTableName, string strUITableName, string strChannelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where gsd.udate = '"
+                + strSecondDay
+                + "' and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + strInput
+                + "' and channel like '"
+                + strChannelValue
+                + "%' and uid in (select uid from "
+                + strUITableName
+                + " where CONVERT(nvarchar,udate,120) like '"
+                + strInput
+                +"%'))";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDnuChannelCount(string strInput, string strDUTableName, string strUITableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDUTableName
+                + " where udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%' and uid in (select [uid] from "
+                + strUITableName
+                +" where CONVERT(nvarchar,udate,120) like '"
+                + strInput 
+                + "%' )";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDauChannelCount(string strInput, string strDUTableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDUTableName
+                + " where udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%'";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
         /// <summary>
         /// 更新表(DailyUser)中数据
         /// </summary>
@@ -596,6 +735,38 @@ namespace exportExcel
                 rtn = rtn + 1;
             }
             conn.Close();
+            return rtn;
+        }
+
+        internal long GetLossCount(string strUITableName)
+        {
+            LogHelper.writeInfoLog("strUITableName Start");
+
+            int rtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+
+                string sql = "SELECT count(1) FROM "
+                    + strUITableName
+                    + " where DATEDIFF(day, convert(datetime, sadate, 110), convert(datetime, eadate, 110)) < 7";
+
+                SqlCommand comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = intTimeout;
+                rtn = (int)comm.ExecuteScalar();
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+            LogHelper.writeInfoLog("strUITableName End");
+
             return rtn;
         }
 

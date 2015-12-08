@@ -21,6 +21,7 @@ namespace exportExcel
         private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
         private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
         private static string TaskId = ConfigurationManager.AppSettings["TaskId"];
+        private static string ChannelValue = ConfigurationManager.AppSettings["ChannelValue"];
         static void Main(string[] args)
         {
             //Dictionary<string, string> hm = new Dictionary<string, string>();
@@ -33,8 +34,9 @@ namespace exportExcel
             string strUITableName = string.Empty;
             string strDUTableName = string.Empty;
             string strSheetName = string.Empty;
-            string strExcelName = "数据分析-" + nowDt.ToString("yyyyMMdd");
-            string[] strArry = new string[] { "go2.0周统计","go2.0", "C#2.0", "killer2.0", "task2.0"};
+            string strExcelName = "new-数据分析-" + nowDt.ToString("yyyyMMdd");
+            //string[] strArry = new string[] { "go2.0", "go2.0周统计", "go2.0 channel", "C#2.0", "killer2.0", "task2.0"};
+            string[] strArry = new string[] { "go2.0 channel" };
             //{ "go", "C#", "killer", "go2.0", "C#2.0", "killer2.0", "task20" };
             int i = 1;
             foreach (string strT in strArry)//i = 0; i < hm.Count(); i++)
@@ -97,6 +99,13 @@ namespace exportExcel
                         strSheetName = "go2.0周统计";
                         dtb = GetGo20WeekDataToTable(startDt, strTableName, strUITableName, strDUTableName, strSheetName);
                         break;
+                    case "go2.0 channel":
+                        strTableName = "Go20SourceData";
+                        strUITableName = "Go20UserInfo";
+                        strDUTableName = "Go20DailyUser";
+                        strSheetName = "go2.0 channel";
+                        dtb = Get20ChannelDataToTable(startDt, strTableName, strUITableName, strDUTableName, strSheetName);
+                        break;
                     default:
                         return;
                 }
@@ -105,6 +114,159 @@ namespace exportExcel
             }
         }
 
+        private static System.Data.DataTable Get20ChannelDataToTable(DateTime startDt, string strTableName, string strUITableName, string strDUTableName, string strDBType)
+        {
+
+            LogHelper.writeInfoLog("Get20ChannelDataToTable Start");
+            bool updateFlg = false;
+            bool ThreeDayNumberOfNewUsersUpdateFlg = false;
+
+            //Int64 intCount = 0;
+            Int64 intdaycount = 0;
+            Int64 intdauChannelcount = 0;
+            Int64 intdnuChannelcount = 0;
+            Int64 intsecondnewcount = 0;
+            Int64 intthirdnewcount = 0;
+            Int64 intthreenewcount = 0;
+
+            string strInput = string.Empty;
+            string strSecondDay = string.Empty;
+            string strThirdDay = string.Empty;
+
+            DailyVisitUserStatisticsData dvusd = new DailyVisitUserStatisticsData();
+
+            DBConnect dbc = new DBConnect();
+
+            System.Data.DataTable table = new System.Data.DataTable();
+
+            table.Columns.Add("统计日期");
+            //table.Columns.Add("日总访问量");
+            table.Columns.Add("DAU数");
+            table.Columns.Add("DAU channel : " + ChannelValue+" 用户数");
+            table.Columns.Add("DAU中比例");
+            table.Columns.Add("DNU channel : " + ChannelValue + " 用户数");
+            table.Columns.Add("次日访问数");
+            table.Columns.Add("第三日访问数");
+            table.Columns.Add("三日内访问数");
+            table.Columns.Add("次日访问比例");
+            table.Columns.Add("第三日访问比例");
+            table.Columns.Add("三日内访问比例");
+
+            DataRow dr = null;
+
+            for (int i = 0; i < 15; i++)
+            {
+                intdaycount = 0;
+                intdauChannelcount = 0;
+                intdnuChannelcount = 0;
+                intsecondnewcount = 0;
+                intthirdnewcount = 0;
+                intthreenewcount = 0;
+
+                strInput = startDt.AddDays(i).ToString("yyyy-MM-dd");
+
+                strSecondDay = string.Format("{0:yyyy-MM-dd}", startDt.AddDays(i + 1));
+                strThirdDay = string.Format("{0:yyyy-MM-dd}", startDt.AddDays(i + 2));
+
+                LogHelper.writeDebugLog("strInput = " + strInput);
+                LogHelper.writeDebugLog("strDBType = " + strDBType);
+
+                dvusd = dbc.GetDailyVisitUserStatistics(strInput, strDBType);
+
+                LogHelper.writeDebugLog("dvusd = " + dvusd.ToString());
+
+                dr = table.NewRow();
+
+                //if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
+                //{
+                //    intCount = dbc.GetTCount(strInput, strTableName);
+                //    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
+                //    updateFlg = true;
+                //}
+                //else
+                //{
+                //    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
+                //}
+
+
+                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
+                {
+                    intdaycount = dbc.GetDayCount(strInput, strDUTableName);
+                    dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
+                    //updateFlg = true;
+                }
+                else
+                {
+                    intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
+                }
+
+                intdauChannelcount = dbc.GetDauChannelCount(strInput, strDUTableName, ChannelValue);
+
+                intdnuChannelcount = dbc.GetDnuChannelCount(strInput, strDUTableName, strUITableName, ChannelValue);
+                
+                intsecondnewcount = dbc.GetDnuSecondCount(strInput, strSecondDay, strDUTableName, strUITableName, ChannelValue);
+                
+                intthirdnewcount = dbc.GetDnuThirdCount(strInput, strThirdDay, strDUTableName, strUITableName, ChannelValue);
+
+                intthreenewcount = dbc.GetDnuThreeCount(strInput, strSecondDay, strThirdDay, strDUTableName, strUITableName, ChannelValue);
+                                
+
+                dr["统计日期"] = strInput;
+                //dr["日总访问量"] = intCount;
+                dr["DAU数"] = intdaycount;
+                dr["DAU channel : " + ChannelValue + " 用户数"] = intdauChannelcount;
+                dr["DAU中比例"] = ((double)intdauChannelcount / (double)intdaycount).ToString("P");
+                dr["DNU channel : " + ChannelValue + " 用户数"] = intdnuChannelcount;
+                dr["次日访问数"] = intsecondnewcount;
+                dr["次日访问比例"] = ((double)intsecondnewcount / (double)intdnuChannelcount).ToString("P");
+                dr["第三日访问数"] = intthirdnewcount;
+                dr["第三日访问比例"] = ((double)intthirdnewcount / (double)intdnuChannelcount).ToString("P");
+                dr["三日内访问数"] = intthreenewcount;
+                dr["三日内访问比例"] = ((double)intthreenewcount / (double)intdnuChannelcount).ToString("P");
+
+                table.Rows.Add(dr);
+
+                //if (string.IsNullOrEmpty(dvusd.UType) &&
+                //    string.IsNullOrEmpty(dvusd.UDate))
+                //{
+                //    dvusd.UType = strDBType;
+                //    dvusd.UDate = strInput;
+                //    dbc.InsertDailyVisitUserStatisticsForGo20(dvusd);
+                //}
+                //else
+                //{
+                //    if (updateFlg)
+                //    {
+                //        dbc.UpdateDailyVisitUserStatistics(dvusd);
+                //    }
+                //}
+
+            }
+            //if ("go2.0".Equals(strDBType))
+            //{
+            //    dr = table.NewRow();              
+            //    dr["统计日期"] = "总UID数";
+            //    //dr["日总访问量"] = "=sum(C2:C8)";
+            //    int userCount = dbc.GetGo20UserInfoCount(strUITableName);
+            //    dr["DAU"] = userCount;
+            //    table.Rows.Add(dr);
+
+            //    dr = table.NewRow();
+            //    DateTime nowDt = DateTime.Now.AddDays(-1);
+
+            //    strInput = nowDt.ToString("yyyy-MM-dd");
+            //    dvusd = dbc.GetDailyVisitUserStatistics(strInput, strDBType);
+            //    dr["统计日期"] = "流失数";
+            //    dr["DAU"] = dvusd.Extension1;
+            //    table.Rows.Add(dr);
+
+            //}
+
+            LogHelper.writeInfoLog("Get20ChannelDataToTable End");
+
+
+            return table;
+        }
 
         private static void exportToExcel(int index,string strExcelName, string strSheetName, System.Data.DataTable dtb)
         {
@@ -375,6 +537,8 @@ namespace exportExcel
 
             //Int64 intCount = 0;
             Int64 intdaycount = 0;
+            Int64 intUIDCount = 0;
+            Int64 intLossCount = 0;
 
             Int64 inttaskcount = 0;
             Int64 intreturncount = 0;
@@ -413,6 +577,8 @@ namespace exportExcel
             table.Columns.Add("新用户次日访问比例");
             table.Columns.Add("新用户第三日访问比例");
             table.Columns.Add("新用户三日内访问比例");
+            table.Columns.Add("总UID数");
+            table.Columns.Add("流失数");
             table.Columns.Add("DAU在一周后的存活数");
             table.Columns.Add("DAU在一周后的存活比例");
             table.Columns.Add("egg1中存在用户数");
@@ -535,6 +701,31 @@ namespace exportExcel
 
                 intAfterWeekcount = dbc.GetAfterWeekcount(strInput, strDUTableName);
 
+                // 总用户数
+                if (string.IsNullOrEmpty(dvusd.Extension2))
+                {
+                    intUIDCount = dbc.GetGo20UserInfoCount(strUITableName);
+                    dvusd.Extension2 = Convert.ToString(intUIDCount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intUIDCount = Convert.ToInt64(dvusd.Extension2);
+                }
+
+                // 流失用户数
+                if (string.IsNullOrEmpty(dvusd.Extension1))
+                {
+                    intLossCount = dbc.GetLossCount(strUITableName);
+                    dvusd.Extension1 = Convert.ToString(intUIDCount);
+                    updateFlg = true;
+                }
+                else
+                {
+                    intLossCount = Convert.ToInt64(dvusd.Extension1);
+                }
+
+
                 dr["统计日期"] = strInput;
                 //dr["日总访问量"] = intCount;
                 dr["DAU"] = intdaycount;
@@ -545,6 +736,8 @@ namespace exportExcel
                 dr["新用户第三日访问比例"] = ((double)intthirdnewcount / (double)intnewcount).ToString("P");
                 dr["新用户三日内访问数"] = intthreenewcount;
                 dr["新用户三日内访问比例"] = ((double)intthreenewcount / (double)intnewcount).ToString("P");
+                dr["总UID数"] = intUIDCount;
+                dr["流失数"] = intLossCount;
                 dr["egg1中存在用户数"] = integg1usercount;
                 dr["kill安装用户数"] = intkillusercount;
                 dr["DAU在一周后的存活数"] = intAfterWeekcount;
@@ -575,25 +768,25 @@ namespace exportExcel
                 }
 
             }
-            if ("go2.0".Equals(strDBType))
-            {
-                dr = table.NewRow();              
-                dr["统计日期"] = "总UID数";
-                //dr["日总访问量"] = "=sum(C2:C8)";
-                int userCount = dbc.GetGo20UserInfoCount(strUITableName);
-                dr["DAU"] = userCount;
-                table.Rows.Add(dr);
+            //if ("go2.0".Equals(strDBType))
+            //{
+            //    dr = table.NewRow();              
+            //    dr["统计日期"] = "总UID数";
+            //    //dr["日总访问量"] = "=sum(C2:C8)";
+            //    int userCount = dbc.GetGo20UserInfoCount(strUITableName);
+            //    dr["DAU"] = userCount;
+            //    table.Rows.Add(dr);
 
-                dr = table.NewRow();
-                DateTime nowDt = DateTime.Now.AddDays(-1);
+            //    dr = table.NewRow();
+            //    DateTime nowDt = DateTime.Now.AddDays(-1);
 
-                strInput = nowDt.ToString("yyyy-MM-dd");
-                dvusd = dbc.GetDailyVisitUserStatistics(strInput, strDBType);
-                dr["统计日期"] = "流失数";
-                dr["DAU"] = dvusd.Extension1;
-                table.Rows.Add(dr);
+            //    strInput = nowDt.ToString("yyyy-MM-dd");
+            //    dvusd = dbc.GetDailyVisitUserStatistics(strInput, strDBType);
+            //    dr["统计日期"] = "流失数";
+            //    dr["DAU"] = dvusd.Extension1;
+            //    table.Rows.Add(dr);
 
-            }
+            //}
 
 
             return table;

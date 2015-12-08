@@ -36,7 +36,7 @@ namespace exportExcel
             string strSheetName = string.Empty;
             string strExcelName = "new-数据分析-" + nowDt.ToString("yyyyMMdd");
             //string[] strArry = new string[] { "go2.0", "go2.0周统计", "go2.0 channel", "C#2.0", "killer2.0", "task2.0"};
-            string[] strArry = new string[] { "go2.0 channel" };
+            string[] strArry = new string[] { "task2.0" };
             //{ "go", "C#", "killer", "go2.0", "C#2.0", "killer2.0", "task20" };
             int i = 1;
             foreach (string strT in strArry)//i = 0; i < hm.Count(); i++)
@@ -825,11 +825,22 @@ namespace exportExcel
 
             string strSecondDay = string.Empty;
             string strThirdDay = string.Empty;
+            string[] strIdArr = new string[] {};
 
             DailyVisitUserStatisticsData dvusd = new DailyVisitUserStatisticsData();
 
             DBConnect dbc = new DBConnect();
-
+            if (!string.IsNullOrEmpty(TaskId))
+            {
+                if (TaskId.IndexOf(";") > 0)
+                {
+                    strIdArr = TaskId.Split(';');
+                }
+                else
+                {
+                    strIdArr = new string[] { TaskId };
+                }
+            }
             System.Data.DataTable table = new System.Data.DataTable();
             table.Columns.Add("统计日期");
             //table.Columns.Add("日总访问量");
@@ -838,10 +849,15 @@ namespace exportExcel
             table.Columns.Add("task result比例");
             table.Columns.Add("task result return == 0");
             table.Columns.Add("task result return == 0比例");
-            table.Columns.Add("taskid");
-            table.Columns.Add("taskid return == 0");
-            table.Columns.Add("taskid return == 0 比例");
-
+            if (!string.IsNullOrEmpty(TaskId))
+            {
+                foreach (string strId in strIdArr)
+                {
+                    table.Columns.Add("taskid : " + strId);
+                    table.Columns.Add("taskid : " + strId + " return == 0");
+                    table.Columns.Add("taskid : " + strId + " return == 0 比例");
+                }
+            }
             DataRow dr = null;
             string inputTaskId = TaskId;
 
@@ -908,19 +924,29 @@ namespace exportExcel
                 dr["task result return == 0"] = intreturncount;
                 dr["task result return == 0比例"] = ((double)intreturncount / (double)intdaycount).ToString("P");
 
-                if (!string.IsNullOrEmpty(inputTaskId))
+                if (!string.IsNullOrEmpty(TaskId))
                 {
-                    intTaskIdcount = dbc.GetTaskIdCount(strInput, inputTaskId, strDUTableName);
-                    intTaskIdReturncount = dbc.GetTaskIdReturnCount(strInput, inputTaskId, strDUTableName);
+                    foreach (string strId in strIdArr)
+                    {
+                        //table.Columns.Add("taskid : " + strId);
+                        //table.Columns.Add("taskid : " + strId + " return == 0");
+                        //table.Columns.Add("taskid : " + strId + " return == 0 比例");
+
+                        if (!string.IsNullOrEmpty(strId))
+                        {
+                            intTaskIdcount = dbc.GetTaskIdCount(strInput, strId, strDUTableName);
+                            intTaskIdReturncount = dbc.GetTaskIdReturnCount(strInput, strId, strDUTableName);
+                        }
+                        else
+                        {
+                            intTaskIdcount = 0;
+                            intTaskIdReturncount = 0;
+                        }
+                        dr["taskid : " + strId] = intTaskIdcount;
+                        dr["taskid : " + strId + " return == 0"] = intTaskIdReturncount;
+                        dr["taskid : " + strId + " return == 0 比例"] = ((double)intTaskIdReturncount / (double)intTaskIdcount).ToString("P");
+                    }
                 }
-                else
-                {
-                    intTaskIdcount = 0;
-                    intTaskIdReturncount = 0;
-                }
-                dr["taskid"] = intTaskIdcount;
-                dr["taskid return == 0"] = intTaskIdReturncount;
-                dr["taskid return == 0 比例"] = ((double)intTaskIdReturncount / (double)intTaskIdcount).ToString("P");
                 table.Rows.Add(dr);
 
                 if (string.IsNullOrEmpty(dvusd.UType) &&

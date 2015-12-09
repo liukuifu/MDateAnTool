@@ -1045,7 +1045,7 @@ namespace MDAutoImport
                             + "',null,null,null,null,null,null,null,null,null,null,null,null,null,"
                             +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,"
                             +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,"
-                            +"null,null,null,null,null,null,null,null,null,null,null,null,null,null,'"+dt+"','"+dt+"' FROM " 
+                            + "null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'" + dt+"','"+dt+"' FROM " 
                             + strDUTableName + " g2du where g2du.udate = '"
                             + inputDate + "' and g2du.uid not in (select uid from " + strUITableName + ")";
                     //}
@@ -1166,6 +1166,116 @@ namespace MDAutoImport
             return strRtn;
         }
 
+        internal void InsertDUTable30(DataTable tableDU, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("InsertDUTable30 Start");
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+                SqlBulkCopy bulkCopy = new SqlBulkCopy(conn);
+
+                bulkCopy.DestinationTableName = strDUTableName;//设置数据库中对象的表名
+                //if ("Go30TaskSD".Equals(strTableName))
+                //{
+                //    //设置数据表table和数据库中表的列对应关系
+                //    bulkCopy.ColumnMappings.Add("keys", "keys");
+                //    bulkCopy.ColumnMappings.Add("udate", "udate");
+                //    bulkCopy.ColumnMappings.Add("amd64", "amd64");
+                //    bulkCopy.ColumnMappings.Add("channel", "channel");
+                //    bulkCopy.ColumnMappings.Add("data_parameter", "data_parameter");
+                //    bulkCopy.ColumnMappings.Add("data_return", "data_return");
+                //    bulkCopy.ColumnMappings.Add("data_taskid", "data_taskid");
+                //    bulkCopy.ColumnMappings.Add("eggid", "eggid");
+                //    bulkCopy.ColumnMappings.Add("event", "event");
+                //    bulkCopy.ColumnMappings.Add("hid", "hid");
+                //    bulkCopy.ColumnMappings.Add("locale", "locale");
+                //    bulkCopy.ColumnMappings.Add("os", "os");
+                //    bulkCopy.ColumnMappings.Add("sid", "sid");
+                //    bulkCopy.ColumnMappings.Add("sysid", "sysid");
+                //    bulkCopy.ColumnMappings.Add("uid", "uid");
+                //    bulkCopy.ColumnMappings.Add("version", "version");
+                //    bulkCopy.ColumnMappings.Add("vid", "vid");
+                //    bulkCopy.ColumnMappings.Add("vm", "vm");
+                //    bulkCopy.ColumnMappings.Add("createdate", "createdate");
+                //    bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
+                //}
+                //else
+                //{
+                    //设置数据表table和数据库中表的列对应关系
+                    bulkCopy.ColumnMappings.Add("keys", "keys");
+                    bulkCopy.ColumnMappings.Add("uid", "uid");
+                    bulkCopy.ColumnMappings.Add("sid", "sid");
+                    bulkCopy.ColumnMappings.Add("hid", "hid");
+                    bulkCopy.ColumnMappings.Add("sysid", "sysid");
+                    bulkCopy.ColumnMappings.Add("vid", "vid");
+                    bulkCopy.ColumnMappings.Add("udate", "udate");
+                    bulkCopy.ColumnMappings.Add("kill", "kill");
+                    bulkCopy.ColumnMappings.Add("version", "version");
+                    bulkCopy.ColumnMappings.Add("channel", "channel");
+                    bulkCopy.ColumnMappings.Add("md5", "md5");
+                    bulkCopy.ColumnMappings.Add("createdate", "createdate");
+                    bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
+                
+                //}
+
+                bulkCopy.WriteToServer(tableDU);//将数据表table复制到数据库中
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                LogHelper.writeErrorLog("<<<<<<<<<<<<<<<<<<      sssss           >>>>>>>>>>>>>>>>>");
+                int ri = 1;
+                foreach (DataRow dr in tableDU.Rows)
+                {
+                    LogHelper.writeErrorLog("<<<<<<<<<<<<<<<<<<      " + ri + "           >>>>>>>>>>>>>>>>>");
+
+                    for (int m = 0; m < dr.ItemArray.Length; m++)
+                    //foreach (string t in dr.ItemArray)
+                    {
+                        LogHelper.writeErrorLog(m + " : " + dr.ItemArray[m]);
+                    }
+                    ri = ri + 1;
+                }
+                LogHelper.writeErrorLog("<<<<<<<<<<<<<<<<<<      eeeee           >>>>>>>>>>>>>>>>>");
+            }
+            LogHelper.writeInfoLog("InsertDUTable30 End");
+        }
+
+
+        /// <summary>
+        /// 取得(DAU)日活件数
+        /// </summary>
+        public int GetDUCount(string date, string strDUTableName)
+        {
+            LogHelper.writeInfoLog("GetDUCount Start");
+
+            int strRtn = 0;
+
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
+                string sql = "SELECT count(distinct uid) FROM "
+                    + strDUTableName
+                    + " where udate = '" + date + "'";
+                SqlCommand comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = intTimeout;
+                strRtn = (int)comm.ExecuteScalar();
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+
+            LogHelper.writeInfoLog("strRtn = " + strRtn);
+            LogHelper.writeInfoLog("GetDUCount End");
+            return strRtn;
+        }
 
     }
 }

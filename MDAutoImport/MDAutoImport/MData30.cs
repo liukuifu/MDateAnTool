@@ -6,12 +6,26 @@ using System.Threading.Tasks;
 
 namespace MDAutoImport
 {
+    public class MData30ListItem
+    {
+        /// <summary>
+        /// data
+        /// </summary>
+        public string data { get; set; }
+
+        /// <summary>
+        /// MData30Item
+        /// </summary>
+        public MData30 MData30Item { get; set; }
+
+    }
+
     public class MData30
     {
         /// <summary>
         /// 时间戳
         /// </summary>
-        public long Date { get; set; }
+        public DateTime udate { get; set; }
         
         /// <summary>
         /// channel
@@ -89,6 +103,7 @@ namespace MDAutoImport
         public Data30Item Data { get; set; }
 
     }
+
     public class Data30Item
     {
         /// <summary>
@@ -196,6 +211,60 @@ namespace MDAutoImport
         /// ever
         /// </summary>
         public string ever { get; set; }
+    }
+
+
+    public class MDataDU30
+    {
+        /// <summary>
+        /// 时间戳
+        /// </summary>
+        public string udate { get; set; }
+
+        /// <summary>
+        /// channel
+        /// </summary>
+        public string Channel { get; set; }
+
+        /// <summary>
+        /// uid
+        /// </summary>
+        public string Uid { get; set; }
+
+        /// <summary>
+        /// sid
+        /// </summary>
+        public string Sid { get; set; }
+
+        /// <summary>
+        /// hid
+        /// </summary>
+        public string Hid { get; set; }
+
+        /// <summary>
+        /// sysid
+        /// </summary>
+        public string Sysid { get; set; }
+
+        /// <summary>
+        /// vm
+        /// </summary>
+        public string Vid { get; set; }
+        
+        /// <summary>
+        /// version
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
+        /// kill
+        /// </summary>
+        public string kill { get; set; }
+
+        /// <summary>
+        /// md5
+        /// </summary>
+        public string md5 { get; set; }
     }
 
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace MDAutoImport
 {
-    class LogHelper
+    public class LogHelper
     {
         public static ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

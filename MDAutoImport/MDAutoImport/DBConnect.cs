@@ -11,19 +11,19 @@ namespace MDAutoImport
 {
     public class DBConnect
     {
-        //private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
-        ////private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
-        //private static int intTimeout = Convert.ToInt32(ConfigurationManager.AppSettings["DBCommandTimeout"]);
-        //private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
-        //private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
+        private static string connectionString = ConfigurationManager.ConnectionStrings["SqlConnection"].ConnectionString;
+        //private static int intTimeout = Convert.ToInt32(ConfigurationSettings.AppSettings["DBCommandTimeout"]);
+        private static int intTimeout = Convert.ToInt32(ConfigurationManager.AppSettings["DBCommandTimeout"]);
+        private static string LowVersion = ConfigurationManager.AppSettings["LowVersion"];
+        private static string HighVersion = ConfigurationManager.AppSettings["HighVersion"];
 
-        private string connectionString = "Server = 10.1.7.126;" +
-        "Database = MDataAn;" +
-        "User ID = sa;" +
-        "Password = 12345678;";
-        private int intTimeout = 1200;
-        private string LowVersion = "1000.0.0.107";
-        private string HighVersion = "1000.0.0.112";
+        //private string connectionString = "Server = 10.1.7.126;" +
+        //"Database = MDataAn;" +
+        //"User ID = sa;" +
+        //"Password = 12345678;";
+        //private int intTimeout = 1200;
+        //private string LowVersion = "1000.0.0.107";
+        //private string HighVersion = "1000.0.0.112";
         //public DBConnect(){
         //    ConnectionOpen();
         //}
@@ -943,7 +943,7 @@ namespace MDAutoImport
             {
                 SqlConnection conn = ConnectionOpen();
                 SqlBulkCopy bulkCopy = new SqlBulkCopy(conn);
-
+                bulkCopy.BulkCopyTimeout = intTimeout;
                 bulkCopy.DestinationTableName = strTableName;//设置数据库中对象的表名
                 if ("Go30TaskSD".Equals(strTableName))
                 {
@@ -997,6 +997,8 @@ namespace MDAutoImport
                 }
 
                 bulkCopy.WriteToServer(table);//将数据表table复制到数据库中
+
+                bulkCopy.Close();
                 conn.Close();
             }
             catch (Exception ex)
@@ -1173,52 +1175,29 @@ namespace MDAutoImport
             {
                 SqlConnection conn = ConnectionOpen();
                 SqlBulkCopy bulkCopy = new SqlBulkCopy(conn);
-
-                bulkCopy.DestinationTableName = strDUTableName;//设置数据库中对象的表名
-                //if ("Go30TaskSD".Equals(strTableName))
-                //{
-                //    //设置数据表table和数据库中表的列对应关系
-                //    bulkCopy.ColumnMappings.Add("keys", "keys");
-                //    bulkCopy.ColumnMappings.Add("udate", "udate");
-                //    bulkCopy.ColumnMappings.Add("amd64", "amd64");
-                //    bulkCopy.ColumnMappings.Add("channel", "channel");
-                //    bulkCopy.ColumnMappings.Add("data_parameter", "data_parameter");
-                //    bulkCopy.ColumnMappings.Add("data_return", "data_return");
-                //    bulkCopy.ColumnMappings.Add("data_taskid", "data_taskid");
-                //    bulkCopy.ColumnMappings.Add("eggid", "eggid");
-                //    bulkCopy.ColumnMappings.Add("event", "event");
-                //    bulkCopy.ColumnMappings.Add("hid", "hid");
-                //    bulkCopy.ColumnMappings.Add("locale", "locale");
-                //    bulkCopy.ColumnMappings.Add("os", "os");
-                //    bulkCopy.ColumnMappings.Add("sid", "sid");
-                //    bulkCopy.ColumnMappings.Add("sysid", "sysid");
-                //    bulkCopy.ColumnMappings.Add("uid", "uid");
-                //    bulkCopy.ColumnMappings.Add("version", "version");
-                //    bulkCopy.ColumnMappings.Add("vid", "vid");
-                //    bulkCopy.ColumnMappings.Add("vm", "vm");
-                //    bulkCopy.ColumnMappings.Add("createdate", "createdate");
-                //    bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
-                //}
-                //else
-                //{
-                    //设置数据表table和数据库中表的列对应关系
-                    bulkCopy.ColumnMappings.Add("keys", "keys");
-                    bulkCopy.ColumnMappings.Add("uid", "uid");
-                    bulkCopy.ColumnMappings.Add("sid", "sid");
-                    bulkCopy.ColumnMappings.Add("hid", "hid");
-                    bulkCopy.ColumnMappings.Add("sysid", "sysid");
-                    bulkCopy.ColumnMappings.Add("vid", "vid");
-                    bulkCopy.ColumnMappings.Add("udate", "udate");
-                    bulkCopy.ColumnMappings.Add("kill", "kill");
-                    bulkCopy.ColumnMappings.Add("version", "version");
-                    bulkCopy.ColumnMappings.Add("channel", "channel");
-                    bulkCopy.ColumnMappings.Add("md5", "md5");
-                    bulkCopy.ColumnMappings.Add("createdate", "createdate");
-                    bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
+                bulkCopy.BulkCopyTimeout = intTimeout;
                 
-                //}
+                bulkCopy.DestinationTableName = strDUTableName;//设置数据库中对象的表名
+                bulkCopy.BatchSize = 1000000;
+                //设置数据表table和数据库中表的列对应关系
+                bulkCopy.ColumnMappings.Add("keys", "keys");
+                bulkCopy.ColumnMappings.Add("uid", "uid");
+                bulkCopy.ColumnMappings.Add("sid", "sid");
+                bulkCopy.ColumnMappings.Add("hid", "hid");
+                bulkCopy.ColumnMappings.Add("sysid", "sysid");
+                bulkCopy.ColumnMappings.Add("vid", "vid");
+                bulkCopy.ColumnMappings.Add("udate", "udate");
+                bulkCopy.ColumnMappings.Add("kill", "kill");
+                bulkCopy.ColumnMappings.Add("version", "version");
+                bulkCopy.ColumnMappings.Add("channel", "channel");
+                bulkCopy.ColumnMappings.Add("md5", "md5");
+                bulkCopy.ColumnMappings.Add("ip", "ip");
+                bulkCopy.ColumnMappings.Add("createdate", "createdate");
+                bulkCopy.ColumnMappings.Add("updatedate", "updatedate");
 
                 bulkCopy.WriteToServer(tableDU);//将数据表table复制到数据库中
+                bulkCopy.Close();
+
                 conn.Close();
             }
             catch (Exception ex)

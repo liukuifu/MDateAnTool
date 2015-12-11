@@ -20,6 +20,11 @@
 		</div>
 	</div>
 	<div class="row row-fluid">
+		<div class="col-md-12">
+            <input type="hidden" id="hdmsg" value="<%=strMsg%>"" /><br/>
+		</div>
+	</div>
+	<div class="row row-fluid">
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-8">
@@ -35,6 +40,9 @@
 							</li>
 							<li>
 								<a href="/weekwf.aspx">周统计</a>
+							</li>
+							<li >
+								<a href="/channelwf.aspx">渠道统计</a>
 							</li>
 						</ul>
 					</div>
@@ -52,13 +60,14 @@
 		    <div class="col-md-12" style="height:10px">
 		    </div>
 	    </div>
+	    <div class="row row-fluid">
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-2" style="height:50px;">
             <div class="container">
                 <fieldset>
 			        <div class="form-group">
-                        <label for="dtp_input2" class="col-md-1 control-label">日 期 ： </label>
+                        <label for="dtp_input2" class="col-md-1 control-label" style="width:120px">开始日期 ： </label>
                         <div class="input-group date form_date col-md-2" id="datetimepicker" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
                             <input class="form-control" size="10" type="text" value="" readonly runat="server" id="input2" name="input2" />
                             <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
@@ -68,24 +77,37 @@
                     </div>
                 </fieldset>
             </div>
-		</div>
+		</div>        
 		<div class="col-md-2">
             <div class="container">
 			 <select class="form-control" runat="server" id="ctype" name="ctype" style="width:auto;display:inline" onchange="chg(this.value);"> 
-                 <option selected>go</option> 
-                 <option>go2.0</option> 
-                 <option>C#</option> 
+                 <option selected>go2.0</option> 
                  <option>C#2.0</option> 
-                 <option>killer</option> 
                  <option>killer2.0</option> 
-                 <option>task</option> 
                  <option>task2.0</option> 
              </select>
-            <asp:TextBox class="form-control" ID="tbTaskId" name="tbTaskId" runat="server" style="width:40px;display: inline"></asp:TextBox>
+             <asp:TextBox class="form-control" ID="tbTaskId" name="tbTaskId" runat="server" style="width:60px;display: inline"></asp:TextBox>
+                <label for="dtp_input2" class="control-label" style="display: inline">※ 多个ID时请以分好（;）分割</label>
 		     <div style="display: inline" id="searchDiv">                 
                  <asp:Button CssClass="btn btn-info" ID="search" runat="server" Text="按钮" OnClick="search_Click" />
 		     </div>
             </div>
+		</div>
+	    </div>
+	</div> 
+	<div class="row row-fluid">
+		<div class="col-md-2">
+		</div>
+		<div class="col-md-2" style="height:50px;">    
+            <fieldset>
+			    <div class="form-group">    
+                    <label for="dtp_input2" class="col-md-5 control-label"  style="width:120px">统计天数 ： </label>
+                    <asp:TextBox class="form-control" ID="tbDayCount" name="tbDayCount" runat="server" style="width:60px;display: inline"></asp:TextBox>
+                </div>
+            </fieldset>
+		</div>      
+		<div class="col-md-8">
+            <label for="dtp_input2" class="control-label">※ 最少1天；最多30天；不输入，默认为15天</label>
 		</div>
 	</div> 
 	<div class="row row-fluid">
@@ -318,9 +340,13 @@
 	    $('#datetimepicker').datetimepicker('setEndDate', newdn);
 	    $('#tbTaskId').attr("disabled", "disabled");
 	    //alert($("#ctype").val());
-	    if ($("#ctype").val() == "task") {
+	    if ($("#ctype").val() == "task2.0") {
 	        //alert("removeAttr");
 	        $('#tbTaskId').removeAttr("disabled");
+	    }
+	    //alert($("#hdmsg").val());
+	    if ($("#hdmsg").val() != "") {
+	        $(".alert").alert($("#hdmsg").val())
 	    }
 	})
 
@@ -337,7 +363,7 @@
 	}
 
 	function chg(locationid) {
-	    if (locationid == "task") {
+	    if (locationid == "task2.0") {
 	        $('#tbTaskId').removeAttr("disabled");
 	    } else {
 	        $('#tbTaskId').attr("disabled", "disabled");

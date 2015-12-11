@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Resources;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -33,6 +34,7 @@ namespace MdataAn
 
         public DailyVisitUserStatisticsData GetDailyVisitUserStatistics(string date, string strCType)
         {
+            LogHelper.writeDebugLog("GetDailyVisitUserStatistics Start");
             DailyVisitUserStatisticsData rtn = new DailyVisitUserStatisticsData();
 
             SqlConnection conn = ConnectionOpen();
@@ -147,6 +149,7 @@ namespace MdataAn
                 }
             }
             conn.Close();
+            LogHelper.writeDebugLog("GetDailyVisitUserStatistics End");
             return rtn;
         }
 
@@ -205,6 +208,7 @@ namespace MdataAn
 
         public Int64 GetNewCount(string date, string strDataTableName, string strUserTableName)
         {
+            LogHelper.writeDebugLog("GetNewCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -241,6 +245,7 @@ namespace MdataAn
                 //rtn = intUserInfoCount;
             }
             conn.Close();
+            LogHelper.writeDebugLog("GetNewCount End");
             return rtn;
         }
 
@@ -261,6 +266,7 @@ namespace MdataAn
 
         public Int64 GetDayCount(string date, string strDailyTableName)
         {
+            LogHelper.writeDebugLog("GetDayCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -280,6 +286,7 @@ namespace MdataAn
             //    rtn = rtn + 1;
             //}
             conn.Close();
+            LogHelper.writeDebugLog("GetDayCount End");
             return rtn;
         }
 
@@ -315,6 +322,7 @@ namespace MdataAn
 
         public Int64 GetSecondNewCount(string date, string strSecondDay, string strDailyTableName, string strUserTableName)
         {
+            LogHelper.writeDebugLog("GetSecondNewCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -334,11 +342,13 @@ namespace MdataAn
                 rtn = rtn + 1;
             }
             conn.Close();
+            LogHelper.writeDebugLog("GetSecondNewCount End");
             return rtn;
         }
 
         public Int64 GetThirdNewCount(string date, string strThirdDay, string strDailyTableName, string strUserTableName)
         {
+            LogHelper.writeDebugLog("GetThirdNewCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -362,11 +372,13 @@ namespace MdataAn
                 rtn = rtn + 1;
             }
             conn.Close();
+            LogHelper.writeDebugLog("GetThirdNewCount End");
             return rtn;
         }
         
         public Int64 GetThreeNewCount(string date, string strSecondDay, string strThirdDay, string strDailyTableName, string strUserTableName)
         {
+            LogHelper.writeDebugLog("GetThreeNewCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -391,6 +403,7 @@ namespace MdataAn
                 rtn = rtn + 1;
             }
             conn.Close();
+            LogHelper.writeDebugLog("GetThreeNewCount End");
             return rtn;
         }
         
@@ -499,6 +512,7 @@ namespace MdataAn
 
         public long GetAfterWeekcount(string strInput, string strDUTableName)
         {
+            LogHelper.writeDebugLog("GetAfterWeekcount Start");
             Int64 rtn = 0;
             DateTime startDT = Convert.ToDateTime(strInput).AddDays(7);
             DateTime endDT = Convert.ToDateTime(strInput).AddDays(13);
@@ -513,19 +527,21 @@ namespace MdataAn
                 + endDT.ToString("yyyy-MM-dd") 
                 + "' and gsd.uid in (SELECT DISTINCT [uid] FROM " 
                 + strDUTableName 
-                + " where udate in ('" 
+                + " where udate = '" 
                 + strInput 
-                + "'))";
+                + "')";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
+            LogHelper.writeDebugLog("GetAfterWeekcount End");
             return rtn;
         }
 
         public Int64 GetEgg1UserCount(string date, string strUserTableName)
         {
+            LogHelper.writeDebugLog("GetEgg1UserCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -537,45 +553,51 @@ namespace MdataAn
             comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
+            LogHelper.writeDebugLog("GetEgg1UserCount End");
             return rtn;
         }
 
         public Int64 GetVCount(string strInput, string strDailyTableName, string v)
         {
+            LogHelper.writeDebugLog("GetVCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
             string sql = "SELECT count(1) FROM "
                 + strDailyTableName
-                + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version = '" + v + "'";
+                + " where udate = '" + strInput + "' and version = '" + v + "'";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
 
             conn.Close();
+            LogHelper.writeDebugLog("GetVCount End");
             return rtn;
         }
 
         public long GetNotVCount(string strInput, string strDailyTableName, string v1, string v2)
         {
+            LogHelper.writeDebugLog("GetNotVCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
             string sql = "SELECT count(1) FROM "
                 + strDailyTableName
-                + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version not in ('" + v1+"','"+ v2 + "')";
+                + " where udate = '" + strInput + "' and version not in ('" + v1+"','"+ v2 + "')";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
 
             conn.Close();
+            LogHelper.writeDebugLog("GetNotVCount End");
             return rtn;
         }
 
         public Int64 GetKillUserCount(string date, string strDailyTableName)
         {
+            LogHelper.writeDebugLog("GetKillUserCount Start");
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
@@ -587,6 +609,7 @@ namespace MdataAn
             comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
             rtn = (int)comm.ExecuteScalar();
             conn.Close();
+            LogHelper.writeDebugLog("GetKillUserCount End");
             return rtn;
         }
 
@@ -628,6 +651,7 @@ namespace MdataAn
 
         public int InsertDailyVisitUserStatisticsForGo20(DailyVisitUserStatisticsData dvusd)
         {
+            LogHelper.writeDebugLog("InsertDailyVisitUserStatisticsForGo20 Start");
             //LogHelper.writeInfoLog("InsertDailyVisitUserStatistics For Go20 Start");
             int strRtn = 0;
             try
@@ -637,8 +661,8 @@ namespace MdataAn
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "insert into DailyVisitUserStatistics"+
-                        "(UType, UDate, TotalNumberOfDays, DayNumberOfUsers, NumberOfDaysNewUsers, NextDayNumberOfNewUsers, ThirdDayNumberOfNewUsers, ThreeDayNumberOfNewUsers, NumberOfNewUsersEgg1, DayNumberOfUsersKillInstallation, createdate, updatedate) "+
-                        " values (@UType,@UDate,@TotalNumberOfDays,@DayNumberOfUsers,@NumberOfDaysNewUsers,@NextDayNumberOfNewUsers,@ThirdDayNumberOfNewUsers,@ThreeDayNumberOfNewUsers,@NumberOfNewUsersEgg1,@DayNumberOfUsersKillInstallation,@createdate,@updatedate)";
+                        "(UType, UDate, TotalNumberOfDays, DayNumberOfUsers, NumberOfDaysNewUsers, NextDayNumberOfNewUsers, ThirdDayNumberOfNewUsers, ThreeDayNumberOfNewUsers, NumberOfNewUsersEgg1, DayNumberOfUsersKillInstallation, Extension1,Extension2,createdate, updatedate) " +
+                        " values (@UType,@UDate,@TotalNumberOfDays,@DayNumberOfUsers,@NumberOfDaysNewUsers,@NextDayNumberOfNewUsers,@ThirdDayNumberOfNewUsers,@ThreeDayNumberOfNewUsers,@NumberOfNewUsersEgg1,@DayNumberOfUsersKillInstallation,@Extension1,@Extension2,@createdate,@updatedate)";
                     //清除上一次的参数
                     cmd.Parameters.Clear();
                     cmd.Parameters.Add(new SqlParameter("@UType", dvusd.UType));
@@ -651,6 +675,8 @@ namespace MdataAn
                     cmd.Parameters.Add(new SqlParameter("@ThreeDayNumberOfNewUsers", dvusd.ThreeDayNumberOfNewUsers));
                     cmd.Parameters.Add(new SqlParameter("@NumberOfNewUsersEgg1", dvusd.NumberOfNewUsersEgg1));
                     cmd.Parameters.Add(new SqlParameter("@DayNumberOfUsersKillInstallation", dvusd.DayNumberOfUsersKillInstallation));
+                    cmd.Parameters.Add(new SqlParameter("@Extension1", dvusd.Extension1));
+                    cmd.Parameters.Add(new SqlParameter("@Extension2", dvusd.Extension2));
                     cmd.Parameters.Add(new SqlParameter("@createdate", dt));
                     cmd.Parameters.Add(new SqlParameter("@updatedate", dt));
                     strRtn = cmd.ExecuteNonQuery();
@@ -663,8 +689,7 @@ namespace MdataAn
                 return strRtn;
             }
 
-            //LogHelper.writeInfoLog("strRtn = " + strRtn);
-            //LogHelper.writeInfoLog("InsertDailyVisitUserStatistics For Go20 End");
+            LogHelper.writeDebugLog("InsertDailyVisitUserStatisticsForGo20 End");
             return strRtn;
         }
 
@@ -713,7 +738,7 @@ namespace MdataAn
         /// </summary>
         public int UpdateDailyVisitUserStatistics(DailyVisitUserStatisticsData dvusd)
         {
-            //LogHelper.writeInfoLog("UpdateDailyUser Start");
+            LogHelper.writeDebugLog("UpdateDailyVisitUserStatistics Start");
 
             int strRtn = 0;
             DateTime dt = DateTime.Now;
@@ -747,6 +772,8 @@ namespace MdataAn
                             + ",[ThreeDayNumberOfNewUsers] = " + dvusd.ThreeDayNumberOfNewUsers
                             + ",[NumberOfNewUsersEgg1] = " + dvusd.NumberOfNewUsersEgg1
                             + ",[DayNumberOfUsersKillInstallation] = " + dvusd.DayNumberOfUsersKillInstallation
+                            + ",[Extension1] = " + dvusd.Extension1
+                            + ",[Extension2] = " + dvusd.Extension2
                             + ",[updatedate] = '" + dt
                             + "' where keys = "
                             + dvusd.keys;
@@ -778,13 +805,249 @@ namespace MdataAn
                 //LogHelper.writeErrorLog(ex);
             }
 
-            //LogHelper.writeInfoLog("strRtn = " + strRtn);
-            //LogHelper.writeInfoLog("UpdateDailyUser End");
+            LogHelper.writeDebugLog("UpdateDailyVisitUserStatistics End");
+
             return strRtn;
         }
+        
+        internal long GetLossCount(string strUITableName)
+        {
+            LogHelper.writeDebugLog("GetLossCount Start");
 
+            int rtn = 0;
 
+            try
+            {
+                SqlConnection conn = ConnectionOpen();
 
+                string sql = "SELECT count(1) FROM "
+                    + strUITableName
+                    + " where DATEDIFF(day, convert(datetime, sadate, 110), convert(datetime, eadate, 110)) < 7";
+
+                SqlCommand comm = new SqlCommand(sql, conn);
+                comm.CommandTimeout = Convert.ToInt32(CommonResource.Command_Timeout);
+                rtn = (int)comm.ExecuteScalar();
+                conn.Close();
+            }
+            catch (SqlException se)
+            {
+                LogHelper.writeErrorLog(se);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+            }
+            LogHelper.writeDebugLog("GetLossCount End");
+
+            return rtn;
+        }
+
+        internal int GetGo20UserInfoCount(string date, string strUITableName)
+        {
+            LogHelper.writeInfoLog("GetGo20UserInfoCount Start");
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strUITableName
+                + " where udate < '" + date + "'";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(CommonResource.Command_Timeout); 
+            rtn = (int)comm.ExecuteScalar();
+
+            conn.Close();
+            LogHelper.writeInfoLog("GetGo20UserInfoCount End");
+            return rtn;
+        }
+        
+        internal int GetWeekDAUCount(string weeks, string weeke, string strDUTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDUTableName
+                + " where udate between '" + weeks + "' and '" + weeke + "'";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout); 
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+        internal int GetWeekDAUDisCount(string weeks, string weeke, string strDUTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(distinct [uid]) FROM "
+                + strDUTableName
+                + " where udate between '" + weeks + "' and '" + weeke + "'";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
+        internal int GetNextWeekDAUDisCount(string pweeks, string pweeke, string weeks, string weeke, string strDUTableName)
+        {
+            int rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(distinct [uid]) FROM "
+                + strDUTableName
+                + " gsd where gsd.udate between '" + pweeks + "' and '" + pweeke + "' and gsd.uid in (SELECT distinct [uid] FROM "
+                + strDUTableName
+                + " where udate between '" + weeks + "' and '" + weeke + "')";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+        
+        internal long GetDnuThreeCount(string strInput, string strSecondDay, string strThirdDay, string strDUTableName, string strUITableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where (gsd.udate = '"
+                + strSecondDay
+                + "' or gsd.udate = '"
+                + strThirdDay
+                + "') and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%' and uid in (select uid from "
+                + strUITableName
+                + " where sadate = '"
+                + strInput
+                + "'))";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDnuThirdCount(string strInput, string strThirdDay, string strDUTableName, string strUITableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where gsd.udate = '"
+                + strThirdDay
+                + "' and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%' and uid in (select uid from "
+                + strUITableName
+                + " where sadate = '"
+                + strInput
+                + "'))";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDnuSecondCount(string strInput, string strSecondDay, string strDUTableName, string strUITableName, string strChannelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where gsd.udate = '"
+                + strSecondDay
+                + "' and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + strInput
+                + "' and channel like '"
+                + strChannelValue
+                + "%' and uid in (select uid from "
+                + strUITableName
+                + " where sadate = '"
+                + strInput
+                + "'))";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDnuChannelCount(string strInput, string strDUTableName, string strUITableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDUTableName
+                + " where udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%' and uid in (select [uid] from "
+                + strUITableName
+                + " where sadate = '"
+                + strInput
+                + "' )";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
+
+        internal long GetDauChannelCount(string strInput, string strDUTableName, string channelValue)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(1) FROM "
+                + strDUTableName
+                + " where udate = '"
+                + strInput
+                + "' and channel like '"
+                + channelValue
+                + "%'";
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = Convert.ToInt32(Resources.CommonResource.Command_Timeout);
+            int intUserInfoCount = (int)comm.ExecuteScalar();
+            if (intUserInfoCount > 0)
+            {
+                rtn = intUserInfoCount;
+            }
+            conn.Close();
+            return rtn;
+        }
 
 
 

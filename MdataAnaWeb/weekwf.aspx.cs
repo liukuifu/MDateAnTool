@@ -15,10 +15,10 @@ namespace MdataAn
             if (!IsPostBack)
             {
                 DataTable table = new DataTable();
-                table.Columns.Add("date"); ;
-                table.Columns.Add("week");
-                table.Columns.Add("daycount");
-                table.Columns.Add("weekACount");
+                table.Columns.Add("week"); ;
+                table.Columns.Add("weekcount");
+                table.Columns.Add("weeknewcount");
+                table.Columns.Add("nextweekcount");
                 table.Columns.Add("weekACountp");
                 DataRow dr = table.NewRow();
                 table.Rows.Add(dr);
@@ -83,22 +83,25 @@ namespace MdataAn
                 strUITableName = "Killer20UserInfo";
                 this.lblTitle.Text = "killer2.0";
             }
-            DBConnect dbc = new DBConnect();
+            //DBConnect dbc = new DBConnect();
 
             DataTable table = new DataTable();
-            DataRow dr = null;
+            //DataRow dr = null;
 
-            table.Columns.Add("date");
-            table.Columns.Add("week");
-            table.Columns.Add("daycount");
-            table.Columns.Add("weekACount");
-            table.Columns.Add("weekACountp");
+            //table.Columns.Add("date");
+            //table.Columns.Add("week");
+            //table.Columns.Add("daycount");
+            //table.Columns.Add("weekACount");
+            //table.Columns.Add("weekACountp");
 
-            dbc.GetWeekCount(strInput, strDUTableName,ref table);
+            //dbc.GetWeekCount(strInput, strDUTableName,ref table);
+            table = WeekStatisticsLogic.GetGo20WeekDataToTable(dt, strTableName, strUITableName, strDUTableName, "go2.0");
 
+            //this.GridView3.DataSource = table;
+            //this.GridView3.DataBind();
+            this.search.Enabled = true;
 
-            this.GridView3.DataSource = table;
-            this.GridView3.DataBind();
+            LogHelper.writeInfoLog("search_Click End");
 
         }
     }

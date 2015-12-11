@@ -43,9 +43,9 @@ namespace UserInfoUpdate
 
             string strJson = string.Empty;
             //string strDBType = args[0];
-            string strDBType = "go2.0";
+            string strDBType = "go3.0";
             //string strInputDate = args[1];
-            string strInputDate = "2015-12-01";
+            string strInputDate = "2015-12-10";
             //string strFileName = @"E:\导入数据\temp.eggdata.log.2015-10-29.001";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;

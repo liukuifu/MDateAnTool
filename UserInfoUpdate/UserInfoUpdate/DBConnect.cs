@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -72,7 +73,7 @@ namespace UserInfoUpdate
                     //3.SqlDataAdapter
                     using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
-                        da.UpdateBatchSize = 500;
+                        //da.UpdateBatchSize = 500;
                         StringBuilder sb = new StringBuilder();
                         sb.Append("UPDATE " + strUITableName);
                         sb.Append(" SET [locale] = @locale");
@@ -133,7 +134,7 @@ namespace UserInfoUpdate
                         //4.建立DataSet類別或DataTable類別
                         //使用Fill方法
                         //===========================================
-
+                        //da.UpdateCommand.UpdatedRowSource = UpdateRowSource.None;
                         DataSet ds = new DataSet();
                         da.Fill(ds, "guit");
 
@@ -261,6 +262,7 @@ namespace UserInfoUpdate
         {
             DateTime dtNow = DateTime.Now;
             string strJson = string.Empty;
+            string strMd5 = string.Empty;
             try
             {
                 MData30Data md = new MData30Data();
@@ -358,6 +360,7 @@ namespace UserInfoUpdate
                         sb.Append(",[software_gupdate_ever_3] = @software_gupdate_ever_3");
                         sb.Append(",[software_gupdate_ever_4] = @software_gupdate_ever_4");
                         sb.Append(",[software_gupdate_ever_5] = @software_gupdate_ever_5");
+                        sb.Append(",[md5] = @md5");
                         sb.Append(",[updatedate] = @updatedate");
                         sb.Append(" WHERE [uid] = @uid");
 
@@ -416,6 +419,7 @@ namespace UserInfoUpdate
                         da.UpdateCommand.Parameters.Add("@software_gupdate_ever_3", SqlDbType.NVarChar, 50, "software_gupdate_ever_3");
                         da.UpdateCommand.Parameters.Add("@software_gupdate_ever_4", SqlDbType.NVarChar, 50, "software_gupdate_ever_4");
                         da.UpdateCommand.Parameters.Add("@software_gupdate_ever_5", SqlDbType.NVarChar, 50, "software_gupdate_ever_5");
+                        da.UpdateCommand.Parameters.Add("@md5", SqlDbType.NVarChar, 100, "md5");
                         da.UpdateCommand.Parameters.Add("@updatedate", SqlDbType.DateTimeOffset, 50, "updatedate");
                         da.UpdateCommand.Parameters.Add("@uid", SqlDbType.NVarChar, 50, "uid");
 
@@ -442,6 +446,7 @@ namespace UserInfoUpdate
                             for (int i = 0; i <= ds.Tables["guit"].Rows.Count - 1; i++)
                             {
                                 strJson = string.Empty;
+                                strMd5 = string.Empty;
                                 md = new MData30Data();
                                 //DataRow dr = dt.Rows[0];
                                 DataRow[] foundRows = dtsd.Select("uid='" + ds.Tables["guit"].Rows[i]["uid"] + "'", "udate desc");
@@ -449,6 +454,7 @@ namespace UserInfoUpdate
                                 if (foundRows != null && foundRows.Length > 0)
                                 {
                                     strJson = foundRows[0]["data"].ToString();
+                                    strMd5 = MD5Encrypt(strJson);
                                     try
                                     {
                                         //LogHelper.writeInfoLog("intline = " + intline);
@@ -507,16 +513,6 @@ namespace UserInfoUpdate
                                     }
                                     if (md != null)
                                     {
-                                        //ds.Tables["guit"].Rows[i]["antivirus_guid_1"] = foundRows[0]["antivirus_guid_1"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_name_1"] = foundRows[0]["antivirus_name_1"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_guid_2"] = foundRows[0]["antivirus_guid_2"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_name_2"] = foundRows[0]["antivirus_name_2"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_guid_3"] = foundRows[0]["antivirus_guid_3"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_name_3"] = foundRows[0]["antivirus_name_3"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_guid_4"] = foundRows[0]["antivirus_guid_4"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_name_4"] = foundRows[0]["antivirus_name_4"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_guid_5"] = foundRows[0]["antivirus_guid_5"];
-                                        //ds.Tables["guit"].Rows[i]["antivirus_name_5"] = foundRows[0]["antivirus_name_5"];
                                         if (md.Antivirus != null && md.Antivirus.Count > 0)
                                         {
                                             for (int m = 0; m < md.Antivirus.Count; m++)
@@ -544,15 +540,7 @@ namespace UserInfoUpdate
                                             ds.Tables["guit"].Rows[i]["disk"] = md.Hardware.Disk;
                                             ds.Tables["guit"].Rows[i]["network"] = md.Hardware.Network;
                                         }
-
-
-                                        //ds.Tables["guit"].Rows[i]["dotnet_1"] = foundRows[0]["dotnet_1"];
-                                        //ds.Tables["guit"].Rows[i]["dotnet_2"] = foundRows[0]["dotnet_2"];
-                                        //ds.Tables["guit"].Rows[i]["dotnet_3"] = foundRows[0]["dotnet_3"];
-                                        //ds.Tables["guit"].Rows[i]["dotnet_4"] = foundRows[0]["dotnet_4"];
-                                        //ds.Tables["guit"].Rows[i]["dotnet_5"] = foundRows[0]["dotnet_5"];
-                                        //ds.Tables["guit"].Rows[i]["browser"] = foundRows[0]["browser"];
-                                        //ds.Tables["guit"].Rows[i]["bversion"] = foundRows[0]["bversion"];
+                                                                                
                                         if (md.dotnet != null && md.dotnet.Count > 0)
                                         {
                                             for (int m = 0; m < md.dotnet.Count; m++)
@@ -592,103 +580,19 @@ namespace UserInfoUpdate
 
 
                                     }
+                                    ds.Tables["guit"].Rows[i]["md5"] = strMd5;
                                     ds.Tables["guit"].Rows[i]["dx"] = foundRows[0]["dx"];
                                     ds.Tables["guit"].Rows[i]["ie"] = foundRows[0]["ie"];
                                     ds.Tables["guit"].Rows[i]["kill"] = foundRows[0]["kill"];
-
-
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_hver_1"] = foundRows[0]["software_chrome_hver_1"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_hver_2"] = foundRows[0]["software_chrome_hver_2"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_hver_3"] = foundRows[0]["software_chrome_hver_3"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_hver_4"] = foundRows[0]["software_chrome_hver_4"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_hver_5"] = foundRows[0]["software_chrome_hver_5"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_ever_1"] = foundRows[0]["software_chrome_ever_1"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_ever_2"] = foundRows[0]["software_chrome_ever_2"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_ever_3"] = foundRows[0]["software_chrome_ever_3"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_ever_4"] = foundRows[0]["software_chrome_ever_4"];
-                                    //ds.Tables["guit"].Rows[i]["software_chrome_ever_5"] = foundRows[0]["software_chrome_ever_5"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_hver_1"] = foundRows[0]["software_gupdate_hver_1"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_hver_2"] = foundRows[0]["software_gupdate_hver_2"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_hver_3"] = foundRows[0]["software_gupdate_hver_3"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_hver_4"] = foundRows[0]["software_gupdate_hver_4"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_hver_5"] = foundRows[0]["software_gupdate_hver_5"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_ever_1"] = foundRows[0]["software_gupdate_ever_1"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_ever_2"] = foundRows[0]["software_gupdate_ever_2"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_ever_3"] = foundRows[0]["software_gupdate_ever_3"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_ever_4"] = foundRows[0]["software_gupdate_ever_4"];
-                                    //ds.Tables["guit"].Rows[i]["software_gupdate_ever_5"] = foundRows[0]["software_gupdate_ever_5"];
+                                    
                                     ds.Tables["guit"].Rows[i]["updatedate"] = dtNow;
                                 }
-                                //SqlCommand cmd1 = conn.CreateCommand();
-                                //cmd1.CommandTimeout = intTimeout;
-                                //cmd1.CommandText = "SELECT top(1) *  FROM [Go20SourceData-bak1105] where uid = '" + dr["uid"] + "' order by udate";
-                                //SqlDataReader reader = cmd1.ExecuteReader();
-                                //while (reader.Read())
-                                //{
-                                //    dr["locale"] = reader["locale"];
-                                //    dr["amd64"] = reader["amd64"];
-                                //    dr["antivirus_guid_1"] = reader["antivirus_guid_1"];
-                                //    dr["antivirus_name_1"] = reader["antivirus_name_1"];
-                                //    dr["antivirus_guid_2"] = reader["antivirus_guid_2"];
-                                //    dr["antivirus_name_2"] = reader["antivirus_name_2"];
-                                //    dr["antivirus_guid_3"] = reader["antivirus_guid_3"];
-                                //    dr["antivirus_name_3"] = reader["antivirus_name_3"];
-                                //    dr["antivirus_guid_4"] = reader["antivirus_guid_4"];
-                                //    dr["antivirus_name_4"] = reader["antivirus_name_4"];
-                                //    dr["antivirus_guid_5"] = reader["antivirus_guid_5"];
-                                //    dr["antivirus_name_5"] = reader["antivirus_name_5"];
-                                //    dr["browser"] = reader["browser"];
-                                //    dr["dotnet_1"] = reader["dotnet_1"];
-                                //    dr["dotnet_2"] = reader["dotnet_2"];
-                                //    dr["dotnet_3"] = reader["dotnet_3"];
-                                //    dr["dotnet_4"] = reader["dotnet_4"];
-                                //    dr["dotnet_5"] = reader["dotnet_5"];
-                                //    dr["base"] = reader["base"];
-                                //    dr["bios"] = reader["bios"];
-                                //    dr["disk"] = reader["disk"];
-                                //    dr["network"] = reader["network"];
-                                //    dr["ie"] = reader["ie"];
-                                //}
-                                //reader.Close();
-                                //cmd1.Dispose();
                             }
-                            //da.Update(dt);
                             da.Update(ds, "guit");
                         }
                         ds.Clear();
                         ds.Dispose();
                     }
-                    ////3.SqlDataAdapter
-                    //using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                    //{
-                    //    //4.建立DataSet類別或DataTable類別
-                    //    //使用Fill方法
-                    //    //===========================================
-                    //    dt.BeginLoadData();
-                    //    da.Fill(dt);
-                    //    dt.EndLoadData();
-
-                    //    if (dt != null && dt.Rows.Count > 0)
-                    //    {
-                    //        LogHelper.writeErrorLog("dt.Rows.Count = " + dt.Rows.Count);
-
-                    //        for (int i = 0; i < dt.Rows.Count; i++)
-                    //        {
-                    //            DataRow dr = dt.Rows[0];
-                    //            using (SqlCommand cmd1 = conn.CreateCommand())
-                    //            {
-                    //                cmd1.CommandTimeout = intTimeout;
-                    //                cmd1.CommandText = "SELECT top(1) *  FROM [Go20SourceData-bak1105] where uid = '" + dr["uid"] + "' order by udate";
-                    //                SqlDataReader reader = cmd1.ExecuteReader();
-                    //                while (reader.Read())
-                    //                {
-
-                    //                }
-                    //            }
-                    //        }
-                    //        da.Update(dt);
-                    //    }
-                    //}
                 }
                 conn.Close();
             }
@@ -696,6 +600,24 @@ namespace UserInfoUpdate
             {
                 LogHelper.writeErrorLog(ex);
             }
+        }
+
+        ///   <summary>
+        ///   给一个字符串进行MD5加密
+        ///   </summary>
+        ///   <param   name="strText">待加密字符串</param>
+        ///   <returns>加密后的字符串</returns>
+        public static string MD5Encrypt(string strText)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] result = md5.ComputeHash(System.Text.Encoding.Default.GetBytes(strText));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+            {
+                sb.Append(result[i].ToString("x2"));
+            }
+            return sb.ToString();
+            //return System.Text.Encoding.Default.GetString(result);
         }
     }
 }

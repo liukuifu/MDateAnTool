@@ -22,6 +22,10 @@ namespace MDAutoImport
         private static string DownLoadPath = ConfigurationManager.AppSettings["DownLoadPath"];
         private static string UnZipPath = ConfigurationManager.AppSettings["UnZipPath"];
         private static int ZipCount = Convert.ToInt32(ConfigurationManager.AppSettings["ZipCount"]);
+        //private static List<string> duUidListY = new List<string>();
+        //private static List<string> duUidListN = new List<string>();
+        private static Dictionary<string, string> duUidListY = new Dictionary<string, string>();
+        private static Dictionary<string, string> duUidListN = new Dictionary<string, string>();
         static void Main(string[] args)
         {
             LogHelper.writeInfoLog("Main Start");
@@ -39,56 +43,56 @@ namespace MDAutoImport
                 LogHelper.writeDebugLog("DlFullPath : " + DlFullPath);
                 LogHelper.writeDebugLog("UnFullPath : " + UnFullPath);
 
-                ////判断文件路径是否存在，不存在则创建文件夹
-                //if (!Directory.Exists(UnFullPath))
-                //{
-                //    Directory.CreateDirectory(UnFullPath);//不存在就创建目录
-                //}
-                ////for (;;)
-                //for (int countIndex = 0; countIndex < 10000; countIndex++)
-                //{
-                //    //获取目录parentDir下的所有的文件，并过滤得到所有的文本文件
-                //    //string[] file = Directory.GetFiles(DlFullPath, ".zip");
-                //    string[] file = Directory.GetFiles(DlFullPath);
-                //    for (int i = 0; i < file.Length; i++)
-                //    {
-                //        //FileInfo fi = new FileInfo(file[i]);
-                //        //if (fi.Extension.ToLower() == "txt")
-                //        //{
-                //        LogHelper.writeDebugLog("file [" + i + "] : " + file[i]);
-                //        if (file[i].EndsWith(".zip"))
-                //        {
-                //            if (!ht.ContainsKey(file[i]))
-                //            {
-                //                //hm.Add(file[i], DlFullPath + "/" + file[i]);
-                //                LogHelper.writeDebugLog("Add file [" + i + "] : " + file[i]);
-                //                ht.Add(file[i], DlFullPath + "\\" + file[i]);
-                //                string fileName = string.Empty;
-                //                string unZipPath = string.Empty;
-                //                bool retF = UnZip(file[i], DlFullPath + "\\" + file[i], UnFullPath,out fileName,out unZipPath);
-                //                if (retF)
-                //                {
-                //                    ImportData(fileName, unZipPath);
-                //                }
+                //判断文件路径是否存在，不存在则创建文件夹
+                if (!Directory.Exists(UnFullPath))
+                {
+                    Directory.CreateDirectory(UnFullPath);//不存在就创建目录
+                }
+                //for (;;)
+                for (int countIndex = 0; countIndex < 10000; countIndex++)
+                {
+                    //获取目录parentDir下的所有的文件，并过滤得到所有的文本文件
+                    //string[] file = Directory.GetFiles(DlFullPath, ".zip");
+                    string[] file = Directory.GetFiles(DlFullPath);
+                    for (int i = 0; i < file.Length; i++)
+                    {
+                        //FileInfo fi = new FileInfo(file[i]);
+                        //if (fi.Extension.ToLower() == "txt")
+                        //{
+                        LogHelper.writeDebugLog("file [" + i + "] : " + file[i]);
+                        if (file[i].EndsWith(".zip"))
+                        {
+                            if (!ht.ContainsKey(file[i]))
+                            {
+                                //hm.Add(file[i], DlFullPath + "/" + file[i]);
+                                LogHelper.writeDebugLog("Add file [" + i + "] : " + file[i]);
+                                ht.Add(file[i], DlFullPath + "\\" + file[i]);
+                                string fileName = string.Empty;
+                                string unZipPath = string.Empty;
+                                bool retF = UnZip(file[i], DlFullPath + "\\" + file[i], UnFullPath, out fileName, out unZipPath);
+                                if (retF)
+                                {
+                                    ImportData(fileName, unZipPath);
+                                }
 
-                //                if (ht.Count == ZipCount)
-                //                //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
-                //                //if (ht.Count == 3)
-                //                {
-                //                    break;
-                //                }
-                //            }
-                //        }
-                //        //}                
-                //    }
-                //    //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
-                //    if (ht.Count == ZipCount)
-                //    {
-                //        break;
-                //    }
-                //    //Thread.Sleep(60000);
-                //    Thread.Sleep(30000);
-                //}
+                                if (ht.Count == ZipCount)
+                                //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                                //if (ht.Count == 3)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        //}                
+                    }
+                    //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                    if (ht.Count == ZipCount)
+                    {
+                        break;
+                    }
+                    //Thread.Sleep(60000);
+                    Thread.Sleep(30000);
+                }
 
                 //Hashtable imht = new Hashtable();
 
@@ -130,7 +134,9 @@ namespace MDAutoImport
                 ////imht.Add("egg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\egg20151201");
                 ////imht.Add("kegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\kegg20151201");
                 //bool flg = ImportData(imht);
-                bool flg = ImportData("egg20151208.zip", @"E:\MD\UnZipFile\2015-12-08\egg20151208");
+
+                //bool flg = ImportData("egg20151210.zip", @"E:\MD\UnZipFile\2015-12-10\egg20151210");
+                //bool flg = ImportData("cegg20151209.zip", @"E:\MD\UnZipFile\2015-12-09\cegg20151209");
                 //bool flg = ImportData("egg20151208.zip", @"E:\temp\test");
 
                 LogHelper.writeInfoLog("Main End");
@@ -264,7 +270,10 @@ namespace MDAutoImport
             //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\cegg20151126
             else if (strFileName.ToString().IndexOf("cegg") == 0)
             {
-                retFlag = FileToTable20("C#2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+                //retFlag = FileToTable20("C#2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+                //retFlag = FileToTable30ForCs("C#2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+                retFlag = FileToTable30("C#2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+
             }
             //strFileName : egg20151126.zip
             //strFilePath : E:\MD\UnZipFile\2015 - 11 - 26\egg20151126
@@ -273,7 +282,8 @@ namespace MDAutoImport
                 //retFlag = FileToTable20("go2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
 
                 //retFlag = FileToTable20ForTask("task2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
-                retFlag = FileToTable30("go3.0", dt.ToString("yyyy-MM-dd"), strFilePath);                
+                retFlag = FileToTable30("go2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
+                retFlag = FileToTable30ForTask("task2.0", dt.ToString("yyyy-MM-dd"), strFilePath);
             }
 
             LogHelper.writeDebugLog("ImportData 2 end");
@@ -1411,7 +1421,6 @@ namespace MDAutoImport
             return rt;
         }
 
-
         public static bool FileToTable30(string strDBType, string strImportDate, string strPath)
         {
             LogHelper.writeDebugLog("FileToTable30 start");
@@ -1440,13 +1449,13 @@ namespace MDAutoImport
             string strUITableName = string.Empty;
             try
             {
-                if ("go3.0".Equals(strDBType))
+                if ("go2.0".Equals(strDBType))
                 {
                     strTableName = "Go30SD";
                     strDUTableName = "Go30DailyUser";
                     strUITableName = "Go30UserInfo";
                 }
-                else if ("C#3.0".Equals(strDBType))
+                else if ("C#2.0".Equals(strDBType))
                 {
                     strTableName = "Cs30SD";
                     strDUTableName = "Cs30DailyUser";
@@ -1482,21 +1491,14 @@ namespace MDAutoImport
                 duT.Columns.Add("version");
                 duT.Columns.Add("channel");
                 duT.Columns.Add("md5");
+                duT.Columns.Add("ip");
                 duT.Columns.Add("createdate");
                 duT.Columns.Add("updatedate");
-
-                //tableDU.Columns.Add("keys");
-                //tableDU.Columns.Add("uid");
-                //tableDU.Columns.Add("sid");
-                //tableDU.Columns.Add("hid");
-                //tableDU.Columns.Add("sysid");
-                //tableDU.Columns.Add("vid");
-                //tableDU.Columns.Add("udate");
-                //tableDU.Columns.Add("kill");
-                //tableDU.Columns.Add("version");
-                //tableDU.Columns.Add("channel");
+                
                 DataRow drDU;
 
+                duUidListY = new Dictionary<string, string>();
+                duUidListN = new Dictionary<string, string>();
 
                 for (int index = 0; index < file.Length; index++)
                 {
@@ -1528,31 +1530,7 @@ namespace MDAutoImport
                     List<string> lsTemp = new List<string>();
 
                     table = new DataTable();
-
-                    ////为数据表创建相对应的数据列
-                    //table.Columns.Add("keys");
-                    //table.Columns.Add("udate");
-                    //table.Columns.Add("channel");
-                    //table.Columns.Add("uid");
-                    //table.Columns.Add("sid");
-                    //table.Columns.Add("hid");
-                    //table.Columns.Add("sysid");
-                    //table.Columns.Add("vid");
-                    //table.Columns.Add("vm");
-                    //table.Columns.Add("eggid");
-                    //table.Columns.Add("version");
-                    //table.Columns.Add("workversion");
-                    //table.Columns.Add("os");
-                    //table.Columns.Add("amd64");
-                    //table.Columns.Add("locale");
-                    //table.Columns.Add("event");
-                    //table.Columns.Add("dx");
-                    //table.Columns.Add("ie");
-                    //table.Columns.Add("kill");
-                    //table.Columns.Add("data");
-                    //table.Columns.Add("createdate");
-                    //table.Columns.Add("updatedate");
-
+                    
                     String line;
                     DataRow dr;
                     do
@@ -1587,6 +1565,7 @@ namespace MDAutoImport
                                 if (!string.IsNullOrEmpty(line)
                                     && line.IndexOf("{") > 0
                                     && line.IndexOf("\"event\":\"checkupdate") > 0)
+                                    //&& line.IndexOf("\"event\":\"checktask") > 0)
                                 {
 
                                     s = line.Split(' ');
@@ -1647,24 +1626,6 @@ namespace MDAutoImport
                                             itemCount = itemCount + 1;
                                             try
                                             {
-                                                //md.Date = long.Parse(s[0]);
-                                                //md.Id = s[1];
-
-                                                //往对应的 行中添加数据
-
-                                                //DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-                                                //long lTime = long.Parse(((long.Parse(s[0])) / 1000000000).ToString() + "0000000");
-                                                //TimeSpan toNow = new TimeSpan(lTime);
-                                                //DateTime dtResult = dtStart.Add(toNow);
-                                                //string uidT = string.Empty;
-                                                //string udateT = string.Empty;
-                                                //string killT = string.Empty;
-                                                //string versionT = string.Empty;
-                                                //string channelT = string.Empty;
-
-                                                //dr["udate"] = dtResult.AddHours(-8);// Convert.ToDateTime(md.Date);
-                                                //dr["udate"] = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8);
-                                                //udateT = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8).ToString("yyyy-MM-dd");
                                                 DateTime dtUdate = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8);
                                                 if (dtUdate <= ds)
                                                 {
@@ -1683,186 +1644,18 @@ namespace MDAutoImport
 
                                                     mdli.MData30Item = md;
                                                     mdli.data = strData;
+                                                    string strIp = string.Empty;
+                                                    if(!(string.IsNullOrEmpty(s[4])))
+                                                    {
+                                                        if(s[4].IndexOf(':')>1)
+                                                        {
+                                                            strIp = s[4].Substring(0, s[4].IndexOf(':'));
+                                                        }
+
+                                                    }
+                                                    mdli.Ip = strIp;
                                                     mdList.Add(mdli);
                                                 }
-                                                //if ((!string.IsNullOrEmpty(md.Channel)) && md.Channel.Length > 50)
-                                                //{
-                                                //    dr["channel"] = md.Channel.Remove(50);
-                                                //    channelT = md.Channel.Remove(50);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["channel"] = md.Channel == null ? "" : md.Channel;
-                                                //    channelT = md.Channel == null ? "" : md.Channel;
-                                                //}
-                                                
-                                                //if ((!string.IsNullOrEmpty(md.Uid)) && md.Uid.Length > 50)
-                                                //{
-                                                //    LogHelper.writeDebugLog("md.Uid    > 50    : " + md.Uid);
-                                                //    dr["uid"] = md.Uid.Remove(50);
-                                                //    uidT = md.Uid.Remove(50);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["uid"] = md.Uid == null ? "" : md.Uid;
-                                                //    uidT = md.Uid == null ? "" : md.Uid;
-                                                //}
-
-                                                ////dr["sid"] = md.Sid == null ? "" : md.Uid;
-                                                //if ((!string.IsNullOrEmpty(md.Sid)) && md.Sid.Length > 100)
-                                                //{
-                                                //    LogHelper.writeDebugLog("md.Uid    > 100    : " + md.Sid);
-                                                //    dr["sid"] = md.Sid.Remove(100);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["sid"] = md.Sid == null ? "" : md.Sid;
-                                                //}
-
-                                                ////dr["hid"] = md.Uid == null ? "" : md.Uid;
-                                                //if ((!string.IsNullOrEmpty(md.Hid)) && md.Hid.Length > 100)
-                                                //{
-                                                //    LogHelper.writeDebugLog("md.Hid    > 100    : " + md.Hid);
-                                                //    dr["hid"] = md.Hid.Remove(100);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["hid"] = md.Hid == null ? "" : md.Hid;
-                                                //}
-
-                                                ////dr["sysid"] = md.Sysid == null ? "" : md.Sysid;
-                                                //if ((!string.IsNullOrEmpty(md.Sysid)) && md.Sysid.Length > 50)
-                                                //{
-                                                //    LogHelper.writeDebugLog("md.Sysid    > 50    : " + md.Sysid);
-                                                //    dr["sysid"] = md.Sysid.Remove(50);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["sysid"] = md.Sysid == null ? "" : md.Sysid;
-                                                //}
-
-                                                ////dr["vid"] = md.Vid == null ? "" : md.Vid;
-                                                //if ((!string.IsNullOrEmpty(md.Vid)) && md.Vid.Length > 50)
-                                                //{
-                                                //    LogHelper.writeDebugLog("md.Vid    > 50    : " + md.Vid);
-                                                //    dr["vid"] = md.Vid.Remove(50);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["vid"] = md.Vid == null ? "" : md.Vid;
-                                                //}
-
-                                                ////dr["vm"] = md.Vm == null ? "" : md.Vm;
-                                                //if ((!string.IsNullOrEmpty(md.Vm)) && md.Vm.Length > 50)
-                                                //{
-                                                //    LogHelper.writeDebugLog("md.Vm    > 50    : " + md.Vm);
-                                                //    dr["vm"] = md.Vm.Remove(50);
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["vm"] = md.Vm == null ? "" : md.Vm;
-                                                //}
-                                                //dr["version"] = md.Version == null ? "" : md.Version;                                                
-                                                //versionT = md.Version == null ? "" : md.Version;
-
-                                                //dr["eggid"] = md.Eggid == null ? "" : md.Eggid;
-                                                //dr["workversion"] = md.Workversion == null ? "" : md.Workversion;
-                                                //dr["os"] = md.OS == null ? "" : md.OS;
-                                                //if (md.Amd64)
-                                                //{
-                                                //    dr["amd64"] = 1;
-                                                //}
-                                                //else
-                                                //{
-                                                //    dr["amd64"] = 0;
-                                                //}
-                                                //dr["locale"] = md.Locale;
-                                                //dr["event"] = md.Event == null ? "" : md.Event;
-
-                                                ////for (int i = 1; i <= 5; i++)
-                                                ////{
-                                                ////    dr["antivirus_guid_" + i] = "";
-                                                ////    dr["antivirus_name_" + i] = "";
-                                                ////    dr["dotnet_" + i] = "";
-                                                ////}
-
-
-                                                //if (md.Data != null)
-                                                //{
-                                                //    //if (md.Data.Antivirus != null && md.Data.Antivirus.Count > 0)
-                                                //    //{
-                                                //    //    for (int i = 0; i < md.Data.Antivirus.Count; i++)
-                                                //    //    {
-                                                //    //        if (i < 5)
-                                                //    //        {
-                                                //    //            dr["antivirus_guid_" + (i + 1)] = md.Data.Antivirus[i].guid;
-
-                                                //    //            if (md.Data.Antivirus[i].name.Length > 50)
-                                                //    //            {
-                                                //    //                dr["antivirus_name_" + (i + 1)] = md.Data.Antivirus[i].name.Remove(50);
-                                                //    //            }
-                                                //    //            else
-                                                //    //            {
-                                                //    //                dr["antivirus_name_" + (i + 1)] = md.Data.Antivirus[i].name;
-                                                //    //            }
-                                                //    //        }
-                                                //    //    }
-                                                //    //}
-
-                                                //    //dr["browser"] = md.Data.browser;
-                                                //    //dr["bversion"] = md.Data.bversion;
-                                                //    //if (md.Data.dotnet != null)
-                                                //    //{
-                                                //    //    for (int i = 0; i < md.Data.dotnet.Count; i++)
-                                                //    //    {
-                                                //    //        if (i < 5)
-                                                //    //        {
-                                                //    //            dr["dotnet_" + (i + 1)] = md.Data.dotnet[i];
-                                                //    //        }
-                                                //    //    }
-                                                //    //}
-
-                                                //    dr["dx"] = md.Data.dx;
-                                                //    //if (md.Data.hardware != null)
-                                                //    //{
-                                                //    //    dr["base"] = md.Data.hardware.Base;
-                                                //    //    dr["bios"] = md.Data.hardware.Bios;
-                                                //    //    dr["disk"] = md.Data.hardware.Disk;
-                                                //    //    dr["network"] = md.Data.hardware.Network;
-                                                //    //}
-
-                                                //    dr["ie"] = md.Data.ie;
-                                                //    dr["kill"] = md.Data.kill;
-                                                //    killT = md.Data.kill;
-
-                                                //}
-
-                                                //dr["data"] = strData;
-                                                //dr["createdate"] = dt;
-                                                //dr["updatedate"] = dt;
-
-                                                //将创建的数据行添加到table中
-                                                //table.Rows.Add(dr);
-                                                //DateTime dss = DateTime.Now;
-                                                //LogHelper.writeDebugLog("tableDU search start : " + dss.ToString());
-                                                
-                                                //if (tableDU.Select("uid='" + uidT + "'").Length > 0)
-                                                //{
-                                                //    //LogHelper.writeDebugLog("存在 itemCount = " + itemCount);
-                                                //}
-                                                //else
-                                                //{
-                                                //    //LogHelper.writeDebugLog("tableDU search timespan : " + DateTime.Now.Subtract(dss).ToString());
-                                                //    //LogHelper.writeDebugLog("不存在 itemCount = " + itemCount);
-                                                //    //LogHelper.writeDebugLog("tableDU search end : " + DateTime.Now.ToString());
-                                                //    drDU = tableDU.NewRow();
-                                                //    drDU["uid"] = uidT;
-                                                //    drDU["udate"] = udateT;
-                                                //    drDU["kill"] = killT;
-                                                //    drDU["version"] = versionT;
-                                                //    drDU["channel"] = channelT;
-                                                //    tableDU.Rows.Add(drDU);
-                                                //}
 
                                             }
                                             catch (Exception ex)
@@ -1877,33 +1670,8 @@ namespace MDAutoImport
 
                                     }
                                 }
-                                //if (itemCount != 0 && itemCount % 100000 == 0)
-                                //{
-                                //    try
-                                //    {
-                                //        DataView dv = table.DefaultView;
-                                //        DataTable dtT = dv.ToTable("Dist", true, "uid");
-                                //        db.InsertTable30(table, strTableName);
-                                //    }
-                                //    catch (Exception ex)
-                                //    {
-                                //        LogHelper.writeErrorLog("itemCount : " + itemCount);
-                                //        LogHelper.writeErrorLog(ex);
-                                //        continue;
-                                //    }
-                                //    table.Clear();
-                                //}
                             } while (!reader.EndOfStream);
-
-                            //if (itemCount % 100000 > 0)
-                            //{
-                                //DataView dv = table.DefaultView;
-                                //DataTable dtT = dv.ToTable("Dist", true, "uid");
-                                //db.InsertTable30(dtT, strTableName);
-                                //table.Clear();
-                                //itemCount = 0;
-                            //}
-
+                            
                             string t = lsTemp[lsTemp.Count - 1];
                             offset = offset + length - t.Length;
                             if (tempCount == readCount - 1)
@@ -1929,80 +1697,95 @@ namespace MDAutoImport
                     LogHelper.writeDebugLog("MakeSDTable start : " + dss.ToString());
 
                     //table = MakeSDTable(mdList, out tableDU);
-                    table = MakeSDTable(mdList, ref htY,ref htN);
+                    table = MakeSDTable(mdList, out duT);
                     LogHelper.writeDebugLog("MakeSDTable timespan : " + DateTime.Now.Subtract(dss).ToString());
 
                     db.InsertTable30(table, strTableName);
                     LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss).ToString());
+                    LogHelper.writeDebugLog("InsertTable30 end : " + DateTime.Now.ToString());
+                    dss = DateTime.Now;
+
+                    LogHelper.writeDebugLog("MakeSDTable start : " + dss.ToString());
+
+                    db.InsertDUTable30(duT, strDUTableName);
+                    LogHelper.writeDebugLog("InsertDUTable30 timespan : " + DateTime.Now.Subtract(dss).ToString());
+                    LogHelper.writeDebugLog("InsertDUTable30 end : " + DateTime.Now.ToString());
+
                     itemCount = 0;
                     table.Clear();
                     mdList.Clear();
+                    duT.Clear();
 
-                    //DataView dv2 = tableDU.DefaultView;
-                    //dv2.Sort = "createdate desc";
-                    //string[] colArr2 = new string[] { "uid", "udate" };
-                    //DataTable tableDUTT = dv2.ToTable(true, colArr2);
-                    //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT timespan : " + DateTime.Now.Subtract(dss).ToString());
-
-                    //duT = CombineTheSameDatatable(duT, tableDUTT);
-                    //LogHelper.writeDebugLog("tableDUTT TO duT timespan : " + DateTime.Now.Subtract(dss).ToString());
-
-                    //tableDUT = tableDUTT.Clone();
-
-                    ////dt1.Rows.Add(dt.Rows[0].ItemArray);
-                    //foreach (DataRow dr1 in tableDUTT.Rows)
-                    //{
-                    //    tableDUT.Rows.Add(dr1.ItemArray);
-                    //}
-                    LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
                 }
+                duUidListN.Clear();
+                duUidListY.Clear();
 
-                DateTime dss1 = DateTime.Now;
-                LogHelper.writeDebugLog("MakeDU start : " + dss1.ToString());
+                //DateTime dss1 = DateTime.Now;
+                //LogHelper.writeDebugLog("MakeDU start : " + dss1.ToString());
+                //int insertFlg = 0;
+                //foreach (DictionaryEntry de1 in htY)
+                //{
+                //    MDataDU30 t = de1.Value as MDataDU30;
+                //    drDU = duT.NewRow();
+                //    DateTime dt1 = DateTime.Now;
+                //    drDU["udate"] = t.udate;
+                //    drDU["channel"] = t.Channel;
+                //    drDU["uid"] = t.Uid;
+                //    drDU["sid"] = t.Sid;
+                //    drDU["hid"] = t.Hid;
+                //    drDU["sysid"] = t.Sysid;
+                //    drDU["vid"] = t.Vid;
+                //    drDU["version"] = t.Version;
+                //    drDU["kill"] = t.kill;
+                //    drDU["md5"] = t.md5;
+                //    drDU["createdate"] = dt1;
+                //    drDU["updatedate"] = dt1;
+                //    duT.Rows.Add(drDU);
+                //    insertFlg = insertFlg + 1;
+                //    if (insertFlg == 100000)
+                //    {
+                //        db.InsertDUTable30(duT, strDUTableName);
+                //        LogHelper.writeDebugLog("insertDU 111111 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+                //        insertFlg = 0;
+                //        duT.Clear();
+                //    }
+                //}
+                //LogHelper.writeDebugLog("MakeDU 22222222 timespan : " + DateTime.Now.Subtract(dss1).ToString());
 
-                foreach (DictionaryEntry de1 in htY)
-                {
-                    MDataDU30 t = de1.Value as MDataDU30;
-                    drDU = duT.NewRow();
-                    DateTime dt1 = DateTime.Now;
-                    drDU["udate"] = t.udate;
-                    drDU["channel"] = t.Channel;
-                    drDU["uid"] = t.Uid;
-                    drDU["sid"] = t.Sid;
-                    drDU["hid"] = t.Hid;
-                    drDU["sysid"] = t.Sysid;
-                    drDU["vid"] = t.Vid;
-                    drDU["version"] = t.Version;
-                    drDU["kill"] = t.kill;
-                    drDU["md5"] = t.md5;
-                    drDU["createdate"] = dt1;
-                    drDU["updatedate"] = dt1;
-                    duT.Rows.Add(drDU);
-                }
-                LogHelper.writeDebugLog("MakeDU 111111 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                foreach (DictionaryEntry de2 in htN)
-                {
-                    MDataDU30 t = de2.Value as MDataDU30;
-                    drDU = duT.NewRow();
-                    DateTime dt1 = DateTime.Now;
-                    drDU["udate"] = t.udate;
-                    drDU["channel"] = t.Channel;
-                    drDU["uid"] = t.Uid;
-                    drDU["sid"] = t.Sid;
-                    drDU["hid"] = t.Hid;
-                    drDU["sysid"] = t.Sysid;
-                    drDU["vid"] = t.Vid;
-                    drDU["version"] = t.Version;
-                    drDU["kill"] = t.kill;
-                    drDU["md5"] = t.md5;
-                    drDU["createdate"] = dt1;
-                    drDU["updatedate"] = dt1;
-                    duT.Rows.Add(drDU);
-                }
+                //foreach (DictionaryEntry de2 in htN)
+                //{
+                //    MDataDU30 t = de2.Value as MDataDU30;
+                //    drDU = duT.NewRow();
+                //    DateTime dt1 = DateTime.Now;
+                //    drDU["udate"] = t.udate;
+                //    drDU["channel"] = t.Channel;
+                //    drDU["uid"] = t.Uid;
+                //    drDU["sid"] = t.Sid;
+                //    drDU["hid"] = t.Hid;
+                //    drDU["sysid"] = t.Sysid;
+                //    drDU["vid"] = t.Vid;
+                //    drDU["version"] = t.Version;
+                //    drDU["kill"] = t.kill;
+                //    drDU["md5"] = t.md5;
+                //    drDU["createdate"] = dt1;
+                //    drDU["updatedate"] = dt1;
+                //    duT.Rows.Add(drDU);
+                //    insertFlg = insertFlg + 1;
+                //    if (insertFlg == 100000)
+                //    {
+                //        db.InsertDUTable30(duT, strDUTableName);
+                //        LogHelper.writeDebugLog("insertDU 33333 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+                //        insertFlg = 0;
+                //        duT.Clear();
+                //    }
+                //}
 
-                LogHelper.writeDebugLog("MakeDU 22222222 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                //DataRow drDU;
-                // for test sssssssssssssssssssss
+                //LogHelper.writeDebugLog("MakeDU 44444 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+
+                //db.InsertDUTable30(duT, strDUTableName);
+
+                //LogHelper.writeDebugLog("insertDU 5555555 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+                //LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss1).ToString());
 
                 int intLossCount = 0;
                 //int intWeekCount = 0;
@@ -2032,9 +1815,433 @@ namespace MDAutoImport
                 //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT timespan : " + DateTime.Now.Subtract(dss2).ToString());
                 //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
 
+                DateTime dss1 = DateTime.Now;
+                LogHelper.writeDebugLog("GetDUCount start : " + dss1.ToString());
+                intInsertDU = db.GetDUCount(strImportDate, strDUTableName);
+                LogHelper.writeDebugLog("GetDUCount timespan : " + DateTime.Now.Subtract(dss1).ToString());
+                LogHelper.writeDebugLog("GetDUCount timespan : " + DateTime.Now.Subtract(dss1).ToString());
+
+                if (intInsertDU > 0)
+                {
+                    //if ("go3.0".Equals(strDBType))
+                    //{
+                    //    // 更新表(DailyUser)中数据
+                    //    Console.WriteLine("DailyUser3.0 Update Start.");
+                    //    int intUpdateDU = db.UpdateDailyUser20(strImportDate, strTableName, strDUTableName);
+                    //    Console.WriteLine("DailyUser3.0 Update Count = " + intUpdateDU);
+                    //    Console.WriteLine("DailyUser3.0 Update End.");
+                    //}
+
+                    Console.WriteLine("UserInfo3.0 Insert Start.");
+                    // 向表(UserInfo)中插入数据
+                    intInsertUI = db.InsertUserInfo30(strImportDate, strDUTableName, strUITableName);
+                    Console.WriteLine("UserInfo3.0 Insert Count = " + intInsertUI);
+                    Console.WriteLine("UserInfo3.0 Insert End.");
+
+                    if ("go2.0".Equals(strDBType))
+                    {
+                        int intUpdateUI = 0;
+                        // 更新第一次访问时间
+                        Console.WriteLine("UserInfo3.0 Update Start.");
+                        intUpdateUI = db.UpdateSadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
+                        Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
+                        Console.WriteLine("UserInfo3.0 Update End.");
+
+                        intUpdateUI = 0;
+                        // 更新最后一次访问时间
+                        Console.WriteLine("UserInfo3.0 Update Start.");
+                        intUpdateUI = db.UpdateEadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
+                        Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
+                        Console.WriteLine("UserInfo3.0 Update End.");
+
+                        intLossCount = db.GetLossCount(strUITableName);
+                    }
+                }
+
+                Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 Start.");
+                if ("go2.0".Equals(strDBType))
+                {
+                    intCount = db.InsertDailyVisitUserStatisticsForLoss(strDBType, strImportDate, intSourceDataCount, intInsertDU, intInsertUI, intLossCount);
+                }
+                else
+                {
+                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strImportDate, intSourceDataCount, intInsertDU, intInsertUI);
+                }
+                Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 Count = " + intCount);
+                Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 End.");
+
+                // for test eeeeeeeeeeeeeeeeeeeee
+            }
+            catch (Exception ex)
+            {
+                LogHelper.writeErrorLog(ex);
+                return false;
+            }
+
+
+            LogHelper.writeDebugLog("FileToTable30 end");
+            return rt;
+        }
+
+        public static bool FileToTable30ForCs(string strDBType, string strImportDate, string strPath)
+        {
+            LogHelper.writeDebugLog("FileToTable30ForCs start");
+            LogHelper.writeDebugLog("DBType : " + strDBType);
+            bool rt = true;
+
+            Int64 itemCount = 0;
+            int intSourceDataCount = 0;
+            int intInsertDU = 0;
+            int intInsertUI = 0;
+            int intCount = 0;
+            string[] s;
+            List<MData30ListItem> mdList = new List<MData30ListItem>();
+            MData30ListItem mdli = new MData30ListItem();
+            MData30 md = null;
+            DBConnect db = new DBConnect();
+            DateTime dt = DateTime.Now;
+            DateTime ds = Convert.ToDateTime("1 / 1 / 1753 12:00:00 AM");
+            DateTime de = Convert.ToDateTime("12 / 31 / 9999 11:59:59 PM");
+
+            string strJson = string.Empty;
+            string strData = string.Empty;
+            string strFileName = string.Empty;
+            string strTableName = string.Empty;
+            string strDUTableName = string.Empty;
+            string strUITableName = string.Empty;
+            try
+            {
+                strTableName = "Cs30SD";
+                strDUTableName = "Cs30DailyUser";
+                strUITableName = "Cs30UserInfo";
+                //else if ("killer3.0".Equals(strDBType))
+                //{
+                //    strTableName = "Killer20SourceData";
+                //    strDUTableName = "Killer20DailyUser";
+                //    strUITableName = "Killer20UserInfo";
+                //}
+
+                string[] file = Directory.GetFiles(strPath);
+
+                FileStream fs;
+
+                DataTable table = new DataTable();
+                DataTable tableDU = new DataTable();
+                DataTable tableDUT = new DataTable();
+                Hashtable htY = new Hashtable();
+                Hashtable htN = new Hashtable();
+
+                DataTable duT = new DataTable();
+
+                duT.Columns.Add("keys");
+                duT.Columns.Add("uid");
+                duT.Columns.Add("sid");
+                duT.Columns.Add("hid");
+                duT.Columns.Add("sysid");
+                duT.Columns.Add("vid");
+                duT.Columns.Add("udate");
+                duT.Columns.Add("kill");
+                duT.Columns.Add("version");
+                duT.Columns.Add("channel");
+                duT.Columns.Add("md5");
+                duT.Columns.Add("createdate");
+                duT.Columns.Add("updatedate");
+
+                DataRow drDU;
+
+
+                for (int index = 0; index < file.Length; index++)
+                {
+                    strFileName = string.Empty;
+                    strFileName = file[index];
+                    LogHelper.writeDebugLog("file [" + index + "] : " + strFileName);
+
+
+                    fs = new FileStream(strFileName, FileMode.Open);
+
+                    long fileLength = fs.Length;//文件流的长度
+                    fs.Dispose();
+                    fs.Close();
+
+                    // 读取开始位置
+                    long offset = 0x0; // 256 megabytes
+                                       // 读取大小
+                    long length = 0x20000000; // 512 megabytes
+
+                    if (length > fileLength)
+                    {
+                        length = fileLength;
+                    }
+                    //需要对文件读取的次数
+                    int readCount = (int)Math.Ceiling((double)(fileLength / length));
+                    //当前已经读取的次数
+
+                    int tempCount = 0;
+                    List<string> lsTemp = new List<string>();
+
+                    table = new DataTable();
+
+                    String line;
+                    DataRow dr;
+                    do
+                    {
+                        // 建立缓存文件
+                        using (var mmf = MemoryMappedFile.CreateFromFile(strFileName, FileMode.Open))
+                        using (var stream = mmf.CreateViewStream(offset, length, MemoryMappedFileAccess.Read))
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            do
+                            {
+                                //string t = reader.ReadLine();
+                                line = string.Empty;
+                                strJson = string.Empty;
+                                strData = string.Empty;
+                                mdli = new MData30ListItem();
+                                try
+                                {
+                                    line = reader.ReadLine();
+                                    //intline = intline + 1;
+                                }
+                                catch (OutOfMemoryException oome)
+                                {
+                                    //LogHelper.writeErrorLog("error: intline = " + intline);
+                                    LogHelper.writeErrorLog("error: lsTemp = " + lsTemp.Count);
+                                    LogHelper.writeErrorLog(oome);
+
+                                    continue;
+                                }
+                                lsTemp.Add(line);
+
+                                if (!string.IsNullOrEmpty(line)
+                                    && line.IndexOf("{") > 0
+                                    && line.IndexOf("\"event\":\"checktask") > 0)
+                                {
+
+                                    s = line.Split(' ');
+
+                                    if (s.Length >= 7 && "req".Equals(s[5]))
+                                    {
+                                        //LogHelper.writeInfoLog("intline = " + intline);
+                                        if (line.IndexOf("\"data\":{") > 0
+                                            && line.EndsWith("}"))
+                                        {
+                                            if (line.LastIndexOf("}}") > 0 && line.LastIndexOf("}}") > line.IndexOf("\"data\":{"))
+                                            {
+                                                strData = line.Substring(line.IndexOf("\"data\":{") + 7, (line.LastIndexOf("}}") - line.IndexOf("\"data\":{") - 5));
+                                            }
+                                        }
+
+                                        strJson = line.Substring(line.IndexOf("{"));
+                                        md = new MData30();
+                                        //创建数据行
+                                        dr = table.NewRow();
+                                        try
+                                        {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
+                                            JsonSerializer serializer = new JsonSerializer();
+                                            StringReader srt = new StringReader(strJson);
+
+                                            md = serializer.Deserialize(new JsonTextReader(srt), typeof(MData30)) as MData30;
+                                            srt.Close();
+                                        }
+                                        catch (JsonException je)
+                                        {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
+                                            LogHelper.writeDebugLog("debug: " + line);
+                                            LogHelper.writeErrorLog("error: itemCount = " + itemCount);
+                                            LogHelper.writeErrorLog(je);
+
+                                            continue;
+                                        }
+                                        catch (OutOfMemoryException oome)
+                                        {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
+                                            LogHelper.writeDebugLog("debug: " + line);
+                                            LogHelper.writeErrorLog("error: itemCount = " + itemCount);
+                                            LogHelper.writeErrorLog(oome);
+
+                                            continue;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            //LogHelper.writeInfoLog("intline = " + intline);
+                                            LogHelper.writeErrorLog("error: itemCount = " + itemCount);
+                                            LogHelper.writeErrorLog("error: s[0] = " + s[0]);
+                                            LogHelper.writeErrorLog(ex);
+                                            continue;
+                                        }
+                                        if (md != null)
+                                        {
+                                            itemCount = itemCount + 1;
+                                            try
+                                            {
+                                                DateTime dtUdate = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8);
+                                                if (dtUdate <= ds)
+                                                {
+                                                    LogHelper.writeErrorLog("line = " + line);
+                                                    continue;
+                                                }
+                                                else if (dtUdate >= de)
+                                                {
+                                                    LogHelper.writeErrorLog("line = " + line);
+                                                    continue;
+                                                }
+                                                else
+                                                {
+
+                                                    md.udate = dtUdate;
+
+                                                    mdli.MData30Item = md;
+                                                    mdli.data = strData;
+                                                    mdList.Add(mdli);
+                                                }
+
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                //LogHelper.writeInfoLog("intline = " + intline);
+                                                LogHelper.writeErrorLog("error: itemCount = " + itemCount);
+                                                LogHelper.writeErrorLog("error: s[0]+s[1] = " + s[0] + s[1]);
+                                                LogHelper.writeErrorLog(ex);
+                                                continue;
+                                            }
+                                        }
+
+                                    }
+                                }
+                            } while (!reader.EndOfStream);
+
+                            string t = lsTemp[lsTemp.Count - 1];
+                            offset = offset + length - t.Length;
+                            if (tempCount == readCount - 1)
+                            {
+                                length = fileLength - offset;
+                            }
+                            if (tempCount < readCount)
+                            {
+                                lsTemp.RemoveAt(lsTemp.Count - 1);
+                            }
+
+                            stream.Dispose();
+                            stream.Close();
+                            mmf.Dispose();
+                        }
+
+                        tempCount = tempCount + 1;
+                    }
+                    while (tempCount <= readCount);
+
+                    DateTime dss = DateTime.Now;
+
+                    LogHelper.writeDebugLog("MakeSDTable start : " + dss.ToString());
+
+                    //table = MakeSDTable(mdList, out tableDU);
+                    //table = MakeSDTable(mdList, ref htY, ref htN);
+                    LogHelper.writeDebugLog("MakeSDTable timespan : " + DateTime.Now.Subtract(dss).ToString());
+
+                    db.InsertTable30(table, strTableName);
+                    LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss).ToString());
+                    itemCount = 0;
+                    table.Clear();
+                    mdList.Clear();
+
+                    LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
+                }
+
+                DateTime dss1 = DateTime.Now;
+                LogHelper.writeDebugLog("MakeDU start : " + dss1.ToString());
+                int insertFlg = 0;
+                foreach (DictionaryEntry de1 in htY)
+                {
+                    MDataDU30 t = de1.Value as MDataDU30;
+                    drDU = duT.NewRow();
+                    DateTime dt1 = DateTime.Now;
+                    drDU["udate"] = t.udate;
+                    drDU["channel"] = t.Channel;
+                    drDU["uid"] = t.Uid;
+                    drDU["sid"] = t.Sid;
+                    drDU["hid"] = t.Hid;
+                    drDU["sysid"] = t.Sysid;
+                    drDU["vid"] = t.Vid;
+                    drDU["version"] = t.Version;
+                    drDU["kill"] = t.kill;
+                    drDU["md5"] = t.md5;
+                    drDU["createdate"] = dt1;
+                    drDU["updatedate"] = dt1;
+                    duT.Rows.Add(drDU);
+                    insertFlg = insertFlg + 1;
+                    if (insertFlg == 100000)
+                    {
+                        db.InsertDUTable30(duT, strDUTableName);
+                        LogHelper.writeDebugLog("insertDU 111111 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+                        insertFlg = 0;
+                        duT.Clear();
+                    }
+                }
+                LogHelper.writeDebugLog("MakeDU 22222222 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+
+                foreach (DictionaryEntry de2 in htN)
+                {
+                    MDataDU30 t = de2.Value as MDataDU30;
+                    drDU = duT.NewRow();
+                    DateTime dt1 = DateTime.Now;
+                    drDU["udate"] = t.udate;
+                    drDU["channel"] = t.Channel;
+                    drDU["uid"] = t.Uid;
+                    drDU["sid"] = t.Sid;
+                    drDU["hid"] = t.Hid;
+                    drDU["sysid"] = t.Sysid;
+                    drDU["vid"] = t.Vid;
+                    drDU["version"] = t.Version;
+                    drDU["kill"] = t.kill;
+                    drDU["md5"] = t.md5;
+                    drDU["createdate"] = dt1;
+                    drDU["updatedate"] = dt1;
+                    duT.Rows.Add(drDU);
+                    insertFlg = insertFlg + 1;
+                    if (insertFlg == 100000)
+                    {
+                        db.InsertDUTable30(duT, strDUTableName);
+                        LogHelper.writeDebugLog("insertDU 33333 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+                        insertFlg = 0;
+                        duT.Clear();
+                    }
+                }
+
+                LogHelper.writeDebugLog("MakeDU 44444 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+
                 db.InsertDUTable30(duT, strDUTableName);
-                LogHelper.writeDebugLog("insertDU timespan : " + DateTime.Now.Subtract(dss1).ToString());
+
+                LogHelper.writeDebugLog("insertDU 5555555 timespan : " + DateTime.Now.Subtract(dss1).ToString());
                 LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss1).ToString());
+
+                int intLossCount = 0;
+                //int intWeekCount = 0;
+
+                //Console.WriteLine("SDTableName ： " + strTableName);
+                //// 取得(SourceData)单日件数
+                //Console.WriteLine("GetSourceDataCount3.0 Start.");
+                //intSourceDataCount = db.GetSourceDataCount(strImportDate, strTableName);
+                //Console.WriteLine("GetSourceDataCount3.0 Count = " + intSourceDataCount);
+                //Console.WriteLine("GetSourceDataCount3.0 Insert End.");
+
+                //// 向表(DailyUser)中插入数据
+                //Console.WriteLine("DailyUser3.0 Insert Start.");
+                //intInsertDU = db.InsertDailyUser20(strImportDate, strTableName, strDUTableName);
+                //Console.WriteLine("DailyUser3.0 Insert Count = " + intInsertDU);
+                //Console.WriteLine("DailyUser3.0 Insert End.");
+
+                // 向表(DailyUser)中插入数据
+                //DateTime dss2 = DateTime.Now;
+                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT start : " + dss2.ToString());
+
+                //DataView dv = duT.DefaultView;
+                //dv.Sort = "createdate desc";
+                //string[] colArr = new string[] { "uid", "udate" };
+                //DataTable insertTableDU = dv.ToTable(true, colArr);
+
+                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT timespan : " + DateTime.Now.Subtract(dss2).ToString());
+                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
 
                 dss1 = DateTime.Now;
                 LogHelper.writeDebugLog("GetDUCount start : " + dss1.ToString());
@@ -2059,35 +2266,28 @@ namespace MDAutoImport
                     Console.WriteLine("UserInfo3.0 Insert Count = " + intInsertUI);
                     Console.WriteLine("UserInfo3.0 Insert End.");
 
-                    if ("go3.0".Equals(strDBType))
-                    {
-                        int intUpdateUI = 0;
-                        // 更新第一次访问时间
-                        Console.WriteLine("UserInfo3.0 Update Start.");
-                        intUpdateUI = db.UpdateSadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
-                        Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
-                        Console.WriteLine("UserInfo3.0 Update End.");
+                    //if ("go2.0".Equals(strDBType))
+                    //{
+                    //    int intUpdateUI = 0;
+                    //    // 更新第一次访问时间
+                    //    Console.WriteLine("UserInfo3.0 Update Start.");
+                    //    intUpdateUI = db.UpdateSadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
+                    //    Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
+                    //    Console.WriteLine("UserInfo3.0 Update End.");
 
-                        intUpdateUI = 0;
-                        // 更新最后一次访问时间
-                        Console.WriteLine("UserInfo3.0 Update Start.");
-                        intUpdateUI = db.UpdateEadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
-                        Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
-                        Console.WriteLine("UserInfo3.0 Update End.");
+                    //    intUpdateUI = 0;
+                    //    // 更新最后一次访问时间
+                    //    Console.WriteLine("UserInfo3.0 Update Start.");
+                    //    intUpdateUI = db.UpdateEadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
+                    //    Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
+                    //    Console.WriteLine("UserInfo3.0 Update End.");
 
-                        intLossCount = db.GetLossCount(strUITableName);
-                    }
+                    //    intLossCount = db.GetLossCount(strUITableName);
+                    //}
                 }
 
                 Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 Start.");
-                if ("go3.0".Equals(strDBType))
-                {
-                    intCount = db.InsertDailyVisitUserStatisticsForLoss(strDBType, strImportDate, intSourceDataCount, intInsertDU, intInsertUI, intLossCount);
-                }
-                else
-                {
-                    intCount = db.InsertDailyVisitUserStatistics(strDBType, strImportDate, intSourceDataCount, intInsertDU, intInsertUI);
-                }
+                intCount = db.InsertDailyVisitUserStatistics(strDBType, strImportDate, intSourceDataCount, intInsertDU, intInsertUI);
                 Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 Count = " + intCount);
                 Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 End.");
 
@@ -2100,16 +2300,16 @@ namespace MDAutoImport
             }
 
 
-            LogHelper.writeDebugLog("FileToTable30 end");
+            LogHelper.writeDebugLog("FileToTable30ForCs end");
             return rt;
         }
 
-        //private static DataTable MakeSDTable(List<MData30ListItem> mdList,out DataTable tableDU)
-        private static DataTable MakeSDTable(List<MData30ListItem> mdList, ref Hashtable hty ,ref Hashtable htn)
+        private static DataTable MakeSDTable(List<MData30ListItem> mdList, out DataTable tableDU)
+        //private static DataTable MakeSDTable(List<MData30ListItem> mdList, ref Hashtable hty ,ref Hashtable htn)
         {
             MData30 md = new MData30();
             DataTable table = new DataTable();
-            //DataTable tableDU = new DataTable();
+            tableDU = new DataTable();
             MDataDU30 mddu = new MDataDU30();
             DataRow dr;
 
@@ -2138,19 +2338,21 @@ namespace MDAutoImport
             table.Columns.Add("updatedate");
 
 
-            //tableDU.Columns.Add("keys");
-            //tableDU.Columns.Add("uid");
-            //tableDU.Columns.Add("sid");
-            //tableDU.Columns.Add("hid");
-            //tableDU.Columns.Add("sysid");
-            //tableDU.Columns.Add("vid");
-            //tableDU.Columns.Add("udate");
-            //tableDU.Columns.Add("kill");
-            //tableDU.Columns.Add("version");
-            //tableDU.Columns.Add("channel");
-            //tableDU.Columns.Add("createdate");
-            //tableDU.Columns.Add("updatedate");
-            //DataRow drDU;
+            tableDU.Columns.Add("keys");
+            tableDU.Columns.Add("uid");
+            tableDU.Columns.Add("sid");
+            tableDU.Columns.Add("hid");
+            tableDU.Columns.Add("sysid");
+            tableDU.Columns.Add("vid");
+            tableDU.Columns.Add("udate");
+            tableDU.Columns.Add("kill");
+            tableDU.Columns.Add("version");
+            tableDU.Columns.Add("channel");
+            tableDU.Columns.Add("md5");
+            tableDU.Columns.Add("ip");
+            tableDU.Columns.Add("createdate");
+            tableDU.Columns.Add("updatedate");
+            DataRow drDU;
 
             foreach (MData30ListItem mt in mdList)
             {
@@ -2158,10 +2360,9 @@ namespace MDAutoImport
                 md = new MData30();
                 md = mt.MData30Item;
                 dr = table.NewRow();
-                //drDU = tableDU.NewRow();
+                drDU = tableDU.NewRow();
                 mddu = new MDataDU30();
                 dr["udate"] = md.udate;
-                //drDU["udate"] = md.udate.ToString("yyyy-MM-dd");
                 mddu.udate = md.udate.ToString("yyyy-MM-dd");
 
                 if ((!string.IsNullOrEmpty(md.Channel)) && md.Channel.Length > 50)
@@ -2172,7 +2373,6 @@ namespace MDAutoImport
                 {
                     dr["channel"] = md.Channel == null ? "" : md.Channel;
                 }
-                //drDU["channel"] = dr["channel"];
                 mddu.Channel = dr["channel"].ToString();
 
                 if ((!string.IsNullOrEmpty(md.Uid)) && md.Uid.Length > 50)
@@ -2184,7 +2384,6 @@ namespace MDAutoImport
                 {
                     dr["uid"] = md.Uid == null ? "" : md.Uid;
                 }
-                //drDU["uid"] = dr["uid"];
                 mddu.Uid = dr["uid"].ToString();
 
                 //dr["sid"] = md.Sid == null ? "" : md.Uid;
@@ -2197,7 +2396,6 @@ namespace MDAutoImport
                 {
                     dr["sid"] = md.Sid == null ? "" : md.Sid;
                 }
-                //drDU["sid"] = dr["sid"];
                 mddu.Sid = dr["sid"].ToString();
 
                 //dr["hid"] = md.Uid == null ? "" : md.Uid;
@@ -2210,7 +2408,6 @@ namespace MDAutoImport
                 {
                     dr["hid"] = md.Hid == null ? "" : md.Hid;
                 }
-                //drDU["hid"] = dr["hid"];
                 mddu.Hid = dr["hid"].ToString();
 
                 //dr["sysid"] = md.Sysid == null ? "" : md.Sysid;
@@ -2223,7 +2420,6 @@ namespace MDAutoImport
                 {
                     dr["sysid"] = md.Sysid == null ? "" : md.Sysid;
                 }
-                //drDU["sysid"] = dr["sysid"];
                 mddu.Sysid = dr["sysid"].ToString();
 
                 //dr["vid"] = md.Vid == null ? "" : md.Vid;
@@ -2236,7 +2432,6 @@ namespace MDAutoImport
                 {
                     dr["vid"] = md.Vid == null ? "" : md.Vid;
                 }
-                //drDU["vid"] = dr["vid"];
                 mddu.Vid = dr["vid"].ToString();
 
                 //dr["vm"] = md.Vm == null ? "" : md.Vm;
@@ -2250,7 +2445,6 @@ namespace MDAutoImport
                     dr["vm"] = md.Vm == null ? "" : md.Vm;
                 }
                 dr["version"] = md.Version == null ? "" : md.Version;
-                //drDU["version"] = dr["version"];
                 mddu.Version = dr["version"].ToString();
 
                 dr["eggid"] = md.Eggid == null ? "" : md.Eggid;
@@ -2273,7 +2467,6 @@ namespace MDAutoImport
                     dr["dx"] = md.Data.dx;
                     dr["ie"] = md.Data.ie;
                     dr["kill"] = md.Data.kill;
-                    //drDU["kill"] = dr["kill"];
                     mddu.kill = dr["kill"].ToString();
 
                 }
@@ -2282,32 +2475,66 @@ namespace MDAutoImport
                 mddu.md5 = MD5Encrypt(mt.data);
                 dr["createdate"] = dt;
                 dr["updatedate"] = dt;
-                //drDU["createdate"] = dt;
-                //drDU["updatedate"] = dt;
                 table.Rows.Add(dr);
+
                 if(mddu.udate == DateTime.Now.ToString("yyyy-MM-dd"))
                 {
-                    if (hty.ContainsKey(mddu.Uid))
+                    if (!(duUidListN.ContainsKey(mddu.Uid + mddu.Version)))
                     {
-                        hty[mddu.Uid] = mddu;
+                        drDU["udate"] = mddu.udate;
+                        drDU["channel"] = dr["channel"];
+                        drDU["createdate"] = dt;
+                        drDU["updatedate"] = dt;
+                        drDU["kill"] = dr["kill"];
+                        drDU["version"] = dr["version"];
+                        drDU["vid"] = dr["vid"];
+                        drDU["hid"] = dr["hid"];
+                        drDU["sid"] = dr["sid"];
+                        drDU["uid"] = dr["uid"];
+                        drDU["sysid"] = dr["sysid"];
+                        drDU["md5"] = mddu.md5;
+                        drDU["ip"] = mt.Ip;
+                        tableDU.Rows.Add(drDU);
+                        duUidListN.Add(mddu.Uid + mddu.Version,"");
                     }
-                    else
-                    {
-                        hty.Add(mddu.Uid, mddu);
-                    }
+                    //if (hty.ContainsKey(mddu.Uid))
+                    //{
+                    //    hty[mddu.Uid] = mddu;
+                    //}
+                    //else
+                    //{
+                    //    hty.Add(mddu.Uid, mddu);
+                    //}
                 }
                 else
                 {
-                    if (htn.ContainsKey(mddu.Uid))
+                    if (!(duUidListY.ContainsKey(mddu.Uid + mddu.Version)))
                     {
-                        htn[mddu.Uid] = mddu;
+                        drDU["udate"] = mddu.udate;
+                        drDU["channel"] = dr["channel"];
+                        drDU["createdate"] = dt;
+                        drDU["updatedate"] = dt;
+                        drDU["kill"] = dr["kill"];
+                        drDU["version"] = dr["version"];
+                        drDU["vid"] = dr["vid"];
+                        drDU["hid"] = dr["hid"];
+                        drDU["sid"] = dr["sid"];
+                        drDU["uid"] = dr["uid"];
+                        drDU["sysid"] = dr["sysid"];
+                        drDU["md5"] = mddu.md5;
+                        drDU["ip"] = mt.Ip;
+                        tableDU.Rows.Add(drDU);
+                        duUidListY.Add(mddu.Uid + mddu.Version, "");
                     }
-                    else
-                    {
-                        htn.Add(mddu.Uid, mddu);
-                    }
+                    //if (htn.ContainsKey(mddu.Uid))
+                    //{
+                    //    htn[mddu.Uid] = mddu;
+                    //}
+                    //else
+                    //{
+                    //    htn.Add(mddu.Uid, mddu);
+                    //}
                 }
-                //tableDU.Rows.Add(drDU);
             }
 
             return table;
@@ -2338,7 +2565,7 @@ namespace MDAutoImport
             try
             {
 
-                if ("task3.0".Equals(strDBType))
+                if ("task2.0".Equals(strDBType))
                 {
                     strTableName = "Go30TaskSD";
                     strDUTableName = "Go30TaskInfo";
@@ -2689,11 +2916,11 @@ namespace MDAutoImport
                     while (tempCount <= readCount);
                 }
 
-                // 取得(SourceData)单日件数
-                Console.WriteLine("GetSourceDataCount30 Start.");
-                intSourceDataCount = db.GetSourceDataCount20(strImportDate, strTableName);
-                Console.WriteLine("GetSourceDataCount30 Count = " + intSourceDataCount);
-                Console.WriteLine("GetSourceDataCount30 Insert End.");
+                //// 取得(SourceData)单日件数
+                //Console.WriteLine("GetSourceDataCount30 Start.");
+                //intSourceDataCount = db.GetSourceDataCount20(strImportDate, strTableName);
+                //Console.WriteLine("GetSourceDataCount30 Count = " + intSourceDataCount);
+                //Console.WriteLine("GetSourceDataCount30 Insert End.");
 
                 // 向表(DailyUser)中插入数据
                 Console.WriteLine("TaskInfo30 Insert Start.");

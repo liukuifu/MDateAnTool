@@ -14,6 +14,11 @@ namespace MDAutoImport
         public string data { get; set; }
 
         /// <summary>
+        /// ip
+        /// </summary>
+        public string Ip { get; set; }
+
+        /// <summary>
         /// MData30Item
         /// </summary>
         public MData30 MData30Item { get; set; }

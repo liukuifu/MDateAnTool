@@ -10,10 +10,13 @@ namespace MdataAn
 {
     public partial class index : System.Web.UI.Page
     {
+        public string strMsg = string.Empty;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                strMsg = string.Empty;
                 DataTable table = new DataTable();
                 table.Columns.Add("date"); ;
                 table.Columns.Add("count");
@@ -84,11 +87,15 @@ namespace MdataAn
             //strDBType = strInput2;
             if (string.IsNullOrEmpty(strInput))
             {
+                strMsg = "请选择时间";
                 return;
                 //return "请选择时间";
             }
 
+            string inputTaskId = this.tbTaskId.Text;
+
             DateTime dt = DateTime.Parse(strInput);
+            string dayCount = this.tbDayCount.Text;
             string strSecondDay = string.Format("{0:yyyy-MM-dd}", dt.AddDays(1));
             string strThirdDay = string.Format("{0:yyyy-MM-dd}", dt.AddDays(2));
 
@@ -151,6 +158,11 @@ namespace MdataAn
                 this.lblTitle.Text = "killer2.0";
             }
 
+            if (string.IsNullOrEmpty(dayCount))
+            {
+                dayCount = "15";
+            }
+
             DBConnect dbc = new DBConnect();
 
             DataTable table = new DataTable();
@@ -163,311 +175,33 @@ namespace MdataAn
 
             LogHelper.writeDebugLog("dvusd = " + dvusd.ToString());
 
-            if ("task".Equals(strDBType) ||
-                "task2.0".Equals(strDBType))
+            if ("task2.0".Equals(strDBType))
             {
-                string inputTaskId = this.tbTaskId.Text;
-                table.Columns.Add("date");
-                table.Columns.Add("count");
-                table.Columns.Add("daycount");
-                table.Columns.Add("task");
-                table.Columns.Add("taskp");
-                table.Columns.Add("return");
-                table.Columns.Add("returnp");
-                //if (!string.IsNullOrEmpty(inputTaskId))
-                //{
-                    table.Columns.Add("taskid");
-                    table.Columns.Add("taskidreturn");
-                    table.Columns.Add("taskidreturnp");
-                //}
+                table = DayStatisticsLogic.GetTask20DataToTable(dt, strTableName, strUITableName, strDUTableName, strDBType, Convert.ToInt32(dayCount), inputTaskId);
 
-                dr = table.NewRow();
-                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
-                {
-                    intCount = dbc.GetTaskCount(strInput, strTableName);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
-                }
 
-                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers))
-                {
-                    intdaycount = dbc.GetTaskDayCount(strInput, strTableName);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.TaskNumber))
-                {
-                    inttaskcount = dbc.GetTaskResultCount(strInput, strTableName);
-                    updateFlg = true;
-                }
-                else
-                {
-                    inttaskcount = Convert.ToInt64(dvusd.TaskNumber);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.TaskNumberOfSuccess))
-                {
-                    intreturncount = dbc.GetTaskResultReturnCount(strInput, strTableName);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intreturncount = Convert.ToInt64(dvusd.TaskNumberOfSuccess);
-                }
-
-                dr["date"] = strInput;
-                dr["count"] = intCount;
-                dr["daycount"] = intdaycount;
-                dr["task"] = inttaskcount;
-                dr["taskp"] = ((double)inttaskcount / (double)intdaycount).ToString("P");
-                dr["return"] = intreturncount;
-                dr["returnp"] = ((double)intreturncount / (double)intdaycount).ToString("P");
-
-                if (!string.IsNullOrEmpty(inputTaskId))
-                {
-                    intTaskIdcount = dbc.GetTaskIdCount(strInput, inputTaskId, strDUTableName);
-                    intTaskIdReturncount = dbc.GetTaskIdReturnCount(strInput, inputTaskId, strDUTableName);
-                }
-                else
-                {
-                    intTaskIdcount = 0;
-                    intTaskIdReturncount = 0;
-                }
-                dr["taskid"] = intTaskIdcount;
-                    dr["taskidreturn"] = intTaskIdReturncount;
-                    dr["taskidreturnp"] = ((double)intTaskIdReturncount / (double)intTaskIdcount).ToString("P");
-                table.Rows.Add(dr);
-
-                if (string.IsNullOrEmpty(dvusd.UType) &&
-                    string.IsNullOrEmpty(dvusd.UDate))
-                {
-                    dvusd.UType = strDBType;
-                    dvusd.UDate = strInput;
-                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
-                    dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
-                    dvusd.TaskNumber = Convert.ToString(inttaskcount);
-                    dvusd.TaskNumberOfSuccess = Convert.ToString(intreturncount);
-                    dbc.InsertDailyVisitUserStatisticsForTask(dvusd);
-                }
-                else
-                {
-                    if (updateFlg)
-                    {
-                        dvusd.TotalNumberOfDays = Convert.ToString(intCount);
-                        dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
-                        dvusd.TaskNumber = Convert.ToString(inttaskcount);
-                        dvusd.TaskNumberOfSuccess = Convert.ToString(intreturncount);
-                        dbc.UpdateDailyVisitUserStatistics(dvusd);
-                    }
-                }
-
+                GridView2.AutoGenerateColumns = false;//设置自动产生列为false
+                GridViewBind(GridView2, table, "统计日期");
+                
                 this.GridView1.Visible = false;
                 this.GridView2.Visible = true;
                 this.GridView3.Visible = false;
-
-                if (!string.IsNullOrEmpty(inputTaskId))
-                {
-                    //if (this.GridView2.Columns.Count < 9)
-                    //{
-                    //    DataControlField dcf = new DataControlField()
-                    //    dcf.ShowHeader = true;
-                    //    dcf.HeaderText = "指定taskID : " + inputTaskId + " 的 result 数";
-                    //    this.GridView2.Columns.Insert(7, dcf);
-                    //} else {
-                        //this.GridView2.HeaderRow.Cells[7].Text = "指定taskID : " + inputTaskId + " 的 result 数";
-                        //this.GridView2.HeaderRow.Cells[8].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 数";
-                        //this.GridView2.HeaderRow.Cells[9].Text = "指定taskID : " + inputTaskId + " 的 result return == 0 比例";
-                    //}
-                }
-                //else
-                //{
-                //    if (this.GridView2.Columns.Count >= 9)
-                //    {
-                //        this.GridView2.Columns.RemoveAt(9);
-                //    }
-                //    if (this.GridView2.Columns.Count >= 8)
-                //    {
-                //        this.GridView2.Columns.RemoveAt(8);
-                //    }
-                //    if (this.GridView2.Columns.Count >= 8)
-                //    {
-                //        this.GridView2.Columns.RemoveAt(7);
-                //    }
-                //}
-                this.GridView2.DataSource = table;
-                this.GridView2.DataBind();
+                
+                //this.GridView2.DataSource = table;
+                //this.GridView2.DataBind();
 
             }
+            //else if ("C#2.0".Equals(strDBType)
+            //    || "killer2.0".Equals(strDBType))
+            //{ }
             else if ("go2.0".Equals(strDBType)
                 || "C#2.0".Equals(strDBType)
                 || "killer2.0".Equals(strDBType))
             {
-                table.Columns.Add("date");
-                table.Columns.Add("count");
-                table.Columns.Add("daycount");
-                table.Columns.Add("new");
-                table.Columns.Add("secondnew");
-                table.Columns.Add("secondnewp");
-                table.Columns.Add("thirdnew");
-                table.Columns.Add("thirdnewp");
-                table.Columns.Add("threenew");
-                table.Columns.Add("threenewp");
-                table.Columns.Add("weekACount");
-                table.Columns.Add("weekACountp");
-                table.Columns.Add("egg1user");
-                table.Columns.Add("killuser");
-                table.Columns.Add("v112");
-                table.Columns.Add("v107");
-                table.Columns.Add("vother");
+                table = DayStatisticsLogic.Get20DataToTable(dt, strTableName, strUITableName, strDUTableName, strDBType, Convert.ToInt32(dayCount));
 
-                dr = table.NewRow();
-
-                if (string.IsNullOrEmpty(dvusd.TotalNumberOfDays))
-                {
-                    intCount = dbc.GetTCount(strInput, strTableName);
-                    dvusd.TotalNumberOfDays = Convert.ToString(intCount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intCount = Convert.ToInt64(dvusd.TotalNumberOfDays);
-                }
-
-
-                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsers) 
-                    || "0".Equals(dvusd.DayNumberOfUsers))
-                {
-                    intdaycount = dbc.GetDayCount(strInput, strDUTableName);
-                    dvusd.DayNumberOfUsers = Convert.ToString(intdaycount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intdaycount = Convert.ToInt64(dvusd.DayNumberOfUsers);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.NumberOfDaysNewUsers)
-                    || "0".Equals(dvusd.NumberOfDaysNewUsers))
-                {
-                    intnewcount = dbc.GetNewCount(strInput, strTableName, strUITableName);
-                    dvusd.NumberOfDaysNewUsers = Convert.ToString(intnewcount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intnewcount = Convert.ToInt64(dvusd.NumberOfDaysNewUsers);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.NextDayNumberOfNewUsers)
-                    || "0".Equals(dvusd.NextDayNumberOfNewUsers))
-                {
-                    intsecondnewcount = dbc.GetSecondNewCount(strInput, strSecondDay, strDUTableName, strUITableName);
-                    dvusd.NextDayNumberOfNewUsers = Convert.ToString(intsecondnewcount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intsecondnewcount = Convert.ToInt64(dvusd.NextDayNumberOfNewUsers);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.ThirdDayNumberOfNewUsers)
-                    || "0".Equals(dvusd.ThirdDayNumberOfNewUsers))
-                {
-                    intthirdnewcount = dbc.GetThirdNewCount(strInput, strThirdDay, strDUTableName, strUITableName);
-                    dvusd.ThirdDayNumberOfNewUsers = Convert.ToString(intthirdnewcount);
-                    updateFlg = true;
-                    ThreeDayNumberOfNewUsersUpdateFlg = true;
-                }
-                else
-                {
-                    intthirdnewcount = Convert.ToInt64(dvusd.ThirdDayNumberOfNewUsers);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.ThreeDayNumberOfNewUsers)
-                    || "0".Equals(dvusd.ThreeDayNumberOfNewUsers)
-                    || ThreeDayNumberOfNewUsersUpdateFlg)
-                {
-                    intthreenewcount = dbc.GetThreeNewCount(strInput, strSecondDay, strThirdDay, strDUTableName, strUITableName);
-                    dvusd.ThreeDayNumberOfNewUsers = Convert.ToString(intthreenewcount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intthreenewcount = Convert.ToInt64(dvusd.ThreeDayNumberOfNewUsers);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.NumberOfNewUsersEgg1))
-                {
-                    integg1usercount = dbc.GetEgg1UserCount(strInput, strUITableName);
-                    dvusd.NumberOfNewUsersEgg1 = Convert.ToString(integg1usercount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    integg1usercount = Convert.ToInt64(dvusd.NumberOfNewUsersEgg1);
-                }
-
-                if (string.IsNullOrEmpty(dvusd.DayNumberOfUsersKillInstallation))
-                {
-                    intkillusercount = dbc.GetKillUserCount(strInput, strDUTableName);
-                    dvusd.DayNumberOfUsersKillInstallation = Convert.ToString(intkillusercount);
-                    updateFlg = true;
-                }
-                else
-                {
-                    intkillusercount = Convert.ToInt64(dvusd.DayNumberOfUsersKillInstallation);
-                }
-
-                intAfterWeekcount = dbc.GetAfterWeekcount(strInput, strDUTableName);
-
-                dr["date"] = strInput;
-                dr["count"] = intCount;
-                dr["daycount"] = intdaycount;
-                dr["new"] = intnewcount;
-                dr["secondnew"] = intsecondnewcount;
-                dr["secondnewp"] = ((double)intsecondnewcount / (double)intnewcount).ToString("P");
-                dr["thirdnew"] = intthirdnewcount;
-                dr["thirdnewp"] = ((double)intthirdnewcount / (double)intnewcount).ToString("P");
-                dr["threenew"] = intthreenewcount;
-                dr["threenewp"] = ((double)intthreenewcount / (double)intnewcount).ToString("P");
-                dr["egg1user"] = integg1usercount;
-                dr["killuser"] = intkillusercount;
-                dr["weekACount"] = intAfterWeekcount;
-                dr["weekACountp"] = ((double)intAfterWeekcount / (double)intdaycount).ToString("P"); ;
-
-                intv112 = dbc.GetVCount(strInput, strDUTableName, "1000.0.0.112");
-                v107 = dbc.GetVCount(strInput, strDUTableName, "1000.0.0.107");
-                vother = dbc.GetNotVCount(strInput, strDUTableName, "1000.0.0.107", "1000.0.0.112"); ;
-                dr["v112"] = intv112;
-                dr["v107"] = v107;
-                dr["vother"] = vother;
-
-                table.Rows.Add(dr);
-
-                if (string.IsNullOrEmpty(dvusd.UType) &&
-                    string.IsNullOrEmpty(dvusd.UDate))
-                {
-                    dvusd.UType = strDBType;
-                    dvusd.UDate = strInput;
-                    dbc.InsertDailyVisitUserStatisticsForGo20(dvusd);
-                }
-                else
-                {
-                    if (updateFlg)
-                    {
-                        dbc.UpdateDailyVisitUserStatistics(dvusd);
-                    }
-                }
-
-                this.GridView3.DataSource = table;
-                this.GridView3.DataBind();
+                GridView3.AutoGenerateColumns = false;//设置自动产生列为false
+                GridViewBind(GridView3, table, "统计日期");
 
                 this.GridView1.Visible = false;
                 this.GridView2.Visible = false;
@@ -616,6 +350,24 @@ namespace MdataAn
             }
             this.search.Enabled = true;
             LogHelper.writeInfoLog("search_Click End");
+        }
+
+        private void GridViewBind(GridView gdv, DataTable table, string strDataKey)
+        {
+            gdv.Columns.Clear();
+
+            gdv.AutoGenerateColumns = false;
+            gdv.DataSource = table;
+            gdv.DataKeyNames = new string[] { strDataKey };
+
+            for (int i = 0; i < table.Columns.Count; i++)   //绑定普通数据列
+            {
+                BoundField bfColumn = new BoundField();
+                bfColumn.DataField = table.Columns[i].ColumnName;
+                bfColumn.HeaderText = table.Columns[i].Caption;
+                gdv.Columns.Add(bfColumn);
+            }
+            gdv.DataBind();//绑定
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -45,7 +46,7 @@ namespace exportExcel
 
             SqlConnection conn = ConnectionOpen();
 
-            string sql = "SELECT count(1) FROM "
+            string sql = "SELECT count(distinct uid) FROM "
                 + strDailyTableName
                 + " where udate = '"
                 + date
@@ -68,11 +69,24 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
-                + strUserTableName
-                + " where Convert(varchar, udate,120) LIKE '"
-                + date
-                + "%'";
+            string sql = string.Empty;
+            if ("Go30UserInfo".Equals(strUserTableName))
+            {
+                sql = "SELECT count(1) FROM "
+                   + strUserTableName
+                   + " where sadate = '"
+                   + date
+                   + "'";
+            }
+            else
+            {
+                sql = "SELECT count(1) FROM "
+                   + strUserTableName
+                   + " where Convert(varchar, udate,120) LIKE '"
+                   + date
+                   + "%'";
+            }
+
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
             int intUserInfoCount = (int)comm.ExecuteScalar();
@@ -90,11 +104,23 @@ namespace exportExcel
 
             SqlConnection conn = ConnectionOpen();
 
-            string sql = "SELECT DISTINCT gsd.uid FROM " + strDailyTableName + " gsd where gsd.udate = '"
+            string sql = string.Empty;
+            if ("Go30UserInfo".Equals(strUserTableName))
+            {
+                sql = "SELECT DISTINCT gsd.uid FROM " + strDailyTableName + " gsd where gsd.udate = '"
+                + strSecondDay
+                + "' and gsd.uid in (select uif.uid from " + strUserTableName + " uif where sadate = '"
+                + date
+                + "') and uid like '{%'";
+            }
+            else
+            {
+                sql = "SELECT DISTINCT gsd.uid FROM " + strDailyTableName + " gsd where gsd.udate = '"
                 + strSecondDay
                 + "' and gsd.uid in (select uif.uid from " + strUserTableName + " uif where Convert(varchar, uif.udate,120) like '"
                 + date
                 + "%') and uid like '{%'";
+            }
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -114,7 +140,22 @@ namespace exportExcel
 
             SqlConnection conn = ConnectionOpen();
 
-            string sql = "SELECT DISTINCT uid FROM "
+            string sql = string.Empty;
+            if ("Go30UserInfo".Equals(strUserTableName))
+            {
+                sql = "SELECT DISTINCT uid FROM "
+                 + strDailyTableName
+                 + " gsd where gsd.udate = '"
+                 + strThirdDay
+                 + "' and gsd.uid in (select uif.uid from "
+                 + strUserTableName
+                 + " uif where sadate = '"
+                 + date
+                 + "') and uid like '{%'";
+            }
+            else
+            {
+                sql = "SELECT DISTINCT uid FROM "
                 + strDailyTableName
                 + " gsd where gsd.udate = '"
                 + strThirdDay
@@ -123,6 +164,7 @@ namespace exportExcel
                 + " uif where Convert(varchar, uif.udate,120) like '"
                 + date
                 + "%') and uid like '{%'";
+            }
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -142,8 +184,25 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-
-            string sql = "SELECT DISTINCT gsd.uid FROM "
+            
+            string sql = string.Empty;
+            if ("Go30UserInfo".Equals(strUserTableName))
+            {
+                sql = "SELECT DISTINCT gsd.uid FROM "
+                + strDailyTableName
+                + " gsd where (gsd.udate = '"
+                + strSecondDay
+                + "' or gsd.udate = '"
+                + strThirdDay
+                + "')  and gsd.uid in (select uif.uid from "
+                + strUserTableName
+                + " uif where sadate = '"
+                + date
+                + "') and uid like '{%'";
+            }
+            else
+            {
+                sql = "SELECT DISTINCT gsd.uid FROM "
                 + strDailyTableName
                 + " gsd where (gsd.udate = '"
                 + strSecondDay
@@ -154,6 +213,8 @@ namespace exportExcel
                 + " uif where Convert(varchar, uif.udate,120) like '"
                 + date
                 + "%') and uid like '{%'";
+            }
+
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
 
@@ -171,9 +232,19 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(DISTINCT uid) FROM "
-                + strUserTableName
-                + " where uid in (select uif.uid from UserInfo uif) and Convert(varchar, udate,120) LIKE '" + date + "%'";
+            string sql = string.Empty;
+            if ("Go30UserInfo".Equals(strUserTableName))
+            {
+                sql = "SELECT count(DISTINCT uid) FROM "
+                 + strUserTableName
+                 + " where uid in (select uif.uid from UserInfo uif) and sadate = '" + date + "'";
+            }
+            else
+            {
+                sql = "SELECT count(DISTINCT uid) FROM "
+                   + strUserTableName
+                   + " where uid in (select uif.uid from UserInfo uif) and Convert(varchar, udate,120) LIKE '" + date + "%'";
+            }
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -182,6 +253,140 @@ namespace exportExcel
             return rtn;
         }
 
+        internal Hashtable GetDailyVisitUserStatisticsHash(string startDT, string strEndDay, string strDBType)
+        {
+            Hashtable ht = new Hashtable();
+            DailyVisitUserStatisticsData rtn = new DailyVisitUserStatisticsData();
+
+            SqlConnection conn = ConnectionOpen();
+
+            string sql = "SELECT keys,UType ,UDate ,TotalNumberOfDays ,DayNumberOfUsers ,NumberOfDaysNewUsers ,NextDayNumberOfNewUsers ,ThirdDayNumberOfNewUsers ,ThreeDayNumberOfNewUsers ,NumberOfNewUsersEgg1 ,DayNumberOfUsersKillInstallation ,TaskNumber ,TaskNumberOfSuccess ,Extension1 ,Extension2 ,Extension3 ,Extension4 ,Extension5 ,createdate ,updatedate "
+                                + "FROM DailyVisitUserStatistics where UType = '" 
+                                + strDBType 
+                                + "' and UDate between '"
+                                + startDT
+                                + "' and '"
+                                + strEndDay
+                                + "' order by udate";
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+
+            SqlDataReader reader = comm.ExecuteReader();
+            while (reader.Read())
+            {
+                if (reader != null && reader.FieldCount > 0)
+                {
+                    rtn = new DailyVisitUserStatisticsData();
+                    rtn.keys = Convert.ToInt32(reader[0]);
+
+                    if (reader[1] != null)
+                    {
+                        rtn.UType = Convert.ToString(reader[1]);
+                    }
+
+                    if (reader[2] != null)
+                    {
+                        rtn.UDate = Convert.ToString(reader[2]);
+                    }
+
+                    if (reader[3] != null)
+                    {
+                        rtn.TotalNumberOfDays = Convert.ToString(reader[3]);
+                    }
+
+                    if (reader[4] != null)
+                    {
+                        rtn.DayNumberOfUsers = Convert.ToString(reader[4]);
+                    }
+
+                    if (reader[5] != null)
+                    {
+                        rtn.NumberOfDaysNewUsers = Convert.ToString(reader[5]);
+                    }
+
+                    if (reader[6] != null)
+                    {
+                        rtn.NextDayNumberOfNewUsers = Convert.ToString(reader[6]);
+                    }
+
+                    if (reader[7] != null)
+                    {
+                        rtn.ThirdDayNumberOfNewUsers = Convert.ToString(reader[7]);
+                    }
+
+                    if (reader[8] != null)
+                    {
+                        rtn.ThreeDayNumberOfNewUsers = Convert.ToString(reader[8]);
+                    }
+
+                    if (reader[9] != null)
+                    {
+                        rtn.NumberOfNewUsersEgg1 = Convert.ToString(reader[9]);
+                    }
+
+                    if (reader[10] != null)
+                    {
+                        rtn.DayNumberOfUsersKillInstallation = Convert.ToString(reader[10]);
+                    }
+
+                    if (reader[11] != null)
+                    {
+                        rtn.TaskNumber = Convert.ToString(reader[11]);
+                    }
+
+                    if (reader[12] != null)
+                    {
+                        rtn.TaskNumberOfSuccess = Convert.ToString(reader[12]);
+                    }
+
+                    if (reader[13] != null)
+                    {
+                        rtn.Extension1 = Convert.ToString(reader[13]);
+                    }
+
+                    if (reader[14] != null)
+                    {
+                        rtn.Extension2 = Convert.ToString(reader[14]);
+                    }
+
+                    if (reader[15] != null)
+                    {
+                        rtn.Extension3 = Convert.ToString(reader[15]);
+                    }
+
+                    if (reader[16] != null)
+                    {
+                        rtn.Extension4 = Convert.ToString(reader[16]);
+                    }
+
+                    if (reader[17] != null)
+                    {
+                        rtn.Extension5 = Convert.ToString(reader[17]);
+                    }
+
+                    if (reader[18] != null)
+                    {
+                        rtn.createdate = Convert.ToDateTime(reader[18]);
+                    }
+
+                    if (reader[19] != null)
+                    {
+                        rtn.updatedate = Convert.ToDateTime(reader[19]);
+                    }
+                    if (ht.ContainsKey(rtn.UDate))
+                    {
+                        ht[rtn.UDate] = rtn;
+                    }
+                    else
+                    {
+                        ht.Add(rtn.UDate, rtn);
+                    }
+                }
+            }
+            conn.Close();
+            return ht;
+        }
 
         public Int64 GetKillUserCount(string date, string strDailyTableName)
         {
@@ -190,7 +395,7 @@ namespace exportExcel
             SqlConnection conn = ConnectionOpen();
             string sql = "SELECT count(1) FROM "
                 + strDailyTableName
-                + " where Convert(varchar, udate,120) LIKE '" + date + "' and [kill] <> ''";
+                + " where udate = '" + date + "' and [kill] <> ''";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -231,7 +436,7 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
+            string sql = "SELECT count(DISTINCT uid) FROM "
                 + strDailyTableName
                 + " where Convert(varchar, udate,120) LIKE '" + strInput + "' and version = '" + v + "'";
 
@@ -243,6 +448,42 @@ namespace exportExcel
             return rtn;
         }
 
+        public Int64 GetLowVCount(string strInput, string strDailyTableName, string HighVersion, string LowVersion)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = "SELECT count(DISTINCT uid) FROM "
+                + strDailyTableName
+                + " dulow  where dulow.udate = '" 
+                + strInput 
+                + "' and dulow.uid not in (select distinct g2sd.uid from " 
+                + strDailyTableName 
+                + " g2sd where g2sd.udate = '" 
+                + strInput 
+                + "' and g2sd.[version] = '" 
+                + HighVersion 
+                + "' ) and dulow.[version] = '" 
+                + LowVersion
+                + "'";
+
+  //          select count(1)
+  //            from Go30DailyUser dulow
+  //           where dulow.udate = '2015-12-02'
+  //               and dulow.uid not in (
+  //                          select distinct g2sd.uid from Go20DailyUser g2sd
+  //                         where g2sd.udate = '2015-12-02' and g2sd.[version] = '1000.0.0.112'
+		//)
+		//and dulow.[version] = '1000.0.0.107'
+  //group by dulow.uid, dulow.[version] order by dulow.uid, dulow.[version]  --统计访问用户的版本是'1000.0.0.107'
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            rtn = (int)comm.ExecuteScalar();
+
+            conn.Close();
+            return rtn;
+        }
         public long GetNotVCount(string strInput, string strDailyTableName, string v1, string v2)
         {
             Int64 rtn = 0;
@@ -312,15 +553,15 @@ namespace exportExcel
                 + strSecondDay
                 + "' or gsd.udate = '"
                 + strThirdDay
-                +"') and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + "') and gsd.uid in (select DISTINCT uif.uid from " + strDUTableName + " uif where uif.udate = '"
                 + strInput
                 + "' and channel like '"
                 + channelValue
                 + "%' and uid in (select uid from "
                 + strUITableName
-                + " where CONVERT(nvarchar,udate,120) like '"
+                + " where sadate = '"
                 + strInput
-                + "%'))";
+                + "'))";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -341,15 +582,15 @@ namespace exportExcel
 
             string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where gsd.udate = '"
                 + strThirdDay
-                + "' and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + "' and gsd.uid in (select DISTINCT uif.uid from " + strDUTableName + " uif where uif.udate = '"
                 + strInput
                 + "' and channel like '"
                 + channelValue
                 + "%' and uid in (select uid from "
                 + strUITableName
-                + " where CONVERT(nvarchar,udate,120) like '"
+                + " where sadate = '"
                 + strInput
-                + "%'))";
+                + "'))";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -370,15 +611,15 @@ namespace exportExcel
 
             string sql = "SELECT count(DISTINCT gsd.[uid]) FROM " + strDUTableName + " gsd where gsd.udate = '"
                 + strSecondDay
-                + "' and gsd.uid in (select uif.uid from " + strDUTableName + " uif where uif.udate = '"
+                + "' and gsd.uid in (select DISTINCT uif.uid from " + strDUTableName + " uif where uif.udate = '"
                 + strInput
                 + "' and channel like '"
                 + strChannelValue
                 + "%' and uid in (select uid from "
                 + strUITableName
-                + " where CONVERT(nvarchar,udate,120) like '"
+                + " where sadate = '"
                 + strInput
-                +"%'))";
+                +"'))";
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -396,7 +637,7 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
+            string sql = "SELECT count(distinct [uid]) FROM "
                 + strDUTableName
                 + " where udate = '"
                 + strInput
@@ -404,9 +645,9 @@ namespace exportExcel
                 + channelValue
                 + "%' and uid in (select [uid] from "
                 + strUITableName
-                +" where CONVERT(nvarchar,udate,120) like '"
+                + " where sadate = '"
                 + strInput 
-                + "%' )";
+                + "' )";
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
             int intUserInfoCount = (int)comm.ExecuteScalar();
@@ -423,7 +664,7 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
+            string sql = "SELECT count(distinct [uid]) FROM "
                 + strDUTableName
                 + " where udate = '"
                 + strInput
@@ -777,9 +1018,19 @@ namespace exportExcel
             int rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
-                + strUITableName
-                + " where udate < '" + date + "'";
+            string sql = string.Empty;
+            if ("Go30UserInfo".Equals(strUITableName))
+            {
+                sql = "SELECT count(1) FROM "
+                   + strUITableName
+                   + " where sadate < '" + date + "'";
+            }
+            else
+            {
+                sql = "SELECT count(1) FROM "
+                   + strUITableName
+                   + " where Convert(varchar, udate,120) LIKE '" + date + "%'";
+            }
 
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
@@ -879,18 +1130,26 @@ namespace exportExcel
             return strRtn;
         }
 
-        internal int GetWeekDAUCount(string weeks, string weeke, string strDUTableName)
+        internal int GetWeekDAUCount(string weeks, string weeke, string strDUTableName,string strType)
         {
             int rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
+            string sql = "SELECT sum(Cast(DayNumberOfUsers as bigint)) FROM "
                 + strDUTableName
-                + " where udate between '" + weeks + "' and '" + weeke + "'";
-                        
+                + " where UType = '" + strType+"' and udate between '" + weeks + "' and '" + weeke + "'";
+
             SqlCommand comm = new SqlCommand(sql, conn);
             comm.CommandTimeout = intTimeout;
-            rtn = (int)comm.ExecuteScalar();
+
+            SqlDataReader reader = comm.ExecuteReader();
+            while (reader.Read())
+            {
+                if (reader != null && reader.FieldCount > 0)
+                {
+                    rtn = Convert.ToInt32(reader[0]);                    
+                }
+            }
             conn.Close();
             return rtn;
         }

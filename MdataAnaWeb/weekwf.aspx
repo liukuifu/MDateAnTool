@@ -34,6 +34,9 @@
 							<li class="active">
 								<a href="#">周统计</a>
 							</li>
+							<li >
+								<a href="/channelwf.aspx">渠道统计</a>
+							</li>
 						</ul>
 					</div>
 					
@@ -101,19 +104,19 @@
                     BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3"
                     style="vertical-align:central;text-align:center;padding-right:200px">
                     <Columns>
-                        <asp:BoundField DataField="date" HeaderText="日期">
-                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />                    
+                        <asp:BoundField DataField="week" HeaderText="自然周单位">
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="240px" />                    
                         </asp:BoundField>
-                        <asp:BoundField DataField="week" HeaderText="星期" >
-                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="80px" />
+                        <asp:BoundField DataField="weekcount" HeaderText="本周总访问数(DAU)" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />
                         </asp:BoundField>
-                        <asp:BoundField DataField="daycount" HeaderText="DAU数" >
-                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="120px" />
+                        <asp:BoundField DataField="weeknewcount" HeaderText="本周用户(DNU)" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />
                         </asp:BoundField>
-                        <asp:BoundField DataField="weekACount" HeaderText="DAU在一周后的存活数" >
-                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="220px" />
+                        <asp:BoundField DataField="nextweekcount" HeaderText="次周存活" >
+                        <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="100px" />
                         </asp:BoundField>
-                        <asp:BoundField DataField="weekACountp" HeaderText="DAU在一周后的存活数比例" >
+                        <asp:BoundField DataField="weekACountp" HeaderText="次周存活/本周新用户" >
                         <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="220px" />
                         </asp:BoundField>
                     </Columns>

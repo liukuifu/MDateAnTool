@@ -118,6 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Command_Timeout" xml:space="preserve">
-    <value>240</value>
+    <value>2400</value>
+  </data>
+  <data name="HighVersion" xml:space="preserve">
+    <value>1000.0.0.112</value>
+  </data>
+  <data name="LowVersion" xml:space="preserve">
+    <value>1000.0.0.107</value>
   </data>
 </root>

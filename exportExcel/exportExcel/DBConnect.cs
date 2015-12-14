@@ -393,7 +393,7 @@ namespace exportExcel
             Int64 rtn = 0;
 
             SqlConnection conn = ConnectionOpen();
-            string sql = "SELECT count(1) FROM "
+            string sql = "SELECT count(DISTINCT uid) FROM "
                 + strDailyTableName
                 + " where udate = '" + date + "' and [kill] <> ''";
 
@@ -919,7 +919,33 @@ namespace exportExcel
             //LogHelper.writeInfoLog("InsertDailyVisitUserStatistics For Go20 End");
             return strRtn;
         }
-        
+
+        internal long GetCsEgg2UserCount(string strInput, string strDUTableName)
+        {
+            Int64 rtn = 0;
+
+            SqlConnection conn = ConnectionOpen();
+            string sql = string.Empty;
+            if ("Cs30DailyUser".Equals(strDUTableName))
+            {
+                sql = "SELECT count(DISTINCT uid) FROM "
+                 + strDUTableName
+                 + " where uid in (select uif.uid from Cs20UserInfo uif) and udate = '" + strInput + "'";
+            }
+            //else
+            //{
+            //    sql = "SELECT count(DISTINCT uid) FROM "
+            //       + strUserTableName
+            //       + " where uid in (select uif.uid from UserInfo uif) and Convert(varchar, udate,120) LIKE '" + date + "%'";
+            //}
+
+            SqlCommand comm = new SqlCommand(sql, conn);
+            comm.CommandTimeout = intTimeout;
+            rtn = (int)comm.ExecuteScalar();
+            conn.Close();
+            return rtn;
+        }
+
         public Int64 GetTaskCount(string date, string strDataTableName)
         {
             Int64 rtn = 0;
@@ -1147,7 +1173,14 @@ namespace exportExcel
             {
                 if (reader != null && reader.FieldCount > 0)
                 {
-                    rtn = Convert.ToInt32(reader[0]);                    
+                    if (string.IsNullOrEmpty(reader[0].ToString()))
+                    {
+                        rtn = 0;
+                    }
+                    else
+                    {
+                        rtn = Convert.ToInt32(reader[0]);
+                    }
                 }
             }
             conn.Close();

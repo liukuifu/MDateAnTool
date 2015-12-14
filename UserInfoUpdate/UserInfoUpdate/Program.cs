@@ -45,7 +45,7 @@ namespace UserInfoUpdate
             //string strDBType = args[0];
             string strDBType = "go3.0";
             //string strInputDate = args[1];
-            string strInputDate = "2015-12-10";
+            string strInputDate = "2015-12-11";
             //string strFileName = @"E:\导入数据\temp.eggdata.log.2015-10-29.001";
             string strTableName = string.Empty;
             string strDUTableName = string.Empty;
@@ -100,6 +100,7 @@ namespace UserInfoUpdate
                 {
                     Console.WriteLine("UpdateGo30UserInfo Start.");
                     db.UpdateGo30UserInfo(strInputDate, strTableName, strUITableName);
+                    //db.UpdateGo30UserInfoByCondition(strInputDate, strTableName, strUITableName);
                     Console.WriteLine("UpdateGo30UserInfo End.");
                 }
                 //db.GetGo20UserInfo();

@@ -43,99 +43,59 @@ namespace MDAutoImport
                 LogHelper.writeDebugLog("DlFullPath : " + DlFullPath);
                 LogHelper.writeDebugLog("UnFullPath : " + UnFullPath);
 
-                //判断文件路径是否存在，不存在则创建文件夹
-                if (!Directory.Exists(UnFullPath))
-                {
-                    Directory.CreateDirectory(UnFullPath);//不存在就创建目录
-                }
-                //for (;;)
-                for (int countIndex = 0; countIndex < 10000; countIndex++)
-                {
-                    //获取目录parentDir下的所有的文件，并过滤得到所有的文本文件
-                    //string[] file = Directory.GetFiles(DlFullPath, ".zip");
-                    string[] file = Directory.GetFiles(DlFullPath);
-                    for (int i = 0; i < file.Length; i++)
-                    {
-                        //FileInfo fi = new FileInfo(file[i]);
-                        //if (fi.Extension.ToLower() == "txt")
-                        //{
-                        LogHelper.writeDebugLog("file [" + i + "] : " + file[i]);
-                        if (file[i].EndsWith(".zip"))
-                        {
-                            if (!ht.ContainsKey(file[i]))
-                            {
-                                //hm.Add(file[i], DlFullPath + "/" + file[i]);
-                                LogHelper.writeDebugLog("Add file [" + i + "] : " + file[i]);
-                                ht.Add(file[i], DlFullPath + "\\" + file[i]);
-                                string fileName = string.Empty;
-                                string unZipPath = string.Empty;
-                                bool retF = UnZip(file[i], DlFullPath + "\\" + file[i], UnFullPath, out fileName, out unZipPath);
-                                if (retF)
-                                {
-                                    ImportData(fileName, unZipPath);
-                                }
-
-                                if (ht.Count == ZipCount)
-                                //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
-                                //if (ht.Count == 3)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        //}                
-                    }
-                    //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
-                    if (ht.Count == ZipCount)
-                    {
-                        break;
-                    }
-                    //Thread.Sleep(60000);
-                    Thread.Sleep(30000);
-                }
-
-                //Hashtable imht = new Hashtable();
-
-                //foreach (DictionaryEntry de in ht)//i = 0; i < hm.Count(); i++)
+                ////判断文件路径是否存在，不存在则创建文件夹
+                //if (!Directory.Exists(UnFullPath))
                 //{
-                //    string fileFullName = de.Key.ToString();
-                //    string fileName = fileFullName.Substring(fileFullName.LastIndexOf("\\") + 1);
-                //    string unZipToPath = UnFullPath + "\\" + fileName.Substring(0, fileName.IndexOf(".zip"));
-
-                //    //判断文件路径是否存在，不存在则创建文件夹
-                //    if (!Directory.Exists(unZipToPath))
-                //    {
-                //        Directory.CreateDirectory(unZipToPath);//不存在就创建目录
-                //    }
-                //    LogHelper.writeDebugLog("fileName : " + fileName);
-                //    LogHelper.writeDebugLog("fileFullName : " + fileFullName);
-                //    LogHelper.writeDebugLog("unZipToPath : " + unZipToPath);
-                //    try
-                //    {
-                //        using (ZipFile zip = ZipFile.Read(fileFullName))
-                //        {   //遍历zip文件中每一个文件对象，然后解压到指定目录
-                //            foreach (ZipEntry e in zip)
-                //            {
-                //                e.Extract(unZipToPath);
-                //            }
-                //            //也可以通过索引访问文件对象
-                //            //ZipEntry e = zip["MyReport.doc"];
-                //        }
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        LogHelper.writeErrorLog(ex);
-                //        continue;
-                //    }
-
-                //    imht.Add(fileName, unZipToPath);
+                //    Directory.CreateDirectory(UnFullPath);//不存在就创建目录
                 //}
-                ////imht.Add("cegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\cegg20151201");
-                ////imht.Add("egg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\egg20151201");
-                ////imht.Add("kegg20151129.zip", @"E:\MD\UnZipFile\2015-12-01\kegg20151201");
-                //bool flg = ImportData(imht);
+                ////for (;;)
+                //for (int countIndex = 0; countIndex < 10000; countIndex++)
+                //{
+                //    //获取目录parentDir下的所有的文件，并过滤得到所有的文本文件
+                //    //string[] file = Directory.GetFiles(DlFullPath, ".zip");
+                //    string[] file = Directory.GetFiles(DlFullPath);
+                //    for (int i = 0; i < file.Length; i++)
+                //    {
+                //        //FileInfo fi = new FileInfo(file[i]);
+                //        //if (fi.Extension.ToLower() == "txt")
+                //        //{
+                //        LogHelper.writeDebugLog("file [" + i + "] : " + file[i]);
+                //        if (file[i].EndsWith(".zip"))
+                //        {
+                //            if (!ht.ContainsKey(file[i]))
+                //            {
+                //                //hm.Add(file[i], DlFullPath + "/" + file[i]);
+                //                LogHelper.writeDebugLog("Add file [" + i + "] : " + file[i]);
+                //                ht.Add(file[i], DlFullPath + "\\" + file[i]);
+                //                string fileName = string.Empty;
+                //                string unZipPath = string.Empty;
+                //                bool retF = UnZip(file[i], DlFullPath + "\\" + file[i], UnFullPath, out fileName, out unZipPath);
+                //                if (retF)
+                //                {
+                //                    ImportData(fileName, unZipPath);
+                //                }
 
-                //bool flg = ImportData("egg20151210.zip", @"E:\MD\UnZipFile\2015-12-10\egg20151210");
+                //                if (ht.Count == ZipCount)
+                //                //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                //                //if (ht.Count == 3)
+                //                {
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        //}                
+                //    }
+                //    //if (ht.Count == Convert.ToInt32(CommonResource.ZipCount))
+                //    if (ht.Count == ZipCount)
+                //    {
+                //        break;
+                //    }
+                //    //Thread.Sleep(60000);
+                //    Thread.Sleep(30000);
+                //}
+
+                bool flg = ImportData("egg20151213.zip", @"E:\temp\2015-12-14");
+                                                           //E:\MD\UnZipFile\2015-12-12\egg20151212
                 //bool flg = ImportData("cegg20151209.zip", @"E:\MD\UnZipFile\2015-12-09\cegg20151209");
                 //bool flg = ImportData("egg20151208.zip", @"E:\temp\test");
 
@@ -180,60 +140,6 @@ namespace MDAutoImport
 
             //imht.Add(fileName, unZipToPath);
             return true;
-        }
-
-        private static bool ImportData(Hashtable imht)
-        {
-            LogHelper.writeDebugLog("ImportData 1 start");
-            bool retFlag = true;
-            DateTime dt = DateTime.Now.AddDays(-1);
-            foreach (DictionaryEntry de in imht)
-            {
-                LogHelper.writeDebugLog("de.Key : " + de.Key);
-                LogHelper.writeDebugLog("de.Value : " + de.Value);
-
-                //de.Key : mdata.csharp.26.zip
-                //de.Value : E:\MD\UnZipFile\2015 - 11 - 26\mdata.csharp.26
-                if (de.Key.ToString().IndexOf("mdata.csharp") == 0)
-                {
-                    retFlag = FileToTable10("C#", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-                }
-                //de.Key : mdata.killer.26.zip
-                //de.Value : E:\MD\UnZipFile\2015 - 11 - 26\mdata.killer.26
-                else if (de.Key.ToString().IndexOf("mdata.killer") == 0)
-                {
-                    retFlag = FileToTable10("killer", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-                }
-                //de.Key : mdata.go.26.zip
-                //de.Value : E:\MD\UnZipFile\2015 - 11 - 26\mdata.go.26
-                else if (de.Key.ToString().IndexOf("mdata.go") == 0)
-                {
-                    retFlag = FileToTable10("go", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-                }
-                //de.Key : kegg20151126.zip
-                //de.Value : E:\MD\UnZipFile\2015 - 11 - 26\kegg20151126
-                else if (de.Key.ToString().IndexOf("kegg") == 0)
-                {
-                    retFlag = FileToTable20("killer2.0", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-                }
-                //de.Key : cegg20151126.zip
-                //de.Value : E:\MD\UnZipFile\2015 - 11 - 26\cegg20151126
-                else if (de.Key.ToString().IndexOf("cegg") == 0)
-                {
-                    retFlag = FileToTable20("C#2.0", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-                }
-                //de.Key : egg20151126.zip
-                //de.Value : E:\MD\UnZipFile\2015 - 11 - 26\egg20151126
-                else
-                {
-                    retFlag = FileToTable20("go2.0", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-
-                    retFlag = FileToTable20ForTask("task2.0", dt.ToString("yyyy-MM-dd"), de.Value.ToString());
-                }
-
-            }
-            LogHelper.writeDebugLog("ImportData end");
-            return retFlag;
         }
 
         private static bool ImportData(string strFileName,string strFilePath)
@@ -1719,101 +1625,8 @@ namespace MDAutoImport
                 }
                 duUidListN.Clear();
                 duUidListY.Clear();
-
-                //DateTime dss1 = DateTime.Now;
-                //LogHelper.writeDebugLog("MakeDU start : " + dss1.ToString());
-                //int insertFlg = 0;
-                //foreach (DictionaryEntry de1 in htY)
-                //{
-                //    MDataDU30 t = de1.Value as MDataDU30;
-                //    drDU = duT.NewRow();
-                //    DateTime dt1 = DateTime.Now;
-                //    drDU["udate"] = t.udate;
-                //    drDU["channel"] = t.Channel;
-                //    drDU["uid"] = t.Uid;
-                //    drDU["sid"] = t.Sid;
-                //    drDU["hid"] = t.Hid;
-                //    drDU["sysid"] = t.Sysid;
-                //    drDU["vid"] = t.Vid;
-                //    drDU["version"] = t.Version;
-                //    drDU["kill"] = t.kill;
-                //    drDU["md5"] = t.md5;
-                //    drDU["createdate"] = dt1;
-                //    drDU["updatedate"] = dt1;
-                //    duT.Rows.Add(drDU);
-                //    insertFlg = insertFlg + 1;
-                //    if (insertFlg == 100000)
-                //    {
-                //        db.InsertDUTable30(duT, strDUTableName);
-                //        LogHelper.writeDebugLog("insertDU 111111 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                //        insertFlg = 0;
-                //        duT.Clear();
-                //    }
-                //}
-                //LogHelper.writeDebugLog("MakeDU 22222222 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
-                //foreach (DictionaryEntry de2 in htN)
-                //{
-                //    MDataDU30 t = de2.Value as MDataDU30;
-                //    drDU = duT.NewRow();
-                //    DateTime dt1 = DateTime.Now;
-                //    drDU["udate"] = t.udate;
-                //    drDU["channel"] = t.Channel;
-                //    drDU["uid"] = t.Uid;
-                //    drDU["sid"] = t.Sid;
-                //    drDU["hid"] = t.Hid;
-                //    drDU["sysid"] = t.Sysid;
-                //    drDU["vid"] = t.Vid;
-                //    drDU["version"] = t.Version;
-                //    drDU["kill"] = t.kill;
-                //    drDU["md5"] = t.md5;
-                //    drDU["createdate"] = dt1;
-                //    drDU["updatedate"] = dt1;
-                //    duT.Rows.Add(drDU);
-                //    insertFlg = insertFlg + 1;
-                //    if (insertFlg == 100000)
-                //    {
-                //        db.InsertDUTable30(duT, strDUTableName);
-                //        LogHelper.writeDebugLog("insertDU 33333 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                //        insertFlg = 0;
-                //        duT.Clear();
-                //    }
-                //}
-
-                //LogHelper.writeDebugLog("MakeDU 44444 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
-                //db.InsertDUTable30(duT, strDUTableName);
-
-                //LogHelper.writeDebugLog("insertDU 5555555 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                //LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
+                
                 int intLossCount = 0;
-                //int intWeekCount = 0;
-
-                //Console.WriteLine("SDTableName ： " + strTableName);
-                //// 取得(SourceData)单日件数
-                //Console.WriteLine("GetSourceDataCount3.0 Start.");
-                //intSourceDataCount = db.GetSourceDataCount(strImportDate, strTableName);
-                //Console.WriteLine("GetSourceDataCount3.0 Count = " + intSourceDataCount);
-                //Console.WriteLine("GetSourceDataCount3.0 Insert End.");
-
-                //// 向表(DailyUser)中插入数据
-                //Console.WriteLine("DailyUser3.0 Insert Start.");
-                //intInsertDU = db.InsertDailyUser20(strImportDate, strTableName, strDUTableName);
-                //Console.WriteLine("DailyUser3.0 Insert Count = " + intInsertDU);
-                //Console.WriteLine("DailyUser3.0 Insert End.");
-
-                // 向表(DailyUser)中插入数据
-                //DateTime dss2 = DateTime.Now;
-                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT start : " + dss2.ToString());
-
-                //DataView dv = duT.DefaultView;
-                //dv.Sort = "createdate desc";
-                //string[] colArr = new string[] { "uid", "udate" };
-                //DataTable insertTableDU = dv.ToTable(true, colArr);
-
-                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT timespan : " + DateTime.Now.Subtract(dss2).ToString());
-                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
 
                 DateTime dss1 = DateTime.Now;
                 LogHelper.writeDebugLog("GetDUCount start : " + dss1.ToString());
@@ -1823,14 +1636,6 @@ namespace MDAutoImport
 
                 if (intInsertDU > 0)
                 {
-                    //if ("go3.0".Equals(strDBType))
-                    //{
-                    //    // 更新表(DailyUser)中数据
-                    //    Console.WriteLine("DailyUser3.0 Update Start.");
-                    //    int intUpdateDU = db.UpdateDailyUser20(strImportDate, strTableName, strDUTableName);
-                    //    Console.WriteLine("DailyUser3.0 Update Count = " + intUpdateDU);
-                    //    Console.WriteLine("DailyUser3.0 Update End.");
-                    //}
 
                     Console.WriteLine("UserInfo3.0 Insert Start.");
                     // 向表(UserInfo)中插入数据
@@ -1880,427 +1685,6 @@ namespace MDAutoImport
 
 
             LogHelper.writeDebugLog("FileToTable30 end");
-            return rt;
-        }
-
-        public static bool FileToTable30ForCs(string strDBType, string strImportDate, string strPath)
-        {
-            LogHelper.writeDebugLog("FileToTable30ForCs start");
-            LogHelper.writeDebugLog("DBType : " + strDBType);
-            bool rt = true;
-
-            Int64 itemCount = 0;
-            int intSourceDataCount = 0;
-            int intInsertDU = 0;
-            int intInsertUI = 0;
-            int intCount = 0;
-            string[] s;
-            List<MData30ListItem> mdList = new List<MData30ListItem>();
-            MData30ListItem mdli = new MData30ListItem();
-            MData30 md = null;
-            DBConnect db = new DBConnect();
-            DateTime dt = DateTime.Now;
-            DateTime ds = Convert.ToDateTime("1 / 1 / 1753 12:00:00 AM");
-            DateTime de = Convert.ToDateTime("12 / 31 / 9999 11:59:59 PM");
-
-            string strJson = string.Empty;
-            string strData = string.Empty;
-            string strFileName = string.Empty;
-            string strTableName = string.Empty;
-            string strDUTableName = string.Empty;
-            string strUITableName = string.Empty;
-            try
-            {
-                strTableName = "Cs30SD";
-                strDUTableName = "Cs30DailyUser";
-                strUITableName = "Cs30UserInfo";
-                //else if ("killer3.0".Equals(strDBType))
-                //{
-                //    strTableName = "Killer20SourceData";
-                //    strDUTableName = "Killer20DailyUser";
-                //    strUITableName = "Killer20UserInfo";
-                //}
-
-                string[] file = Directory.GetFiles(strPath);
-
-                FileStream fs;
-
-                DataTable table = new DataTable();
-                DataTable tableDU = new DataTable();
-                DataTable tableDUT = new DataTable();
-                Hashtable htY = new Hashtable();
-                Hashtable htN = new Hashtable();
-
-                DataTable duT = new DataTable();
-
-                duT.Columns.Add("keys");
-                duT.Columns.Add("uid");
-                duT.Columns.Add("sid");
-                duT.Columns.Add("hid");
-                duT.Columns.Add("sysid");
-                duT.Columns.Add("vid");
-                duT.Columns.Add("udate");
-                duT.Columns.Add("kill");
-                duT.Columns.Add("version");
-                duT.Columns.Add("channel");
-                duT.Columns.Add("md5");
-                duT.Columns.Add("createdate");
-                duT.Columns.Add("updatedate");
-
-                DataRow drDU;
-
-
-                for (int index = 0; index < file.Length; index++)
-                {
-                    strFileName = string.Empty;
-                    strFileName = file[index];
-                    LogHelper.writeDebugLog("file [" + index + "] : " + strFileName);
-
-
-                    fs = new FileStream(strFileName, FileMode.Open);
-
-                    long fileLength = fs.Length;//文件流的长度
-                    fs.Dispose();
-                    fs.Close();
-
-                    // 读取开始位置
-                    long offset = 0x0; // 256 megabytes
-                                       // 读取大小
-                    long length = 0x20000000; // 512 megabytes
-
-                    if (length > fileLength)
-                    {
-                        length = fileLength;
-                    }
-                    //需要对文件读取的次数
-                    int readCount = (int)Math.Ceiling((double)(fileLength / length));
-                    //当前已经读取的次数
-
-                    int tempCount = 0;
-                    List<string> lsTemp = new List<string>();
-
-                    table = new DataTable();
-
-                    String line;
-                    DataRow dr;
-                    do
-                    {
-                        // 建立缓存文件
-                        using (var mmf = MemoryMappedFile.CreateFromFile(strFileName, FileMode.Open))
-                        using (var stream = mmf.CreateViewStream(offset, length, MemoryMappedFileAccess.Read))
-                        using (var reader = new StreamReader(stream, Encoding.UTF8))
-                        {
-                            do
-                            {
-                                //string t = reader.ReadLine();
-                                line = string.Empty;
-                                strJson = string.Empty;
-                                strData = string.Empty;
-                                mdli = new MData30ListItem();
-                                try
-                                {
-                                    line = reader.ReadLine();
-                                    //intline = intline + 1;
-                                }
-                                catch (OutOfMemoryException oome)
-                                {
-                                    //LogHelper.writeErrorLog("error: intline = " + intline);
-                                    LogHelper.writeErrorLog("error: lsTemp = " + lsTemp.Count);
-                                    LogHelper.writeErrorLog(oome);
-
-                                    continue;
-                                }
-                                lsTemp.Add(line);
-
-                                if (!string.IsNullOrEmpty(line)
-                                    && line.IndexOf("{") > 0
-                                    && line.IndexOf("\"event\":\"checktask") > 0)
-                                {
-
-                                    s = line.Split(' ');
-
-                                    if (s.Length >= 7 && "req".Equals(s[5]))
-                                    {
-                                        //LogHelper.writeInfoLog("intline = " + intline);
-                                        if (line.IndexOf("\"data\":{") > 0
-                                            && line.EndsWith("}"))
-                                        {
-                                            if (line.LastIndexOf("}}") > 0 && line.LastIndexOf("}}") > line.IndexOf("\"data\":{"))
-                                            {
-                                                strData = line.Substring(line.IndexOf("\"data\":{") + 7, (line.LastIndexOf("}}") - line.IndexOf("\"data\":{") - 5));
-                                            }
-                                        }
-
-                                        strJson = line.Substring(line.IndexOf("{"));
-                                        md = new MData30();
-                                        //创建数据行
-                                        dr = table.NewRow();
-                                        try
-                                        {
-                                            //LogHelper.writeInfoLog("intline = " + intline);
-                                            JsonSerializer serializer = new JsonSerializer();
-                                            StringReader srt = new StringReader(strJson);
-
-                                            md = serializer.Deserialize(new JsonTextReader(srt), typeof(MData30)) as MData30;
-                                            srt.Close();
-                                        }
-                                        catch (JsonException je)
-                                        {
-                                            //LogHelper.writeInfoLog("intline = " + intline);
-                                            LogHelper.writeDebugLog("debug: " + line);
-                                            LogHelper.writeErrorLog("error: itemCount = " + itemCount);
-                                            LogHelper.writeErrorLog(je);
-
-                                            continue;
-                                        }
-                                        catch (OutOfMemoryException oome)
-                                        {
-                                            //LogHelper.writeInfoLog("intline = " + intline);
-                                            LogHelper.writeDebugLog("debug: " + line);
-                                            LogHelper.writeErrorLog("error: itemCount = " + itemCount);
-                                            LogHelper.writeErrorLog(oome);
-
-                                            continue;
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            //LogHelper.writeInfoLog("intline = " + intline);
-                                            LogHelper.writeErrorLog("error: itemCount = " + itemCount);
-                                            LogHelper.writeErrorLog("error: s[0] = " + s[0]);
-                                            LogHelper.writeErrorLog(ex);
-                                            continue;
-                                        }
-                                        if (md != null)
-                                        {
-                                            itemCount = itemCount + 1;
-                                            try
-                                            {
-                                                DateTime dtUdate = (Convert.ToDateTime(s[0] + " " + s[1])).AddHours(8);
-                                                if (dtUdate <= ds)
-                                                {
-                                                    LogHelper.writeErrorLog("line = " + line);
-                                                    continue;
-                                                }
-                                                else if (dtUdate >= de)
-                                                {
-                                                    LogHelper.writeErrorLog("line = " + line);
-                                                    continue;
-                                                }
-                                                else
-                                                {
-
-                                                    md.udate = dtUdate;
-
-                                                    mdli.MData30Item = md;
-                                                    mdli.data = strData;
-                                                    mdList.Add(mdli);
-                                                }
-
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                //LogHelper.writeInfoLog("intline = " + intline);
-                                                LogHelper.writeErrorLog("error: itemCount = " + itemCount);
-                                                LogHelper.writeErrorLog("error: s[0]+s[1] = " + s[0] + s[1]);
-                                                LogHelper.writeErrorLog(ex);
-                                                continue;
-                                            }
-                                        }
-
-                                    }
-                                }
-                            } while (!reader.EndOfStream);
-
-                            string t = lsTemp[lsTemp.Count - 1];
-                            offset = offset + length - t.Length;
-                            if (tempCount == readCount - 1)
-                            {
-                                length = fileLength - offset;
-                            }
-                            if (tempCount < readCount)
-                            {
-                                lsTemp.RemoveAt(lsTemp.Count - 1);
-                            }
-
-                            stream.Dispose();
-                            stream.Close();
-                            mmf.Dispose();
-                        }
-
-                        tempCount = tempCount + 1;
-                    }
-                    while (tempCount <= readCount);
-
-                    DateTime dss = DateTime.Now;
-
-                    LogHelper.writeDebugLog("MakeSDTable start : " + dss.ToString());
-
-                    //table = MakeSDTable(mdList, out tableDU);
-                    //table = MakeSDTable(mdList, ref htY, ref htN);
-                    LogHelper.writeDebugLog("MakeSDTable timespan : " + DateTime.Now.Subtract(dss).ToString());
-
-                    db.InsertTable30(table, strTableName);
-                    LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss).ToString());
-                    itemCount = 0;
-                    table.Clear();
-                    mdList.Clear();
-
-                    LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
-                }
-
-                DateTime dss1 = DateTime.Now;
-                LogHelper.writeDebugLog("MakeDU start : " + dss1.ToString());
-                int insertFlg = 0;
-                foreach (DictionaryEntry de1 in htY)
-                {
-                    MDataDU30 t = de1.Value as MDataDU30;
-                    drDU = duT.NewRow();
-                    DateTime dt1 = DateTime.Now;
-                    drDU["udate"] = t.udate;
-                    drDU["channel"] = t.Channel;
-                    drDU["uid"] = t.Uid;
-                    drDU["sid"] = t.Sid;
-                    drDU["hid"] = t.Hid;
-                    drDU["sysid"] = t.Sysid;
-                    drDU["vid"] = t.Vid;
-                    drDU["version"] = t.Version;
-                    drDU["kill"] = t.kill;
-                    drDU["md5"] = t.md5;
-                    drDU["createdate"] = dt1;
-                    drDU["updatedate"] = dt1;
-                    duT.Rows.Add(drDU);
-                    insertFlg = insertFlg + 1;
-                    if (insertFlg == 100000)
-                    {
-                        db.InsertDUTable30(duT, strDUTableName);
-                        LogHelper.writeDebugLog("insertDU 111111 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                        insertFlg = 0;
-                        duT.Clear();
-                    }
-                }
-                LogHelper.writeDebugLog("MakeDU 22222222 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
-                foreach (DictionaryEntry de2 in htN)
-                {
-                    MDataDU30 t = de2.Value as MDataDU30;
-                    drDU = duT.NewRow();
-                    DateTime dt1 = DateTime.Now;
-                    drDU["udate"] = t.udate;
-                    drDU["channel"] = t.Channel;
-                    drDU["uid"] = t.Uid;
-                    drDU["sid"] = t.Sid;
-                    drDU["hid"] = t.Hid;
-                    drDU["sysid"] = t.Sysid;
-                    drDU["vid"] = t.Vid;
-                    drDU["version"] = t.Version;
-                    drDU["kill"] = t.kill;
-                    drDU["md5"] = t.md5;
-                    drDU["createdate"] = dt1;
-                    drDU["updatedate"] = dt1;
-                    duT.Rows.Add(drDU);
-                    insertFlg = insertFlg + 1;
-                    if (insertFlg == 100000)
-                    {
-                        db.InsertDUTable30(duT, strDUTableName);
-                        LogHelper.writeDebugLog("insertDU 33333 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                        insertFlg = 0;
-                        duT.Clear();
-                    }
-                }
-
-                LogHelper.writeDebugLog("MakeDU 44444 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
-                db.InsertDUTable30(duT, strDUTableName);
-
-                LogHelper.writeDebugLog("insertDU 5555555 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                LogHelper.writeDebugLog("InsertTable30 timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
-                int intLossCount = 0;
-                //int intWeekCount = 0;
-
-                //Console.WriteLine("SDTableName ： " + strTableName);
-                //// 取得(SourceData)单日件数
-                //Console.WriteLine("GetSourceDataCount3.0 Start.");
-                //intSourceDataCount = db.GetSourceDataCount(strImportDate, strTableName);
-                //Console.WriteLine("GetSourceDataCount3.0 Count = " + intSourceDataCount);
-                //Console.WriteLine("GetSourceDataCount3.0 Insert End.");
-
-                //// 向表(DailyUser)中插入数据
-                //Console.WriteLine("DailyUser3.0 Insert Start.");
-                //intInsertDU = db.InsertDailyUser20(strImportDate, strTableName, strDUTableName);
-                //Console.WriteLine("DailyUser3.0 Insert Count = " + intInsertDU);
-                //Console.WriteLine("DailyUser3.0 Insert End.");
-
-                // 向表(DailyUser)中插入数据
-                //DateTime dss2 = DateTime.Now;
-                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT start : " + dss2.ToString());
-
-                //DataView dv = duT.DefaultView;
-                //dv.Sort = "createdate desc";
-                //string[] colArr = new string[] { "uid", "udate" };
-                //DataTable insertTableDU = dv.ToTable(true, colArr);
-
-                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT timespan : " + DateTime.Now.Subtract(dss2).ToString());
-                //LogHelper.writeDebugLog("tableDU TO dv TO tableDUT end : " + DateTime.Now.ToString());
-
-                dss1 = DateTime.Now;
-                LogHelper.writeDebugLog("GetDUCount start : " + dss1.ToString());
-                intInsertDU = db.GetDUCount(strImportDate, strDUTableName);
-                LogHelper.writeDebugLog("GetDUCount timespan : " + DateTime.Now.Subtract(dss1).ToString());
-                LogHelper.writeDebugLog("GetDUCount timespan : " + DateTime.Now.Subtract(dss1).ToString());
-
-                if (intInsertDU > 0)
-                {
-                    //if ("go3.0".Equals(strDBType))
-                    //{
-                    //    // 更新表(DailyUser)中数据
-                    //    Console.WriteLine("DailyUser3.0 Update Start.");
-                    //    int intUpdateDU = db.UpdateDailyUser20(strImportDate, strTableName, strDUTableName);
-                    //    Console.WriteLine("DailyUser3.0 Update Count = " + intUpdateDU);
-                    //    Console.WriteLine("DailyUser3.0 Update End.");
-                    //}
-
-                    Console.WriteLine("UserInfo3.0 Insert Start.");
-                    // 向表(UserInfo)中插入数据
-                    intInsertUI = db.InsertUserInfo30(strImportDate, strDUTableName, strUITableName);
-                    Console.WriteLine("UserInfo3.0 Insert Count = " + intInsertUI);
-                    Console.WriteLine("UserInfo3.0 Insert End.");
-
-                    //if ("go2.0".Equals(strDBType))
-                    //{
-                    //    int intUpdateUI = 0;
-                    //    // 更新第一次访问时间
-                    //    Console.WriteLine("UserInfo3.0 Update Start.");
-                    //    intUpdateUI = db.UpdateSadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
-                    //    Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
-                    //    Console.WriteLine("UserInfo3.0 Update End.");
-
-                    //    intUpdateUI = 0;
-                    //    // 更新最后一次访问时间
-                    //    Console.WriteLine("UserInfo3.0 Update Start.");
-                    //    intUpdateUI = db.UpdateEadateForUserInfo30(strImportDate, strUITableName, strDUTableName);
-                    //    Console.WriteLine("UserInfo3.0 Update Count = " + intUpdateUI);
-                    //    Console.WriteLine("UserInfo3.0 Update End.");
-
-                    //    intLossCount = db.GetLossCount(strUITableName);
-                    //}
-                }
-
-                Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 Start.");
-                intCount = db.InsertDailyVisitUserStatistics(strDBType, strImportDate, intSourceDataCount, intInsertDU, intInsertUI);
-                Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 Count = " + intCount);
-                Console.WriteLine("InsertDailyVisitUserStatistics For 3.0 End.");
-
-                // for test eeeeeeeeeeeeeeeeeeeee
-            }
-            catch (Exception ex)
-            {
-                LogHelper.writeErrorLog(ex);
-                return false;
-            }
-
-
-            LogHelper.writeDebugLog("FileToTable30ForCs end");
             return rt;
         }
 
